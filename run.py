@@ -14,7 +14,7 @@ import psycopg2
 #
 from modules import assum_json_to_dict, usrinp_json_to_dict
 import requests
-
+#added remarks for run.py
 # powershell: $env:FLASK_APP = "run"
 # bash: export FLASK_APP=run
 # flask run
