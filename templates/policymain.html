@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Policy Collection{% endblock %}
+
+{% block content %}
+
+<div class="container" style="min-height: 760px;">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h4 class="text-center" style="padding:10px">POLICY COLLECTION</h4>
+            <p class="text-descr" style="padding-bottom:10px">
+                On this page you can explore our collection of peatland-related policies. 
+                At the moment, you can filter the policies by country, governance level, and category.
+                We will be adding further polices and querying methods as we grow our portal.
+            </p>
+
+            <div class="row justify-content-center">
+                <div class="col-3">
+                    <div class="dropdown">
+                        <button class="btn btn-success dropdown-toggle" style="width: 100%;" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Countries
+                        </button>
+                        <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Ireland", "Irish")'>Ireland</a></li>
+                        <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Eesti", "Estonian")'>Estonia</a></li>
+                        <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Nederland", "Dutch")'>Netherlands</a></li>
+                        <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Bulgaria", "Bulgarian")'>Bulgaria</a></li>
+                        <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Italia", "Italian")'>Italy</a></li>
+                        <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=United%20Kingdom", "British")'>United Kingdom</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="dropdown">
+                        <button class="btn btn-success dropdown-toggle" style="width: 100%;" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Governance Level
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/level=Global", "Global")'>Global</a></li>
+                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/level=European", "European")'>EU</a></li>
+                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/level=National", "National")'>National</a></li>
+                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/level=Regional", "Regional")'>Regional</a></li>
+                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/level=Local", "Local")'>Local</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="dropdown">
+                        <button class="btn btn-success dropdown-toggle" style="width: 100%" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Policy Category
+                        </button>
+                        <ul class="dropdown-menu" style="padding:0px;">
+                            <li><a class="dropdown-item bio-class-pill" onclick='policyCollectionGetShow("/policy/categ=bio", "Biodiversity")'>Biodiversity</a></li>
+                            <li><a class="dropdown-item clm-class-pill" onclick='policyCollectionGetShow("/policy/categ=clm", "Climate Action")'>Climate Action</a></li>
+                            <li><a class="dropdown-item comm-class-pill" onclick='policyCollectionGetShow("/policy/categ=comm", "Community and Culture")'>Community / Culture</a></li>
+                            <li><a class="dropdown-item econ-class-pill" onclick='policyCollectionGetShow("/policy/categ=econ", "Economy")'>Economy</a></li>
+                            <li><a class="dropdown-item enr-class-pill" onclick='policyCollectionGetShow("/policy/categ=enr", "Energy")'>Energy</a></li>
+                            <li><a class="dropdown-item env-class-pill" onclick='policyCollectionGetShow("/policy/categ=env", "Environmental Quality")'>Environmental Quality</a></li>
+                            <li><a class="dropdown-item land-class-pill" onclick='policyCollectionGetShow("/policy/categ=land", "Land Use and Agriculture")'>Land Use / Agriculture</a></li>
+                            <li><a class="dropdown-item res-class-pill" onclick='policyCollectionGetShow("/policy/categ=res", "Research and Applied Science")'>Research and Applied Sciences</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion pol-coll-div" id="pol-coll-div" style="margin-bottom: 10px;">
+                <p class="text-center" style="padding: 20px;">Please select a filter to begin exploring policies.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const pillDct = 
+        {'Economy': `econ-class-pill`,
+        'Land-Use / Agriculture': `land-class-pill`,
+        'Environmental quality: water, soil, air':`env-class-pill`,
+        'Community and Culture':`comm-class-pill`,
+        'Climate':`clm-class-pill`,
+        'Energy':`enr-class-pill`,
+        'Biodiversity':`bio-class-pill`,
+        'Research and applied sciences':`res-class-pill`
+        };
+
+    const pillNames = 
+        {'Economy': `Economy`,
+        'Land-Use / Agriculture': `Land-Use / Agriculture`,
+        'Environmental quality: water, soil, air':`Environmental Quality`,
+        'Community and Culture':`Community and Culture`,
+        'Climate':`Climate`,
+        'Energy':`Energy`,
+        'Biodiversity':`Biodiversity`,
+        'Research and applied sciences':`Research`
+        };
+
+    async function policyCollectionGetShow(dataAddress, heading){
+        var polLst = [];
+
+        try {
+            const response = await fetch(dataAddress);
+            if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+            }
+            const json = await response.json();
+            json.forEach(pol =>{
+                polLst.push(pol);
+            })
+        } catch (error) {
+            console.error(error.message);
+        }
+
+        const polPop = $('#pol-coll-div');
+        polPop.html('');
+        var element = `<h4 id="pol-res-he" class="text-center" style="padding-bottom:20px">${heading} Policies</h4>`;
+        polPop.append(element);
+        for (let i = 0; i < polLst.length; i++) {
+            var policy = polLst[i];
+            var element = `<div class="accordion-item polcol-acc-itm" style="margin-bottom:5px;">
+                                <div class="accordion-header polcol-acc-hdr">
+                                    <button class="accordion-button collapsed polcol-acc-btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${i}" aria-expanded="true" aria-controls="collapse${i}">
+                                        <div class="container">
+                                            <p class="d-inline" style="font-weight:bold;">${ policy[0] } </p>
+                                            <p>${ policy[1] } | ${ policy[4] }</p>
+                                        </div>
+                                    </button>
+                                </div>
+                                <div id="collapse${i}" class="accordion-collapse collapse polcol-acc-coll">
+                                    <div class="accordion-body polcol-acc-bdy">
+                                        <a href="${ policy[5] }" class="polcol-lnk d-inline" style=>LINK</a>
+                                        <p class="d-inline"> | <em>${ policy[6] }</em> | ${ policy[7] }</p>
+                                        <p>${ policy[2] }</p>
+                                        <p class="badge rounded-pill ${pillDct[policy[3]]}">${pillNames[policy[3]]}</p>
+                                    </div>
+                                </div>
+                            </div>`
+        polPop.append(element);
+        };
+    }
+</script>
+{% endblock %}

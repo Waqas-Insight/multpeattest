@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en" style="height:100%">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+        {% block links %}
+            <!--bootstrap-->
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+            <!-- own stylesheet -->
+            <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+            <!--ol stylesheet-->
+            <link href="https://cdn.jsdelivr.net/npm/ol@8.1.0/ol.min.css" rel="stylesheet">
+            <!--jquery script-->
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js" async></script>
+        {% endblock %}
+        {% block scripts %}
+            <!--It's okay to put scripts in head now as long as it includes async or defer attributes-->
+            <!--execute jquery-->
+            <script src="https://code.jquery.com/jquery-3.7.0.js" integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
+            <!--jquery validation-->
+            <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.19.1/jquery.validate.min.js" async></script>
+            <!--bootstrap and popper-->
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+            <!--ol js-->
+            <!--<script type="module" src="https://cdn.jsdelivr.net/npm/ol@8.1.0/index.min.js"></script>-->
+            <!--ol skypack-->
+            <script type="module">import ol from 'https://cdn.skypack.dev/ol';</script>
+            <!--<script type="module" src="https://cdn.skypack.dev/ol"></script>-->
+            <!--dataframe javascript-->
+            <script src="https://cdn.jsdelivr.net/npm/danfojs@1.1.2/lib/bundle.min.js"></script>
+            <!--chart js-->
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <!--local script-->
+            <script src="{{url_for('static', filename='scripts/toggle_display.js')}}" async></script>
+            <script src="{{ url_for('static', filename='scripts/logout_template.js') }}"></script>
+        {% endblock %}
+        {% block head %}
+            {% if title %}
+            <title>{% block title %}{% endblock %} - MultiPeat Toolkit</title>
+            {% else %}
+            <title>Multipeat Toolkit</title>
+            {% endif %}
+        {% endblock %}
+    </head>
+        <!-- Google analytics tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-CYHC82N3B2"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-CYHC82N3B2');
+        </script>
+    <body style="padding-bottom: 10px; height:100%;">
+        <div id="page-container">
+            <div id="content-wrap">
+                <div id="navbar">
+                    {% block navbar %}
+                    <nav class="navbar navbar-expand bg-body-tertiary">
+                        <div class="container-fluid d-flex justify-content-between" style="padding:0px; padding-left: 8px; margin-left: 12px; margin-top: 15px; margin-bottom: 50px;">
+                            <div class="d-flex align-middle">
+                                <a class="navbar-brand d-inline-block" href="{{ url_for('landingpage') }}" style="padding:0px">
+                                    <img src="{{url_for('static', filename='multipeat_logo.png')}}" alt="Logo" width="50" height="40" class="align-middle" style="padding-right: 5px;">
+                                    <img src="{{url_for('static', filename='ASPECT_logo.png')}}" alt="Logo" width="75" height="40" class="align-middle" style="padding-right: 10px;">
+                                </a>
+                                <div class="d-inline-block align-middle">
+                                    <h3 class="d-inline-block" style="margin-right: 2px;">Peatland</h3> <h3 style="color: #9fbbcf; font-weight: bold;" class="d-inline-block">TOOLKIT</h3>
+                                    <p class="d-block" style="font-size: small; margin-top: -7px;">Advancing capabilities to measure and regenerate wetlands</p>
+                                </div>
+                            </div>
+                            <div class="d-inline-flex align-middle justify-self-end" style="margin-right: 0px;">
+                                <div class="d-inline-flex input-group" role="search">
+                                    <span class="input-group-text d-inline-block search-svg-block" style="height:30px; width:30px; padding:0px">
+                                        <svg height="18" width="18" class="align-middle">
+                                            <image style="height:18px; width:18px" xlink:href="{{ url_for('static', filename='search.svg') }}"></image>
+                                        </svg>
+                                    </span>
+                                    <input class="form-control d-inline-block search-entry" style="height:30px;" type="search" placeholder="KEYWORD SEARCH" id="header-search" aria-label="Search">
+                                </div>
+                                {% if session.get('username') %}
+                                <p style="padding-left: 20px;" class="d-inline-flex align-middle justify-content-end">  Welcome, {{ username }} </p>
+                                <a href="#" onclick="logout()">Logout</a>
+                                {% else %}
+                                <a href="{{ url_for('login') }}"> Login </a>
+                                {% endif %}
+                                <div style="border-right: 1px solid #9fbbcf; height: 25px; padding: 0px 5px; align-self: center;"></div>
+                                <p class="d-inline-flex align-middle" style="padding-left: 10px;">EN</p>
+                                <div class="d-inline align-bottom" style="margin-right: 12px;">
+                                    <svg id="language-tog" height="18" width="18" fill="#9fbbcf" style="display: block; padding-left:5px;" class="d-inline align-center">
+                                        <image style="height:12px; width:12px;" xlink:href="{{ url_for('static', filename='chevron-down.svg') }}"></image>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="background-color: #9fbbcf; height: 40px; width: 100%;" class="position-absolute bottom-0">
+                            <div style="padding-top: 0px;" class="collapse navbar-collapse">
+                                <ul class="nav navbar-nav">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ url_for('map_page') }}" style="padding: 7px; margin-left: 15px; font-weight: bold;">SITES & POLICIES</a>
+                                    </li>
+                                    <div style="border-right: 1px solid #747474; height: 25px; padding: 0px 10px; align-self: center;"></div>
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle on-page" data-bs-toggle="dropdown" href="#" role="button" style="padding: 7px; margin-left: 15px; font-weight: bold;" aria-expanded="false">USE THE TOOLS</a>
+                                        <ul class="dropdown-menu">
+                                          <li><a class="dropdown-item" href="{{ url_for('ffp_tool') }}">Financial Feasibility Tool</a></li>
+                                          <li><a class="dropdown-item" href="{{ url_for('set_tool') }}">Site Emissions Tool</a></li>
+                                          <li><hr class="dropdown-divider"></li>
+                                          <li><a class="dropdown-item" href="{{ url_for('policy_keywords') }}">Policy Keywords</a></li>
+                                          <li><a class="dropdown-item" href="{{ url_for('policy') }}">Policy Collection</a></li>
+                                          <li><a class="dropdown-item" href="{{ url_for('sub_policy') }}">Add a Policy</a></li>
+                                          <li><a class="dropdown-item" href="{{ url_for('stakeholders') }}">Stakeholder Collection</a></li>
+                                          <li><a class="dropdown-item disabled" href="#">Policy Analyser</a></li>
+                                        </ul>
+                                      </li>
+                                    <div style="border-right: 1px solid #747474; height: 25px; padding: 0px 10px; align-self: center;"></div>
+                                </ul>
+                            </div>
+                        </div>
+                    </nav>
+                    {% endblock %}
+                </div>
+                <div id="content">{% block content %}{% endblock %}</div>
+            </div>
+            <div id="footer">
+                {% block footer %}
+                <footer style="margin:0px; padding: 0px;">
+                    <nav class="navbar navbar-expand" style="background-color: #9fbbcf; width: 100%;height: 40px;">
+                        <div style="padding-top: 0px; width: 100%;" class="position-absolute bottom-0 collapse navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="https://multipeat.org/en/life-multi-peat/objectives-and-scope" target="_blank" style="padding: 7px; margin-left: 15px; font-weight: bold;">Project</a>
+                                </li>
+                                <div style="border-right: 1px solid #747474; height: 25px; padding: 0px 10px; align-self: center;"></div>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="https://multipeat.org/en/about-project/project-partners" target="_blank" style="padding: 7px; margin-left: 15px; font-weight: bold;">Partners</a>
+                                </li>
+                                <div style="border-right: 1px solid #747474; height: 25px; padding: 0px 10px; align-self: center;"></div>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="https://multipeat.org/en/contact-0" target="_blank" style="padding: 7px; margin-left: 15px; font-weight: bold;">Contact</a>
+                                </li>
+                                <div style="border-right: 1px solid #747474; height: 25px; padding: 0px 10px; align-self: center;"></div>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="https://multipeat.org/en/downloads-media/gallery" target="_blank" style="padding: 7px; margin-left: 15px; font-weight: bold;">Gallery</a>
+                                </li>
+                                <div style="border-right: 1px solid #747474; height: 25px; padding: 0px 10px; align-self: center;"></div>
+                                <li class="nav-item">
+                                    <a class="nav-link disabled" href="/" style="padding: 7px; margin-left: 15px; font-weight: bold;">Data Upload</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                </footer>
+                {% endblock %}
+            </div>
+        </div>
+    </body>
+</html>
