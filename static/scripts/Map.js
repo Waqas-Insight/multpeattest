@@ -7,7 +7,7 @@ import ImageWMS from 'https://cdn.skypack.dev/ol/source/ImageWMS.js';
 import Projection from 'https://cdn.skypack.dev/ol/proj/Projection.js';
 
 //const serverURL="https://multipeat.insight-centre.org/geoserver/wms";
-const serverURL="http://test-multipeat.insight-centre.org/geoserver/wms";
+const serverURL="https://test-multipeat.insight-centre.org/geoserver/wms";
 
 const mapProjection=new Projection({
     code:'EPSG:3857',
