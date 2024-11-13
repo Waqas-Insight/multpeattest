@@ -359,11 +359,11 @@
         };
         xhttp.open("GET", `/localdata/${code}`, true);
         xhttp.send();
-        /*
+        
         /// populate country stakeholder selection
-        const loc_sel = $(`#inputPolLoc`);
-        loc_sel.empty();
-        loc_sel.append(`<option value="" selected>Local Authority</option>`);
+        const stk_sel = $(`#inputPolSta`);
+        stk_sel.empty();
+        stk_sel.append(`<option value="" selected>Stakeholders</option>`);
         var xhttp;
         xhttp =  new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
@@ -373,17 +373,18 @@
                 var obj = JSON.parse(this.responseText)['result']['response'];
                 //console.log(obj);
                 obj.forEach(entry =>{
-                    const element = `<option value="${entry['id']}">${entry['name']}</option>`;
-                    loc_sel.append(element);
+                    const element = `<option value="${entry['country_id']}">${entry['name']}</option>`;
+                    stk_sel.append(element);
                 });
             }
         };
-        xhttp.open("GET", `/localdata/${code}`, true);
+        xhttp.open("GET", `/stakeholderdatanew/${code}`, true);
+        console.log(`${code}`)
         xhttp.send();
         /// populate country publisher selection
-        const loc_sel = $(`#inputPolLoc`);
-        loc_sel.empty();
-        loc_sel.append(`<option value="" selected>Local Authority</option>`);
+        const pub_sel = $(`#inputPolPub`);
+        pub_sel.empty();
+        pub_sel.append(`<option value="" selected>Publisher</option>`);
         var xhttp;
         xhttp =  new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
@@ -393,14 +394,14 @@
                 var obj = JSON.parse(this.responseText)['result']['response'];
                 //console.log(obj);
                 obj.forEach(entry =>{
-                    const element = `<option value="${entry['id']}">${entry['name']}</option>`;
-                    loc_sel.append(element);
+                    const element = `<option value="${entry['country_id']}">${entry['name']}</option>`;
+                    pub_sel.append(element);
                 });
             }
         };
-        xhttp.open("GET", `/localdata/${code}`, true);
+        xhttp.open("GET", `/publisherdata/${code}`, true);
         xhttp.send();
-        */
+        
     })
 </script>
 

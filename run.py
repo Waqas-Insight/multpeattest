@@ -522,7 +522,6 @@ def getpubs(code):
     url = f'http://140.203.154.253:8016/aspect/publishers/{code}/'
     return create_dataendpoint(url)
 
-
 '''
 Error Handling
 '''
