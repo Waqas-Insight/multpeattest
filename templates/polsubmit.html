@@ -134,7 +134,13 @@
                         <label for="inputPolPub" class="form-label">Publisher</label>
                         <select class="form-select" id="inputPolPub" name="polpub">
                             <option value="" selected>Publisher</option>
+                            <option value="other" >Other</option>
                         </select>
+                    </div>
+                    <!-- Publisher option select -->
+                    <div class="col-md-6" id="inputPolPubTxtDiv" style="display:none">
+                        <label for="inputPolPubTxt" class="form-label">New Publisher</label>
+                        <input type="text" class="form-control" id="inputPolPubTxt" name="polpub_t"/>
                     </div>
                     <!-- Stakeholders -->
                     <div class="col-md-6">
@@ -146,7 +152,13 @@
                         <label for="inputPolSta" class="form-label">Stakeholders</label>
                         <select class="form-select" id="inputPolSta" name="polsta">
                             <option value="" selected>Stakeholders</option>
+                            <option value="other" >Other</option>
                         </select>
+                    </div>
+                    <!-- Stakeholder option select -->
+                    <div class="col-md-6" id="inputPolStaTxtDiv" style="display:none">
+                        <label for="inputPolStaTxt" class="form-label">New Stakeholder</label>
+                        <input type="text" class="form-control" id="inputPolStaTxt" name="polsta_t"/>
                     </div>
                     <!-- link to policy page -->
                     <div class="col-md-6">
@@ -185,7 +197,7 @@
                         </svg>
                         <label for="inputPolReg" class="form-label">Region [NUTS]</label>
                         <select class="form-select" id="inputPolReg" name="reg">
-                            <option selected>Region</option>
+                            <option value="" selected>Region</option>
                         </select>
                     </div>
                     <div class="col-md-6" id="inputPolLocDiv" style="display:none">
@@ -286,6 +298,7 @@
     const stk_sel = $(`#inputPolSta`);
     stk_sel.empty();
     stk_sel.append(`<option value="" selected>Stakeholders</option>`);
+    stk_sel.append(`<option value="other">Other</option>`);
     var xhttp;
     xhttp =  new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -307,6 +320,7 @@
     const pub_sel = $(`#inputPolPub`);
     pub_sel.empty();
     pub_sel.append(`<option value="" selected>Publisher</option>`);
+    pub_sel.append(`<option value="other">Other</option>`);
     var xhttp;
     xhttp =  new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -324,6 +338,38 @@
     xhttp.open("GET", `/publisherdata/0`, true);
     xhttp.send();
 
+    // on selection of "other" publisher, show new input field
+    // and hide new input field if other is deselected
+    $('#inputPolPub').on('change', function(event){
+        var pub_sel = document.getElementById('inputPolPub').value;
+        var pub_tinp_div = document.getElementById('inputPolPubTxtDiv');
+        if(pub_sel=="other"){
+            if(pub_tinp_div.style.display == 'none'){
+                pub_tinp_div.style.display = 'block';
+            }
+        }else{
+            if(pub_tinp_div.style.display == 'block'){
+                pub_tinp_div.style.display = 'none';
+            }
+        }
+    })
+
+    $('#inputPolSta').on('change', function(event){
+        var sta_sel = document.getElementById('inputPolSta').value;
+        var sta_tinp_div = document.getElementById('inputPolStaTxtDiv');
+        if(sta_sel=="other"){
+            if(sta_tinp_div.style.display == 'none'){
+                sta_tinp_div.style.display = 'block';
+            }
+        }else{
+            if(sta_tinp_div.style.display == 'block'){
+                sta_tinp_div.style.display = 'none';
+            }
+        }
+    })
+
+    // change region, local authority, stakeholder, and publisher options
+    // on country selection
     $('#inputPolCtry').on('change', function(event){
         var code = document.getElementById('inputPolCtry').value;
         /// populate region selection
@@ -371,6 +417,7 @@
         const stk_sel = $(`#inputPolSta`);
         stk_sel.empty();
         stk_sel.append(`<option value="" selected>Stakeholders</option>`);
+        stk_sel.append(`<option value="other">Other</option>`);
         var xhttp;
         xhttp =  new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
@@ -392,6 +439,7 @@
         const pub_sel = $(`#inputPolPub`);
         pub_sel.empty();
         pub_sel.append(`<option value="" selected>Publisher</option>`);
+        pub_sel.append(`<option value="other">Other</option>`);
         var xhttp;
         xhttp =  new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
