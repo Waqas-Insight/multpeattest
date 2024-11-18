@@ -41,11 +41,15 @@
                             </a>
                         </svg>
                         <label for="inputPolStartDate" class="form-label">Start Year</label>
-                        <input type="number" class="validate form-control" min="1900" max="2500" id="inputPolStartDate" name="startyr">
+                        <select class="form-select" id="inputPolStartDate" name="startyr">
+                            <option value="" selected>Select start year</option>
+                        </select>
                     </div>
                     <div class="col-md-3">
                         <label for="inputPolEndDate" class="form-label">End Year</label>
-                        <input type="number" class="validate form-control" min="1900" max="2500" id="inputPolEndDate" name="endyr">
+                        <select class="form-select" id="inputPolEndDate" name="endyr">
+                            <option value="" selected>Select end year</option>
+                        </select>
                     </div>
                     <!--categories-->
                     <div class="col-md-6 dropdown align-content-end">
@@ -260,6 +264,21 @@
 </div>
 
 <script>
+    // populate year selections
+    const yr_st_sel = $(`#inputPolStartDate`);
+    yr_st_sel.empty();
+    yr_st_sel.append(`<option value="" selected>Select start year</option>`);
+    for (let i = 2000; i <= 2050; i++) {
+        yr_st_sel.append(`<option value="${i}">${i}</option>`);;
+    }
+
+    const yr_en_sel = $(`#inputPolEndDate`);
+    yr_en_sel.empty();
+    yr_en_sel.append(`<option value="" selected>Select end year</option>`);
+    for (let i = 2000; i <= 2050; i++) {
+        yr_en_sel.append(`<option value="${i}">${i}</option>`);;
+    }
+
     /// populate country selection
     var xhttp;
     xhttp =  new XMLHttpRequest();

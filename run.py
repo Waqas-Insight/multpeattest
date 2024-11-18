@@ -355,10 +355,10 @@ def sub_policy():
                 "nuts_level_1": '' if policy_level in ['Global', 'European'] else request.form['reg'],  # Conditional assignment
                 "year_from": request.form['startyr'],  
                 "year_to": request.form['endyr'],
-                "publisher_char": request.form['polpub'],
-                "publisher_text": request.form['polpub_t'],
+                "publisher": request.form['polpub'],
+                "publisher_char": request.form['polpub_t'],
                 "stakholder_ids": request.form['polsta'],
-                "stakeholder_text": request.form['polsta_t'],
+                "stakeholder_char": request.form['polsta_t'],
                 "publisher_link": request.form['pglnk'], 
                 "data_link": request.form['pdflnk'],  
                 "excerpt": request.form['excnat'],  
