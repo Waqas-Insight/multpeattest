@@ -244,6 +244,13 @@ ROUTES
 def landingpage():
     return redirect(url_for('map_page'))
 
+@app.route('/about', methods=['GET', 'POST'])
+def about():
+    username = session.get('username')
+    if username is None:
+        return render_template('about.html')
+    return render_template('about.html', username=session['username'])
+
 @app.route('/map', methods=['GET', 'POST'])
 def map_page():
     username = session.get('username')
