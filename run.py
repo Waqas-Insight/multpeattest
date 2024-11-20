@@ -504,11 +504,6 @@ def getkwds():
         kwds = json.load(json_file)
     return kwds
 
-@app.route('/stakeholderdata')
-def getstk():
-    url = 'http://140.203.154.253:8016/aspect/stakeholders/0'
-    return create_dataendpoint(url)
-
 @app.route('/categorydata')
 def getcateg():
     url = 'http://140.203.154.253:8016/aspect/category/'
@@ -539,7 +534,7 @@ def getkwdsnew():
     url = 'http://140.203.154.253:8016/aspect/keywords/'
     return create_dataendpoint(url)
 
-@app.route('/stakeholderdatanew/<int:code>')
+@app.route('/stakeholderdata/<int:code>')
 def getstknew(code):
     url = f'http://140.203.154.253:8016/aspect/stakeholders/{code}/'
     return create_dataendpoint(url)

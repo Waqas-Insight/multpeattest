@@ -359,7 +359,7 @@
             });
         }
     };
-    xhttp.open("GET", `/stakeholderdatanew/0`, true);
+    xhttp.open("GET", `/stakeholderdata/0`, true);
     xhttp.send();
 
     /// populate general publisher selection
@@ -476,7 +476,7 @@
                 });
             }
         };
-        xhttp.open("GET", `/stakeholderdatanew/${code}`, true);
+        xhttp.open("GET", `/stakeholderdata/${code}`, true);
         xhttp.send();
         /// populate country publisher selection
         const pub_sel = $(`#inputPolPub`);
