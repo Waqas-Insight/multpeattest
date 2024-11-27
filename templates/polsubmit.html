@@ -347,9 +347,9 @@
         if (this.readyState == 4 && this.status == 200) {
             var obj = JSON.parse(this.responseText)['result']['response'];
             //console.log(obj);
+            const ctry_sel = $(`#inputPolLang`);
             obj.forEach(entry =>{
-                const element = `<option value="${entry['id']}">${entry['name']}</option>`;
-                const ctry_sel = $(`#inputPolLang`);
+                const element = `<option value="${entry['id']}" label="${entry['name']}">${entry['name']}</option>`;
                 ctry_sel.append(element);
             });
         }
@@ -433,6 +433,29 @@
             }
         }
     })
+
+    // populate keywords section
+    const kwd_sel = $(`#inputPolKwd`);
+    kwd_sel.empty();
+    var spec_kwds = [];
+    var xhttp;
+    xhttp =  new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            //var obj = JSON.parse(this.responseText);
+            //console.log(obj);
+            var obj = JSON.parse(this.responseText)['result']['response'];
+            //console.log(obj);
+            obj.forEach(entry =>{
+                if(entry['language']=='English (US)'){
+                    const element = `<option value="${entry['id']}">${entry['name']}</option>`;
+                    kwd_sel.append(element);
+                }
+            });
+        }
+    };
+    xhttp.open("GET", `/keyworddata`, true);
+    xhttp.send();
 
     // change region, local authority, stakeholder, and publisher options
     // on country selection
@@ -521,28 +544,35 @@
         xhttp.send();
     })
 
-    // populate keywords section
-    const kwd_sel = $(`#inputPolKwd`);
-    kwd_sel.empty();
-    var spec_kwds = [];
-    var xhttp;
-    xhttp =  new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            //var obj = JSON.parse(this.responseText);
-            //console.log(obj);
-            var obj = JSON.parse(this.responseText)['result']['response'];
-            //console.log(obj);
-            obj.forEach(entry =>{
-                if(entry['language']=='English (US)'){
-                    const element = `<option value="${entry['id']}">${entry['name']}</option>`;
-                kwd_sel.append(element);
-                }
-            });
-        }
-    };
-    xhttp.open("GET", `/keyworddata`, true);
-    xhttp.send();
+    // change keywords option on language selection
+    $('#inputPolLang').on('change', function(event){
+        var kwd_sel = $(`#inputPolKwd`);
+        //var lang = $(`#inputPolLang:selected`);
+        var lang = document.getElementById('inputPolLang').selectedOptions[0].textContent;
+        var langs = [];
+        var xhttp;
+        xhttp =  new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var obj = JSON.parse(this.responseText)['result']['response'];
+                obj.forEach(entry =>{
+                    langs.push(entry['language']);
+                });
+                var langs_uniq = [...new Set(langs)];
+                if(langs_uniq.includes(lang)){
+                    kwd_sel.empty();
+                    obj.forEach(entry =>{
+                        if(entry['language']==lang){
+                            const element = `<option value="${entry['id']}">${entry['name']}</option>`;
+                            kwd_sel.append(element);
+                        }
+                    });
+                };
+            }
+        };
+        xhttp.open("GET", "/keyworddata", true);
+        xhttp.send();
+    })
 </script>
 
 <!--popover script-->
