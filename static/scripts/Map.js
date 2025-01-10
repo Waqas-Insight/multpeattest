@@ -84,6 +84,20 @@ const alkFenLayer= new ImageLayer({
     region: 'Poland'
 });
 
+// Polish Torfoviska
+const pltSource=new ImageWMS({
+    url:serverURL,
+    params:{"LAYERS":"multipeat:pl_peat", "VERSION":"1.1.1", "FORMAT":"image/png"}
+});
+
+const pltLayer= new ImageLayer({
+    source:pltSource,
+    // @ts-ignore
+    name:'PL_Torf',
+    display: 'Torfowiska',
+    region: 'Poland'
+});
+
 // Dutch Peat Soils
 const nlSoilSource=new ImageWMS({
     url:serverURL,
@@ -199,7 +213,7 @@ const view=new View({
 const map=new Map({
     target:"map",
     layers:[osmLayer, corineLayer, ieLayer, nlSoilLayer, 
-        detLayer, alkFenLayer, befLayer, bewLayer, eeLayer, fiLayer,
+        detLayer, pltLayer, alkFenLayer, befLayer, bewLayer, eeLayer, fiLayer,
         PSLayer, ctryLayer, ipolLayer],
     view:view
 });
