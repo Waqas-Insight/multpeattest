@@ -1248,13 +1248,41 @@ $("#set_csv_btn").on('click', function(event){
         ["Electricity per Site", document.getElementById("rw_elec_per_site").value],
         ["Crop Use", document.getElementById("rw_crop_use").value]
     ];
-    let csvContent = "data:text/csv;charset=utf-8,";
-    rows.forEach(function(rowArray) {
-        let row = rowArray.join(",");
-        csvContent += row + "\r\n";
+    function downloadAndSaveCSV(rows) {
+        let csvContent = rows.map(row => row.join(",")).join("\r\n");
+        // let csvContent = "data:waqassembled"
+        console.log("Sending CSV Data:", csvContent); // Debugging
+    
+        fetch('http://127.0.0.1:5000/save-csv', { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json; charset=UTF-8' 
+            },
+            credentials: 'include',
+            body: JSON.stringify({ csvData: csvContent })
+        })
+        .then(response => response.json().then(data => ({ status: response.status, body: data }))) // Get both status & JSON
+    .then(({ status, body }) => {
+        console.log("Response Status:", status); // Debugging
+        console.log("Server Response:", body); // Debugging
+
+        if (status === 200) {
+            alert("Success: " + body.message);
+        } else if (status === 401) {
+            alert("Unauthorized: " + body.error);
+        } else if (status === 400) {
+            alert("Bad Request: " + body.error);
+        } else {
+            alert("Unexpected Error: " + body.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("Network error: Could not connect to the server.");
     });
-    var encodedUri = encodeURI(csvContent);
-    window.open(encodedUri);
+    }
+    
+    downloadAndSaveCSV(rows);
 });
 
 $("#set_gwp_btn").on('click', function(event){

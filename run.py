@@ -11,6 +11,10 @@ from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from wtforms import StringField, PasswordField, SubmitField, validators
 import psycopg2
+from datetime import datetime
+import csv
+import time
+
 #
 from modules import assum_json_to_dict, usrinp_json_to_dict
 import requests
@@ -68,6 +72,8 @@ conn_params = {
     'host': '140.203.155.91',
     'port': '5432'
 }
+SAVE_DIR = "saved_files"
+os.makedirs(SAVE_DIR, exist_ok=True)  # Ensure directory exists
 
 def create_dataendpoint(url):
     headers = {
@@ -502,6 +508,53 @@ def getnuts(code):
     url = f'http://140.203.154.253:8016/aspect/nuts/{code}/'
     return create_dataendpoint(url)
 
+from flask import Flask, request, jsonify
+@app.route('/save-csv', methods=['POST'])
+@csrf.exempt 
+def save_csv():
+    try:
+        # Check if username is in session
+        if "username" not in session:
+            return jsonify({"error": "You are not logged in, In order to Save the Data please logged in "}), 401  # Unauthorized
+
+        username = session["username"]  # Retrieve username from session
+
+        # Extract JSON data
+        data = request.get_json()
+        print("Parsed JSON:", data)
+
+        if not data:
+            return jsonify({"error": "Empty JSON received"}), 400
+
+        if "csvData" not in data:
+            return jsonify({"error": "Missing 'csvData' key"}), 400
+
+        csv_content = data["csvData"]
+
+        # Process CSV string into list of lists
+        csv_rows = [row.split(",") for row in csv_content.split("\r\n") if row]  # Split rows properly
+
+        # Generate a timestamped filename with username
+        timestamp = time.strftime("%Y%m%d-%H%M%S")  # e.g., "20250224-130530"
+        csv_filename = f"{username}_{timestamp}.csv"
+
+        # Ensure directory exists
+        os.makedirs("csv_outputs", exist_ok=True)
+        file_path = os.path.join("csv_outputs", csv_filename)
+
+        # Save to CSV file
+        with open(file_path, "w", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerows(csv_rows)
+
+        print(f"CSV saved as {file_path}")
+
+        return jsonify({"message": "Your Data has been saved successfullyiptab", "filename": csv_filename}), 200
+
+    except Exception as e:
+        print("Exception occurred:", e)
+        return jsonify({"error": str(e)}), 500
+
 '''
 Error Handling
 '''
@@ -519,4 +572,5 @@ def bad_request_error(error):
 
 if __name__ == "__main__":
     #app.run(debug=True, passthrough_errors=True, use_debugger=False, use_reloader=False)
+    app.run(debug=True)
     app.run(host='0.0.0.0', port=5000)

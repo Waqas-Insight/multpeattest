@@ -17088,3 +17088,7 @@ Press CTRL+C to quit
 127.0.0.1 - - [10/Jul/2024 19:58:43] "GET /static/eu-gr.png HTTP/1.0" 304 -
 127.0.0.1 - - [10/Jul/2024 19:58:43] "GET /static/search.svg HTTP/1.0" 304 -
 127.0.0.1 - - [10/Jul/2024 19:58:43] "GET /static/chevron-down.svg HTTP/1.0" 304 -
+Traceback (most recent call last):
+  File "/Users/waqasshoukatali/multipeattools/test_git_multipeat/run.py", line 4, in <module>
+    from flask import Flask
+ModuleNotFoundError: No module named 'flask'
