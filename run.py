@@ -250,6 +250,13 @@ ROUTES
 def landingpage():
     return redirect(url_for('map_page'))
 
+@app.route('/about', methods=['GET', 'POST'])
+def about():
+    username = session.get('username')
+    if username is None:
+        return render_template('about.html')
+    return render_template('about.html', username=session['username'])
+
 @app.route('/map', methods=['GET', 'POST'])
 def map_page():
     username = session.get('username')
@@ -315,7 +322,7 @@ def stakeholders():
          return render_template('stakeholders.html')
     return render_template('stakeholders.html', username=session['username'])
     
-@app.route('/policy-submit', methods=['GET', 'POST'])
+@app.route('/policy-suggestion', methods=['GET', 'POST'])
 def sub_policy():
     #
     categdct = {
@@ -329,44 +336,85 @@ def sub_policy():
         'env-cls': 8
     }
     if request.method == 'POST':
-        policy_level = request.form['govlvl']
         #url = 'http://localhost:8616/aspect/create_policy/'
         url = 'http://140.203.154.253:8016/aspect/create_policy/'
-
         # Set up the headers
         headers = {
             'Content-Type': 'application/json',
             #='Cookie': 'session_id='+str(cookie_value)
         }
-        '''
+        # get policy level for conditional
+        policy_level = request.form['govlvl']
         category_list = []
+        pub_list = []
+        stk_list = []
+        kwd_list=[]
+        # get category list
         for key in list(categdct):
-            if request.form[key]:
-                category_list.append(categdct[key])
-        #[categdct[key] for key in list(categdct) if request.form[key]][0]
-        print(category_list)
-        '''
+            # try/ except so non-selected categories don't trigger bad request 
+            try: 
+                if request.form[key]:
+                    category_list.append(categdct[key])
+            except:
+                pass
+        # get publisher list and handle "other"
+        # [int(entry) for entry in request.form.getlist('polpub')] if request.form['polpub'] else [] # triggers error when "other"
+        # try/except for 
+        try:
+            for entry in request.form.getlist('polpub'):
+                if entry != "other":
+                    pub_list.append(int(entry))
+        except:
+            pass
+        # get stakeholder list and handle "other"
+        try:
+            for entry in request.form.getlist('polsta'):
+                if entry != "other":
+                    stk_list.append(int(entry))
+        except:
+            pass
+        # if english name is empty, set to native language name
+        engname = request.form['engtitle']
+        if engname == "":
+            engname = request.form['nattitle']
+        # if language, convert to int
+        lang = request.form['pollang']
+        if lang != "":
+            lang = int(request.form['pollang'])
+        # get keyword list [may need to handle 'other' in future]
+        try:
+            for entry in request.form.getlist('polkwd'):
+                kwd_list.append(int(entry))
+        except:
+            pass
+        #
         payload = {
             "jsonrpc": "2.0",
             "params": {
-                "name": request.form['nattitle'], 
-                "name_language": request.form['pollang'],  
+                "name": engname,
+                "name_language": request.form['nattitle'],
+                "language": lang,
                 "type": "Policy",  
-                "category": 1,
+                "category": category_list,
                 "policy_level": request.form['govlvl'],  
                 "country_group": 1,  
                 "country": request.form['ctry'],  
                 "localauthority1": request.form['loc'], 
                 "nuts_level_1": '' if policy_level in ['Global', 'European'] else request.form['reg'],  # Conditional assignment
                 "year_from": request.form['startyr'],  
-                "year_to": request.form['endyr'],  
-                "publisher_char": request.form['polpub'],  
-                "publisher_link": request.form['pglnk'],  
+                "year_to": request.form['endyr'],
+                "publisher": pub_list,
+                "publisher_char": request.form['polpub_t'],
+                "stakholder_ids": stk_list,
+                "stakeholder_char": request.form['polsta_t'],
+                "publisher_link": request.form['pglnk'], 
                 "data_link": request.form['pdflnk'],  
                 "excerpt": request.form['excnat'],  
                 "excerpt_english": request.form['exceng'],  
                 "abstract": request.form['absnat'],  
                 "abstract_english": request.form['abseng'],  
+                "keywords":kwd_list,
+                "additional_info":request.form['addtl'],
                 "state": "Draft"
             }
         }
@@ -379,29 +427,30 @@ def sub_policy():
                 # Parse the JSON response
                 data = response.json()
                 print(json.dumps(data, indent=2))
-                print ('policy submitted successfully')
+                print ('policy suggestion sent successfully')
                 result = data.get("result", {})
                 status = result.get("status")
                 message_text = result.get("message")
                 if status == 200 and message_text == "success":
-                 message = "Policy has been submitted successfully!"
+                 message = "We have received your policy suggestion!"
                 else:
-                 message = "Policy submission failed. Please try again."
+                 message = "Policy suggestion failed. Please try again."
                 return render_template('polsubmit.html',message=message)
             except ValueError:
-                return render_template('polsubmit.html',message="Policy submission failed. Please try again")
+                return render_template('polsubmit.html',message="Policy suggestion failed. Please try again")
         else:
-            return render_template('polsubmit.html',message="Policy submission failed. Please try again")
-        
-        print(payload)
-        if 'username' not in session:
-            return render_template('polsubmit.html')
-        return render_template('polsubmit.html', username=session['username'])
+            return render_template('polsubmit.html',message="Policy suggestion failed. Please try again")
         
     # non-post request
     if 'username' not in session:
          return render_template('polsubmit.html')
     return render_template('polsubmit.html', username=session['username'])
+
+@app.route('/incentive-tool', methods=['GET', 'POST'])
+def incentive_tool():
+    if 'username' not in session:
+         return render_template('incentive_tool.html')
+    return render_template('incentive_tool.html', username=session['username'])
 
 # DATA ENDPOINTS
 
@@ -477,17 +526,6 @@ def getpols_eventual(lint):
     conn.close()
     return policies
 
-@app.route('/getkwds')
-def getkwds():
-    with open(KWD_FILE, encoding="utf-8") as json_file:
-        kwds = json.load(json_file)
-    return kwds
-
-@app.route('/stakeholderdata')
-def getstk():
-    url = 'http://140.203.154.253:8016/aspect/stakeholders'
-    return create_dataendpoint(url)
-
 @app.route('/categorydata')
 def getcateg():
     url = 'http://140.203.154.253:8016/aspect/category/'
@@ -506,6 +544,26 @@ def getlocal(code):
 @app.route('/nutsdata/<int:code>')
 def getnuts(code):
     url = f'http://140.203.154.253:8016/aspect/nuts/{code}/'
+    return create_dataendpoint(url)
+
+@app.route('/languagedata')
+def getlangs():
+    url = 'http://140.203.154.253:8016/aspect/languages/'
+    return create_dataendpoint(url)
+
+@app.route('/keyworddata')
+def getkwdsnew():
+    url = 'http://140.203.154.253:8016/aspect/keywords/'
+    return create_dataendpoint(url)
+
+@app.route('/stakeholderdata/<int:code>')
+def getstknew(code):
+    url = f'http://140.203.154.253:8016/aspect/stakeholders/{code}/'
+    return create_dataendpoint(url)
+
+@app.route('/publisherdata/<int:code>')
+def getpubs(code):
+    url = f'http://140.203.154.253:8016/aspect/publishers/{code}/'
     return create_dataendpoint(url)
 
 from flask import Flask, request, jsonify
@@ -549,7 +607,7 @@ def save_csv():
 
         print(f"CSV saved as {file_path}")
 
-        return jsonify({"message": "Your Data has been saved successfullyiptab", "filename": csv_filename}), 200
+        return jsonify({"message": "Your Data has been saved successfully saved", "filename": csv_filename}), 200
 
     except Exception as e:
         print("Exception occurred:", e)

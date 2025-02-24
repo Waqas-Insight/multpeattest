@@ -7,7 +7,7 @@
 <div class="container" style="min-height: 760px;">
     <div class="row justify-content-center">
         <div class="col-lg-10">
-            <h4 class="text-center" style="padding:10px">POLICY COLLECTION</h4>
+            <h4 class="text-center" style="padding:10px; padding-top: 20px;">POLICY COLLECTION</h4>
             <p class="text-descr" style="padding-bottom:10px">
                 On this page you can explore our collection of peatland-related policies. 
                 At the moment, you can filter the policies by country, governance level, and category.
@@ -21,12 +21,19 @@
                             Countries
                         </button>
                         <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Ireland", "Irish")'>Ireland</a></li>
-                        <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Eesti", "Estonian")'>Estonia</a></li>
-                        <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Nederland", "Dutch")'>Netherlands</a></li>
-                        <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Bulgaria", "Bulgarian")'>Bulgaria</a></li>
-                        <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Italia", "Italian")'>Italy</a></li>
-                        <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=United%20Kingdom", "British")'>United Kingdom</a></li>
+                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Belgi%C3%AB", "Belgian")'>Belgium</a></li>
+                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Bulgaria", "Bulgarian")'>Bulgaria</a></li>
+                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Eesti", "Estonian")'>Estonia</a></li>
+                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Finland", "Finnish")'>Finland</a></li>
+                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Deutschland", "German")'>Germany</a></li>
+                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Ireland", "Irish")'>Ireland</a></li>
+                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Italia", "Italian")'>Italy</a></li>
+                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Latvija", "Latvian")'>Latvia</a></li>
+                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Lietuva", "Lithuanian")'>Lithuania</a></li>
+                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Nederland", "Dutch")'>Netherlands</a></li>
+                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Polska", "Polish")'>Poland</a></li>
+                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Rom%C3%A2nia", "Romanian")'>Romania</a></li>
+                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=United%20Kingdom", "British")'>United Kingdom</a></li>
                         </ul>
                     </div>
                 </div>
@@ -126,7 +133,7 @@
                                 </div>
                                 <div id="collapse${i}" class="accordion-collapse collapse polcol-acc-coll">
                                     <div class="accordion-body polcol-acc-bdy">
-                                        <a href="${ policy[5] }" class="polcol-lnk d-inline" style=>LINK</a>
+                                        <a href="${ policy[5] }" class="polcol-lnk d-inline" target="_blank">LINK</a>
                                         <p class="d-inline"> | <em>${ policy[6] }</em> | ${ policy[7] }</p>
                                         <p>${ policy[2] }</p>
                                         <p class="badge rounded-pill ${pillDct[policy[3]]}">${pillNames[policy[3]]}</p>

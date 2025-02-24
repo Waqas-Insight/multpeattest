@@ -7,7 +7,7 @@ import ImageWMS from 'https://cdn.skypack.dev/ol/source/ImageWMS.js';
 import Projection from 'https://cdn.skypack.dev/ol/proj/Projection.js';
 
 //const serverURL="https://multipeat.insight-centre.org/geoserver/wms";
-const serverURL="http://test-multipeat.insight-centre.org/geoserver/wms";
+const serverURL="https://test-multipeat.insight-centre.org/geoserver/wms";
 
 const mapProjection=new Projection({
     code:'EPSG:3857',
@@ -31,42 +31,16 @@ const PSLayer= new ImageLayer({
 });
 
 // Irish Peat Classes
-const D1Source=new ImageWMS({
+const ieSource=new ImageWMS({
     url:serverURL,
-    params:{"LAYERS":"multipeat:dipm1", "VERSION":"1.1.1", "FORMAT":"image/png"}
+    params:{"LAYERS":"multipeat:dipm", "VERSION":"1.1.1", "FORMAT":"image/png"}
 });
 
-const D1Layer= new ImageLayer({
-    source:D1Source,
+const ieLayer= new ImageLayer({
+    source:ieSource,
     // @ts-ignore
-    name:'Raised_Bog',
-    display: 'Raised Bog',
-    region: 'Ireland'
-});
-
-const D2Source=new ImageWMS({
-    url:serverURL,
-    params:{"LAYERS":"multipeat:dipm2", "VERSION":"1.1.1", "FORMAT":"image/png"}
-});
-
-const D2Layer= new ImageLayer({
-    source:D2Source,
-    // @ts-ignore
-    name:'LL_Atlantic_Bog',
-    display: 'LL Atlantic Bog',
-    region: 'Ireland'
-});
-
-const D3Source=new ImageWMS({
-    url:serverURL,
-    params:{"LAYERS":"multipeat:dipm3", "VERSION":"1.1.1", "FORMAT":"image/png"}
-});
-
-const D3Layer= new ImageLayer({
-    source:D3Source,
-    // @ts-ignore
-    name:'HL_Montane_Bog',
-    display: 'HL Montane Bog',
+    name:'IE_dipm',
+    display: 'Irish Peat Map',
     region: 'Ireland'
 });
 
@@ -107,6 +81,20 @@ const alkFenLayer= new ImageLayer({
     // @ts-ignore
     name:'PL_Alk_Fens',
     display: 'Alkaline Fen Map',
+    region: 'Poland'
+});
+
+// Polish Torfowiska
+const pltSource=new ImageWMS({
+    url:serverURL,
+    params:{"LAYERS":"multipeat:pl_peat", "VERSION":"1.1.1", "FORMAT":"image/png"}
+});
+
+const pltLayer= new ImageLayer({
+    source:pltSource,
+    // @ts-ignore
+    name:'PL_Torf',
+    display: 'Peatland Map',
     region: 'Poland'
 });
 
@@ -165,6 +153,33 @@ const bewLayer= new ImageLayer({
     region: 'Belgium'
 });
 
+const eeSource=new ImageWMS({
+    url:serverURL,
+    params:{"LAYERS":"multipeat:peat_ee", "VERSION":"1.1.1", "FORMAT":"image/png"}
+});
+
+const eeLayer= new ImageLayer({
+    source:eeSource,
+    // @ts-ignore
+    name:'EE_Peatlands',
+    display: 'Estonian Bogs',
+    region: 'Estonia'
+});
+
+const fiSource=new ImageWMS({
+    url:serverURL,
+    params:{"LAYERS":"multipeat:peat_fi", "VERSION":"1.1.1", "FORMAT":"image/png"}
+});
+
+const fiLayer= new ImageLayer({
+    source:fiSource,
+    // @ts-ignore
+    name:'FI_Peatlands',
+    display: 'Finnish Bogs',
+    region: 'Finland'
+});
+
+
 // CORINE-18 
 const corineSource=new ImageWMS({
     url:serverURL,
@@ -189,16 +204,17 @@ const osmLayer=new TileLayer({
 const view=new View({
     //extent:[-1189593, 6692152.5, -665102.8125, 7450535], // ireland
     //extent:[-2005155, 3723095, 3711745, 8600839], // europe
-    extent:[-2850000, 3700000, 4000000, 11600000], // europe and EEA countries
-    center:[-816308.25,7051300.85],
-    zoom:7.5,
+    extent:[-2050000, 3500000, 8000000, 15000000], // europe and EEA countries
+    center:[2000000,7500000],
+    zoom:5,
     projection: mapProjection
 });
 
 const map=new Map({
     target:"map",
-    layers:[osmLayer, corineLayer, D1Layer, D2Layer, D3Layer, nlSoilLayer, 
-        detLayer, alkFenLayer, befLayer, bewLayer, PSLayer, ctryLayer, ipolLayer],
+    layers:[osmLayer, corineLayer, ieLayer, nlSoilLayer, 
+        detLayer, pltLayer, alkFenLayer, befLayer, bewLayer, eeLayer, fiLayer,
+        PSLayer, ctryLayer, ipolLayer],
     view:view
 });
 

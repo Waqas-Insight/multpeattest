@@ -57,18 +57,15 @@ map.on('singleclick', function (evt) {
   // project sites
   const PSInfo=$('#PS-info');
   PSInfo.html('');
-  // Raised Bog
-  const D1Info=$('#D1-info');
-  D1Info.html('');
-  // LL Atlantic Bog
-  const D2Info=$('#D2-info');
-  D2Info.html('');
-  // HL Montane Bog
-  const D3Info=$('#D3-info');
-  D3Info.html('');
-  // alkaline fens
+  // irish
+  const ieInfo=$('#ie-info');
+  ieInfo.html('');
+  // polish alk fens
   const PlAlkFenInfo=$('#PlAlkFen-info');
   PlAlkFenInfo.html('');
+  // alkaline fens
+  const pltInfo=$('#plt-info');
+  pltInfo.html('');
   // corine-18
   const corineInfo=$('#corine-info');
   corineInfo.html('');
@@ -84,6 +81,12 @@ map.on('singleclick', function (evt) {
   // be-wallonia
   const bewInfo=$('#bew-info');
   bewInfo.html('');
+  // be-wallonia
+  const eeInfo=$('#ee-info');
+  eeInfo.html('');
+  // be-wallonia
+  const fiInfo=$('#fi-info');
+  fiInfo.html('');
   // default
   const noFeatures=$('#no-features');
   noFeatures.html('<p>No features</p>');
@@ -113,65 +116,21 @@ map.on('singleclick', function (evt) {
         })
     }
 
-  const D1Layer=getLayerByName('Raised_Bog');
-  const D1Source=D1Layer.getSource();
-  const D1Url=D1Source.getFeatureInfoUrl(coordinate, resolution, projection,
+  const ieLayer=getLayerByName('IE_dipm');
+  const ieSource=ieLayer.getSource();
+  const ieUrl=ieSource.getFeatureInfoUrl(coordinate, resolution, projection,
     {'INFO_FORMAT':'application/json'});
 
-    if(D1Url){
+    if(ieUrl){
         $.ajax({
-            url:D1Url,
+            url:ieUrl,
             method:'GET',
             success:function(result){
-                const D1=result.features[0];
-                if(D1){
-                    const D1gc=D1.properties.site_type;
+                const ie=result.features[0];
+                if(ie){
+                    const iegc=ie.properties.site_type;
 
-                    D1Info.html(`<p>Site Type: ${D1gc}</p>`);
-                    noFeatures.html('');
-                    }
-
-            }
-        })
-    }
-
-  const D2Layer=getLayerByName('LL_Atlantic_Bog');
-  const D2Source=D2Layer.getSource();
-  const D2Url=D2Source.getFeatureInfoUrl(coordinate, resolution, projection,
-    {'INFO_FORMAT':'application/json'});
-
-    if(D2Url){
-        $.ajax({
-            url:D2Url,
-            method:'GET',
-            success:function(result){
-                const D2=result.features[0];
-                if(D2){
-                    const D2gc=D2.properties.site_type;
-
-                    D2Info.html(`<p>Site Type: ${D2gc}</p>`);
-                    noFeatures.html('');
-                    }
-
-            }
-        })
-    }
-  
-  const D3Layer=getLayerByName('HL_Montane_Bog');
-  const D3Source=D3Layer.getSource();
-  const D3Url=D3Source.getFeatureInfoUrl(coordinate, resolution, projection,
-    {'INFO_FORMAT':'application/json'});
-
-    if(D3Url){
-        $.ajax({
-            url:D3Url,
-            method:'GET',
-            success:function(result){
-                const D3=result.features[0];
-                if(D3){
-                    const D3gc=D3.properties.site_type;
-
-                    D3Info.html(`<p>Site Type: ${D3gc}</p>`);
+                    ieInfo.html(`<p>Site Type: ${iegc}</p>`);
                     noFeatures.html('');
                     }
 
@@ -194,6 +153,30 @@ map.on('singleclick', function (evt) {
                     const PlAlkFenName=PlAlkFen.properties.nazwa_ob;
 
                     PlAlkFenInfo.html(`<p>Nazwa (Name): ${PlAlkFenName}</p>`);
+                    noFeatures.html('');
+                    }
+
+            }
+        })
+    }
+
+const pltLayer=getLayerByName('PL_Torf');
+const pltSource=pltLayer.getSource();
+const pltUrl=pltSource.getFeatureInfoUrl(coordinate, resolution, projection,
+    {'INFO_FORMAT':'application/json'});
+
+    if(pltUrl){
+        $.ajax({
+            url:pltUrl,
+            method:'GET',
+            success:function(result){
+                const plt=result.features[0];
+                if(plt){
+                    const pltTyp=plt.properties.TYP_NAZWA
+                    const pltRos=plt.properties.ROS_NAZWA;
+
+                    pltInfo.html(`<p>Typ: ${pltTyp}</p>
+                        <p>Ros: ${pltRos}</p>`);
                     noFeatures.html('');
                     }
 
@@ -305,6 +288,50 @@ map.on('singleclick', function (evt) {
                     const styp=bew.properties.soil_type;
                     bewInfo.html(`
                         <p>Soil Type: Peat</p>`);
+                    noFeatures.html('');
+                    }
+
+            }
+        })
+    }
+     
+  const eeLayer=getLayerByName('EE_Peatlands');
+  const eeSource=eeLayer.getSource();
+  const eeUrl=eeSource.getFeatureInfoUrl(coordinate, resolution, projection,
+    {'INFO_FORMAT':'application/json'});
+
+    if(eeUrl){
+        $.ajax({
+            url:eeUrl,
+            method:'GET',
+            success:function(result){
+                const ee=result.features[0];
+                if(ee){
+                    const styp=ee.properties.site_type;
+                    eeInfo.html(`
+                        <p>Site Type: ${styp}</p>`);
+                    noFeatures.html('');
+                    }
+
+            }
+        })
+    }
+
+  const fiLayer=getLayerByName('FI_Peatlands');
+  const fiSource=fiLayer.getSource();
+  const fiUrl=fiSource.getFeatureInfoUrl(coordinate, resolution, projection,
+    {'INFO_FORMAT':'application/json'});
+
+    if(fiUrl){
+        $.ajax({
+            url:fiUrl,
+            method:'GET',
+            success:function(result){
+                const fi=result.features[0];
+                if(fi){
+                    const styp=fi.properties.site_type;
+                    fiInfo.html(`
+                        <p>Site Type: ${styp}</p>`);
                     noFeatures.html('');
                     }
 

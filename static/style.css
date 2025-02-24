@@ -33,6 +33,22 @@ p.text-descr, label.text-descr{
     font-size: 16px;
 }
 
+.text-center{
+    justify-content: center;
+    padding: 5px;
+}
+
+a.texta{
+    text-decoration: none;
+    color: #396d85;
+}
+
+a.textab{
+    font-weight: bold;
+    text-decoration: none;
+    color: #396d85;
+}
+
 /* navbar */ 
 a.navbar-brand{
     font-size: 25px;
@@ -92,10 +108,20 @@ hr.inf{
     margin: 7px 0px 7px 25px;
 }
 
+hr.pol{
+    padding: 0px 20px 0px 20px;
+    margin: 20px 0px 20px 0px;
+}
+
 body{
     background-color: whitesmoke;
 }
 
+.disclm{
+    border-radius: 10px;
+    background-color: white;
+    padding: 10px 10px 10px 10px;
+}
 /*
     _________   _________   __________
     |  ______|  |  ______|  |   ___   |
@@ -464,18 +490,8 @@ span.Economy{
     border-color: transparent;
 }
 
-.raised-bog-box:checked{
+.ie-dipm-box:checked{
     background-color: #e7970d;
-    border-color: transparent;
-}
-
-.ll-atl-box:checked{
-    background-color: #cdac64;
-    border-color: transparent;
-}
-
-.hl-mont-box:checked{
-    background-color: #877047;
     border-color: transparent;
 }
 
@@ -486,6 +502,11 @@ span.Economy{
 
 .alk-fen-box:checked{
     background-color: #c69966;
+    border-color: transparent;
+}
+
+.pl-torf-box:checked{
+    background-color: #8d5018;
     border-color: transparent;
 }
 
@@ -506,6 +527,16 @@ span.Economy{
 
 .bew-soil-box:checked{
     background-color: #b66843;
+    border-color: transparent;
+}
+
+.ee-soil-box:checked{
+    background-color: #8f6543;
+    border-color: transparent;
+}
+
+.fi-soil-box:checked{
+    background-color: #c56b21;
     border-color: transparent;
 }
 
