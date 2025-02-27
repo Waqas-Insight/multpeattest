@@ -2,7 +2,7 @@ import os
 import json
 from sys import exit
 from flask import Flask
-from flask import url_for, render_template, send_file, request, redirect, session, send_from_directory, flash, jsonify
+from flask import url_for, render_template, send_file, request, redirect, session, send_from_directory, flash, jsonify, abort
 from werkzeug.utils import secure_filename
 from flask_wtf import FlaskForm
 from flask_wtf.csrf import CSRFProtect
@@ -29,6 +29,8 @@ app = Flask(__name__)
 
 SECRET_KEY = "please_dont_hack_us_thanks"
 app.config['SECRET_KEY'] = SECRET_KEY
+app.config['MAX_CONTENT_LENGTH'] = 1e8 # 100MB
+app.config['UPLOAD_PATH'] = 'uploads'
 
 csrf = CSRFProtect(app)
 
@@ -239,11 +241,16 @@ def logout():
     # Clear the session data
     session.pop('username', None)
     return jsonify({'message': 'Logout successful'}), 200
+
 @app.route('/dashboard')
 def dashboard():
     if 'username' in session:
      return render_template('map.html', username=session['username'])
     return redirect(url_for('login'))
+
+@app.route('/uploads/<filename>')
+def upload(filename):
+    return send_from_directory(app.config['UPLOAD_PATH'], filename)
 
 '''
 ROUTES
@@ -445,13 +452,22 @@ def sub_policy():
         
     # non-post request
     if 'username' not in session:
-         return render_template('polsubmit.html')
+        return render_template('polsubmit.html')
     return render_template('polsubmit.html', username=session['username'])
 
-@app.route('/incentive-tool', methods=['GET', 'POST'])
+@app.route('/incentive-tool', methods=['GET','POST'])
 def incentive_tool():
+    if request.method == 'POST':
+        uploaded_file = request.files['file']
+        filename = secure_filename(uploaded_file.filename)
+        if filename != '':
+            file_ext = os.path.splitext(filename)[1]
+            if file_ext not in ['.pdf','.doc','.docx']:
+                abort(400)
+            uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
+        
     if 'username' not in session:
-         return render_template('incentive_tool.html')
+        return render_template('incentive_tool.html')
     return render_template('incentive_tool.html', username=session['username'])
 
 # DATA ENDPOINTS
