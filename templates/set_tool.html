@@ -15,6 +15,7 @@
                     <div class="container disclm">
                         <p style="color:#5C93AC" class="text-descr">Disclaimer: The results calculated by this tool are not a guarantee. If you would like to learn about the logic behind our calculations, please see the <a class="textab" href="https://vb.nweurope.eu/projects/project-search/cconnects-carbon-connects/#tab-6" target="_blank">original</a> XLSM version of the tool and the <a class="textab" href="https://vb.nweurope.eu/media/12209/site-emissions-tool-v12-description.pdf" target="_blank">user manual</a>.</p>
                     </div>
+                    <pre id="data_display"></pre>
                     <span><p style="color: red;" class="d-inline">*</p><p style="color: #989898;" class="d-inline"> denotes required field.</p></span>    
                 </div>
                 <div class="empty-spacing" style="padding-top: 15px;"></div>
@@ -23,6 +24,8 @@
                     <div class="container set-site-div">
                         <div class="row align-items-center">
                             <div class="col-7">
+                                <button id="load_data_btn" class="btn btn-success">Load Data</button>
+                                <p id="loading_status" style="color: blue; display: none;">Loading data...</p>
                                 <label for="site_name" class="form-label tt-form-label">Site Name</label> 
                             </div>
                             <div class="col-5">
@@ -41,6 +44,7 @@
                         </div>
                         <hr class="inf">
                         <div class="row align-items-center">
+                            
                             <div class="col-7">
                                 <svg height="20" width="16">
                                     <a data-bs-toggle="popover" tabindex="0" data-bs-trigger="focus" data-bs-placement="right" data-bs-content="Coordinates of site.">
@@ -1312,7 +1316,143 @@
         </div>
     </div>
 </div>
+<script>
+// Fetch data from API and populate fields
+document.addEventListener("DOMContentLoaded", function () {
+    let loadCsvButton = document.getElementById("load_data_btn");
 
+    if (loadCsvButton) {
+        console.log("Button Found - Adding Event Listener");
+
+        loadCsvButton.addEventListener("click", function (event) {
+            event.preventDefault(); // Prevent page reload
+
+            console.log("Button Clicked - Fetching Data...");
+            document.getElementById("loading_status").style.display = "block"; // Show loading message
+
+            fetch("http://127.0.0.1:5000/fetchTestData")
+                .then(response => {
+                    console.log("Response Status:", response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Fetched Data:", data);
+                    document.getElementById("loading_status").style.display = "none"; // Hide loading message
+
+                    if (!data || Object.keys(data).length === 0) {
+                        alert("No data found!");
+                        return;
+                    }
+
+                    // Fill in Site Name
+                    if (data["General Site Data"]) {
+                        updateInputField("site_name", data["General Site Data"]["Site Name"]);
+                        updateInputField("tot_area", data["General Site Data"]["Total Area"]);
+                        updateInputField("coords", data["General Site Data"]["Coordinates"]);
+                        updateInputField("elevation", data["General Site Data"]["Elevation"]);
+                        updateInputField("peat_type", data["General Site Data"]["Peat Type"]);
+                        updateInputField("peat_thick", data["General Site Data"]["Peat Thickness"]);
+                        updateInputField("year_start", data["General Site Data"]["Year Rewetting Starts"]);
+                    }
+
+                    // Fill in Base section
+                    if (data["Base"]) {
+                        updateInputField("bs_amount_manure", data["Base"]["Amount Manure"]);
+                        updateInputField("bs_amount_org_fert", data["Base"]["Amount Organic Fertilizer"]);
+                        updateInputField("bs_amount_synth_fert", data["Base"]["Amount Synthetic Fertilizer"]);
+                        updateInputField("bs_avg_num_days", data["Base"]["Average Number of Grazing Days"]);
+                        updateInputField("bs_crop_name", data["Base"]["Crop Name"]);
+                        updateInputField("bs_crop_yield", data["Base"]["Crop Yield"]);
+                        updateInputField("bs_diesel_per_site", data["Base"]["Diesel per Site"]);
+                        updateInputField("bs_elec_per_site", data["Base"]["Electricity per Site"]);
+                        updateCheckbox("bs_crop_resid", data["Base"]["Include Crop Residuals"]);
+                        updateInputField("bs_med_gw_level_summer", data["Base"]["Median Groundwater Level"]);
+                        updateInputField("bs_avg_num_animals", data["Base"]["Number of Grazing Animals"]);
+                        updateInputField("bs_type_synth_fert", data["Base"]["Type Synthetic Fertilizer"]);
+                        updateInputField("bs_type_animals", data["Base"]["Type of Grazing Animals"]);
+                        updateInputField("bs_veg_class", data["Base"]["Vegetation Class"]);
+                    }
+
+                    // Fill in Rewet section
+                    if (data["Rewet"]) {
+                        updateInputField("rw_amount_manure", data["Rewet"]["Amount Manure"]);
+                        updateInputField("rw_amount_org_fert", data["Rewet"]["Amount Organic Fertilizer"]);
+                        updateInputField("rw_amount_synth_fert", data["Rewet"]["Amount Synthetic Fertilizer"]);
+                        updateInputField("rw_avg_num_animals", data["Rewet"]["Average Number of Grazing Animals"]);
+                        updateInputField("rw_avg_num_days", data["Rewet"]["Average Number of Grazing Days"]);
+                        updateInputField("rw_crop_name", data["Rewet"]["Crop Name"]);
+                        updateInputField("rw_crop_use", data["Rewet"]["Crop Use"]);
+                        updateInputField("rw_crop_yield", data["Rewet"]["Crop Yield"]);
+                        updateInputField("rw_diesel_per_site", data["Rewet"]["Diesel per Site"]);
+                        updateInputField("rw_elec_per_site", data["Rewet"]["Electricity per Site"]);
+                        updateCheckbox("rw_crop_resid", data["Rewet"]["Include Crop Residuals"]);
+                        updateInputField("rw_med_gw_level_summer", data["Rewet"]["Median Groundwater Level"]);
+                        updateInputField("rw_type_synth_fert", data["Rewet"]["Type Synthetic Fertilizer"]);
+                        updateInputField("rw_type_animals", data["Rewet"]["Type of Grazing Animals"]);
+                        updateInputField("rw_veg_class", data["Rewet"]["Vegetation Class"]);
+                    }
+
+                    // Fill in Results section
+                    if (data["Results"]) {
+                        updateField("base_CH4", data["Results"]["Base CH4"]);
+                        updateField("base_CO2", data["Results"]["Base CO2"]);
+                        updateField("base_c_emission_gwp_subtotal", data["Results"]["Base Carbon Emission GWP Subtotal"]);
+                        updateField("base_n2o_direct", data["Results"]["Base N2O Direct"]);
+                        updateField("base_n2o_indirect", data["Results"]["Base N2O Indirect"]);
+                        updateField("base_n2o_emission_gwp_subtotal", data["Results"]["Base N2O Emission GWP Subtotal"]);
+                        updateField("base_activity_gwp_subtotal", data["Results"]["Base Activity GWP Subtotal"]);
+                        updateField("base_gwp_total", data["Results"]["Base GWP Total"]);
+                        updateField("rewet_CH4", data["Results"]["Rewet CH4"]);
+                        updateField("rewet_CO2", data["Results"]["Rewet CO2"]);
+                        updateField("rewet_c_emission_gwp_subtotal", data["Results"]["Rewet Carbon Emission GWP Subtotal"]);
+                        updateField("rewet_n2o_direct", data["Results"]["Rewet N2O Direct"]);
+                        updateField("rewet_n2o_indirect", data["Results"]["Rewet N2O Indirect"]);
+                        updateField("rewet_n2o_emission_gwp_subtotal", data["Results"]["Rewet N2O Emission GWP Subtotal"]);
+                        updateField("rewet_activity_gwp_subtotal", data["Results"]["Rewet Activity GWP Subtotal"]);
+                        updateField("rewet_product_gwp_subtotal", data["Results"]["Rewet Product GWP Subtotal"]);
+                        updateField("rewet_gwp_total", data["Results"]["Rewet GWP Total"]);
+                    }
+
+                    alert("Data loaded successfully!");
+                })
+                .catch(error => {
+                    console.error("Error fetching data:", error);
+                    alert("Failed to load data.");
+                });
+        });
+    } else {
+        console.warn("Button with ID 'load_data_btn' not found.");
+    }
+});
+
+// Utility functions to update HTML fields
+function updateField(id, value) {
+    let element = document.getElementById(id);
+    if (element) {
+        element.innerHTML = value || "N/A";
+    } else {
+        console.warn(`Element with ID '${id}' not found`);
+    }
+}
+
+function updateInputField(id, value) {
+    let element = document.getElementById(id);
+    if (element) {
+        element.value = value || "";
+    } else {
+        console.warn(`Input field with ID '${id}' not found`);
+    }
+}
+
+function updateCheckbox(id, value) {
+    let element = document.getElementById(id);
+    if (element) {
+        element.checked = value === "true" || value === true;
+    } else {
+        console.warn(`Checkbox with ID '${id}' not found`);
+    }
+}
+</script>
 <!--set script-->
 <script src="{{url_for('static', filename='scripts/calc_set.js')}}" async></script>
 

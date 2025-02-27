@@ -14,6 +14,8 @@ import psycopg2
 from datetime import datetime
 import csv
 import time
+import pandas as pd
+import glob
 
 #
 from modules import assum_json_to_dict, usrinp_json_to_dict
@@ -612,6 +614,92 @@ def save_csv():
     except Exception as e:
         print("Exception occurred:", e)
         return jsonify({"error": str(e)}), 500
+UPLOAD_FOLDER = "/Users/waqasshoukatali/multipeattools/test_git_multipeat/csv_outputs"
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+def get_latest_csv(username):
+    """Find the latest CSV file for the logged-in user"""
+    folder_path = app.config["UPLOAD_FOLDER"]
+    pattern = os.path.join(folder_path, f"{username}_*.csv")  # Match CSV files
+    files = glob.glob(pattern)
+
+    valid_files = [f for f in files if os.path.isfile(f)]
+    if not valid_files:
+        return None  # No valid file found
+
+    latest_file = max(valid_files, key=os.path.getctime)  # Get the most recent file
+    return latest_file  # Return only the latest file path
+
+UPLOAD_FOLDER = "/Users/waqasshoukatali/multipeattools/test_git_multipeat/csv_outputs"
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+def get_latest_csv(username):
+    """Find the latest CSV file for the logged-in user"""
+    folder_path = app.config["UPLOAD_FOLDER"]
+    pattern = os.path.join(folder_path, f"{username}_*.csv")
+    files = glob.glob(pattern)
+
+    valid_files = [f for f in files if os.path.isfile(f)]
+    if not valid_files:
+        return None  # No valid file found
+
+    return max(valid_files, key=os.path.getctime)  # Return latest file
+
+
+@app.route("/fetchTestData", methods=["GET"])
+def fetch_test_data():
+    """Fetch the latest CSV file for the logged-in user"""
+    if "username" not in session:
+        return jsonify({"error": "User not logged in"}), 401  # Unauthorized
+
+    username = session["username"]
+    latest_csv = get_latest_csv(username)
+
+    if not latest_csv:
+        return jsonify({"error": "No data found"}), 404  # No CSV file found
+
+    try:
+        structured_data = {}
+        current_section = None  # Track current section header
+
+        with open(latest_csv, "r", encoding="utf-8") as file:
+            for line in file:
+                line = line.strip()
+
+                if not line:
+                    continue  # Skip empty lines
+                
+                if "," not in line:
+                    # If line has no comma, treat it as a section header
+                    current_section = line
+                    structured_data[current_section] = {}
+                else:
+                    # Process key-value pairs
+                    key, value = map(str.strip, line.split(",", 1))
+
+                    # Convert list-like values properly
+                    if value.startswith("[") and value.endswith("]"):
+                        try:
+                            value = ast.literal_eval(value)  # Convert to actual list
+                        except:
+                            pass  # Keep as string if conversion fails
+
+                    if current_section:
+                        structured_data[current_section][key] = value
+                    else:
+                        structured_data[key] = value  # Handle cases without section headers
+
+        return jsonify(structured_data)
+        #return render_template("results.html", data=structured_data)
+
+
+    except FileNotFoundError:
+        return jsonify({"error": "CSV file not found"}), 404
+
+    except Exception as e:
+        return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
+
+
 
 '''
 Error Handling
