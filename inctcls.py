@@ -5,6 +5,14 @@ import json
 import unidecode
 import re
 from typing import Dict, List, Any, Set
+from sentence_transformers import SentenceTransformer
+import torch
+import numpy as np
+from sklearn import svm
+from tqdm import tqdm
+
+EN_TOKENIZER = nltk.data.load("tokenizers/punkt/english.pickle")
+
 #########
 # Policy Incentive Tool
 ##########
@@ -150,6 +158,7 @@ def get_nltk_sents(txt: str, tokenizer: nltk.PunktSentenceTokenizer, extra_abbre
 #######################
 ###################
 ###############
+
 def get_clean_eng_sents(pdf_conv, tokenizer):
     '''
     Takes a full text of pdf file and returns all sentences, cleaned, in one list
@@ -168,11 +177,44 @@ def get_clean_eng_sents(pdf_conv, tokenizer):
     postprocessed_sents = remove_short_sents(sents, min_num_words)
     return postprocessed_sents
 
+def pdf_to_sents(pdf_addr, lang='en'):
+    if lang=='en':
+        tok = EN_TOKENIZER
+    raw = get_pdf_text(pdf_addr)
+    sents = get_clean_eng_sents(raw, tok)
+    return sents
+
+def encode_all_sents(all_sents, sbert_model):
+    '''
+    modified from previous repository's latent_embeddings_classifier.py
+    '''
+    stacked = np.vstack([sbert_model.encode(sent) for sent in tqdm(all_sents)])
+    return [torch.from_numpy(element).reshape((1, element.shape[0])) for element in stacked]
+
+def classify_w_svm(sentences, model_addr, mode):
+    with open(f"inputs/{mode}_19Mar.json","r", encoding="utf-8") as f:
+        train_lst = json.load(f)
+    cuda = torch.cuda.is_available()
+    dev = 'cuda' if cuda else 'cpu'
+    model = SentenceTransformer(model_addr, device=dev)
+    t_sents = [item['text'] for item in train_lst]
+    t_labels = [item['label'] for item in train_lst]
+    train_embs = encode_all_sents(t_sents, model)
+    print("Encoding test sentences.")
+    test_embs = encode_all_sents(sentences, model)
+    clf = svm.SVC(gamma=0.001, C=100.)#, random_state=r_state)
+    clf.fit(np.vstack(train_embs), t_labels)
+    clf_preds = [clf.predict(sent_emb)[0] for sent_emb in test_embs]
+    incs = []
+    for i in range(len(clf_preds)):
+        if clf_preds[i] == "incentive":
+            incs.append(sentences[i])
+    return incs
+
 def main():
-    x = get_pdf_text('uploads/Carbon_Budgets.pdf')
-    EN_TOKENIZER = nltk.data.load("tokenizers/punkt/english.pickle")
-    y = get_clean_eng_sents(x, EN_TOKENIZER)
-    print(y)
+    sents = pdf_to_sents('uploads/BISS_and_other_2025_Area_Based_Schemes_-_Terms_and_Conditions.pdf')
+    incs = classify_w_svm(sents, 'models/paraphrase-xlm-r-multilingual-v1_bn_e10_r3.pt', 'bn')
+    print(incs)
 
 if __name__ == '__main__':
     main()

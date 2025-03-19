@@ -19,6 +19,7 @@ import glob
 
 #
 from modules import assum_json_to_dict, usrinp_json_to_dict
+from inctcls import pdf_to_sents, classify_w_svm
 import requests
 #added remarks for run.py
 # powershell: $env:FLASK_APP = "run"
@@ -457,6 +458,7 @@ def sub_policy():
 
 @app.route('/incentive-tool', methods=['GET','POST'])
 def incentive_tool():
+    # will need to add language toggle at some point for tokenization
     if request.method == 'POST':
         uploaded_file = request.files['file']
         filename = secure_filename(uploaded_file.filename)
@@ -465,7 +467,9 @@ def incentive_tool():
             if file_ext not in ['.pdf','.doc','.docx']:
                 abort(400)
             uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
-        
+            sents = pdf_to_sents(os.path.join(app.config['UPLOAD_PATH'], filename))
+            incs = classify_w_svm(sents, 'models/paraphrase-xlm-r-multilingual-v1_bn_e10_r3.pt', 'bn')
+            print(incs)
     if 'username' not in session:
         return render_template('incentive_tool.html')
     return render_template('incentive_tool.html', username=session['username'])
@@ -630,6 +634,7 @@ def save_csv():
     except Exception as e:
         print("Exception occurred:", e)
         return jsonify({"error": str(e)}), 500
+    
 UPLOAD_FOLDER = "/Users/waqasshoukatali/multipeattools/test_git_multipeat/csv_outputs"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
