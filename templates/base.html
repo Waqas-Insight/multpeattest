@@ -171,5 +171,21 @@
                 {% endblock %}
             </div>
         </div>
+        <!-- Custom Dialog Box -->
+<div id="dialogOverlay" class="dialog-overlay">
+    <div id="dialogBox" class="dialog-box">
+        <div class="dialog-header">
+            <h3 id="dialogTitle" class="dialog-title">
+                <span id="dialogIcon" class="dialog-icon"></span>
+                <span id="dialogTitleText"></span>
+            </h3>
+            <button id="dialogClose" class="dialog-close">&times;</button>
+        </div>
+        <div id="dialogContent" class="dialog-content"></div>
+        <div class="dialog-footer">
+            <button id="dialogOk" class="dialog-button">OK</button>
+        </div>
+    </div>
+</div>
     </body>
 </html>

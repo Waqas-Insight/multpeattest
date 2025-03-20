@@ -591,7 +591,7 @@ def save_csv():
     try:
         # Check if username is in session
         if "username" not in session:
-            return jsonify({"error": "You are not logged in, In order to Save the Data please logged in "}), 401  # Unauthorized
+            return jsonify({"error": "Login Required, You need to log in to save your data "}), 401  # Unauthorized
 
         username = session["username"]  # Retrieve username from session
 
@@ -646,7 +646,7 @@ def get_latest_csv(username):
     latest_file = max(valid_files, key=os.path.getctime)  # Get the most recent file
     return latest_file  # Return only the latest file path
 
-UPLOAD_FOLDER = "/Users/waqasshoukatali/multipeattools/test_git_multipeat/csv_outputs"
+UPLOAD_FOLDER = "/Users/waqasshoukatali/multipeattools/test_git_multipeat/"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 def get_latest_csv(username):
@@ -660,7 +660,155 @@ def get_latest_csv(username):
         return None  # No valid file found
 
     return max(valid_files, key=os.path.getctime)  # Return latest file
+def get_all_csv_files(username):
+    """Get all CSV files for a specific user"""
+    # Define the path where user CSV files are stored
+    csv_folder = os.path.join(app.config['UPLOAD_FOLDER'], 'csv_outputs')
+    
+    # Check if the directory exists
+    if not os.path.exists(csv_folder):
+        print(f"Warning: CSV folder does not exist: {csv_folder}")
+        return []
+    
+    # Get all CSV files in the directory that match the username pattern
+    csv_files = []
+    try:
+        for filename in os.listdir(csv_folder):
+            if filename.startswith(f"{username}_") and filename.endswith(".csv"):
+                csv_files.append(os.path.join(csv_folder, filename))
+                
+        # Alternative pattern matching based on your file naming convention
+        if not csv_files:  # If no files found with the above pattern
+            for filename in os.listdir(csv_folder):
+                if filename.startswith(f"{username}") and filename.endswith(".csv"):
+                    csv_files.append(os.path.join(csv_folder, filename))
+        
+        print(f"Found {len(csv_files)} CSV files for user {username}")
+    except Exception as e:
+        print(f"Error listing CSV files: {str(e)}")
+    
+    return csv_files
+@app.route("/getAvailableSites", methods=["GET"])
+def get_available_sites():
+    if "username" not in session:
+        return jsonify({"error": "User not logged in"}), 401
+    
+    username = session["username"]
+    
+    # Get all available CSV files for this user
+    csv_files = get_all_csv_files(username)
+    
+    sites = []
+    for idx, csv_file in enumerate(csv_files):
+        try:
+            if not os.path.exists(csv_file):
+                print(f"Warning: File not found: {csv_file}")
+                continue
+            
+            # Extract a meaningful site name from the CSV content
+            site_name = extract_site_name_from_csv(csv_file)
+            
+            # If we couldn't extract a site name, fall back to the filename
+            filename = os.path.basename(csv_file)
+            display_name = site_name if site_name else filename.replace(f"{username}_", "")
+            
+            sites.append({
+                "id": idx, 
+                "name": display_name,  # This is what shows in the dropdown
+                "file": filename  # This is the actual filename used for data loading
+            })
+        except Exception as e:
+            print(f"Error processing {csv_file}: {str(e)}")
+    
+    return jsonify(sites)
 
+def extract_site_name_from_csv(csv_file):
+    """
+    Extract a proper site name from the CSV file.
+    Returns None if no site name could be found.
+    """
+    try:
+        with open(csv_file, "r", encoding="utf-8") as file:
+            current_section = None
+            for line in file:
+                line = line.strip()
+                if not line:
+                    continue
+                
+                if "," not in line:
+                    current_section = line
+                # Look for site name in common locations
+                elif current_section == "General Site Data" and line.startswith("Site Name"):
+                    return line.split(",", 1)[1].strip()
+                elif line.startswith("Site Name") or line.startswith("Name"):
+                    return line.split(",", 1)[1].strip()
+                elif current_section is None and line.startswith("Site:"):
+                    return line.split(":", 1)[1].strip()
+            
+            # If we couldn't find a proper site name, look for a date in the filename
+            # which might be more meaningful than the full filename
+            filename = os.path.basename(csv_file)
+            import re
+            date_match = re.search(r'(\d{8}|\d{6}|\d{4}-\d{2}-\d{2})', filename)
+            if date_match:
+                date_str = date_match.group(0)
+                return f"Site data from {date_str}"
+            
+            return None
+    except Exception as e:
+        print(f"Error extracting site name from {csv_file}: {str(e)}")
+        return None
+@app.route("/fetchSiteData/<file_name>", methods=["GET"])
+def fetch_site_data(file_name):
+    """Fetch data from a specific CSV file"""
+    if "username" not in session:
+        return jsonify({"error": "User not logged in"}), 401  # Unauthorized
+    
+    username = session["username"]
+    
+    # Define the correct path to the CSV files folder
+    csv_folder = os.path.join(app.config['UPLOAD_FOLDER'], 'csv_outputs')
+    
+    # The full path to the file - check both naming patterns
+    file_path = os.path.join(csv_folder, file_name)
+    
+    # Debug information
+    print(f"Looking for file: {file_path}")
+    print(f"File exists: {os.path.exists(file_path)}")
+    
+    if not os.path.exists(file_path):
+        return jsonify({"error": f"File not found at {file_path}"}), 404
+    
+    try:
+        structured_data = {}
+        current_section = None
+        with open(file_path, "r", encoding="utf-8") as file:
+            for line in file:
+                line = line.strip()
+                if not line:
+                    continue
+                
+                if "," not in line:
+                    current_section = line
+                    structured_data[current_section] = {}
+                else:
+                    key, value = map(str.strip, line.split(",", 1))
+                    if value.startswith("[") and value.endswith("]"):
+                        try:
+                            value = ast.literal_eval(value)
+                        except:
+                            pass
+                    if current_section:
+                        structured_data[current_section][key] = value
+                    else:
+                        structured_data[key] = value
+        
+        return jsonify(structured_data)
+    except Exception as e:
+        import traceback
+        traceback_str = traceback.format_exc()
+        print(f"Error reading file {file_path}: {str(e)}\n{traceback_str}")
+        return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
 
 @app.route("/fetchTestData", methods=["GET"])
 def fetch_test_data():

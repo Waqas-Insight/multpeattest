@@ -1266,15 +1266,57 @@ $("#set_csv_btn").on('click', function(event){
         console.log("Response Status:", status); // Debugging
         console.log("Server Response:", body); // Debugging
 
-        if (status === 200) {
-            alert("Success: " + body.message);
-        } else if (status === 401) {
-            alert("Unauthorized: " + body.error);
-        } else if (status === 400) {
-            alert("Bad Request: " + body.error);
-        } else {
-            alert("Unexpected Error: " + body.error);
-        }
+        // Function to show the custom dialog
+function showDialog(type, title, message) {
+    const dialogOverlay = document.getElementById('dialogOverlay');
+    const dialogBox = document.getElementById('dialogBox');
+    const dialogTitle = document.getElementById('dialogTitleText');
+    const dialogContent = document.getElementById('dialogContent');
+    const dialogIcon = document.getElementById('dialogIcon');
+    const dialogClose = document.getElementById('dialogClose');
+    const dialogOk = document.getElementById('dialogOk');
+    
+    // Reset classes
+    dialogBox.className = 'dialog-box';
+    
+    // Set content
+    dialogTitle.textContent = title;
+    dialogContent.textContent = message;
+    
+    // Set styles based on type
+    if (type === 'success') {
+        dialogBox.classList.add('success');
+        dialogIcon.textContent = '✓';
+    } else if (type === 'error') {
+        dialogBox.classList.add('error');
+        dialogIcon.textContent = '!';
+    } else if (type === 'warning') {
+        dialogBox.classList.add('warning');
+        dialogIcon.textContent = '⚠';
+    }
+    
+    // Show dialog
+    dialogOverlay.classList.add('show');
+    
+    // Event listeners
+    const closeDialog = () => {
+        dialogOverlay.classList.remove('show');
+    };
+    
+    dialogClose.onclick = closeDialog;
+    dialogOk.onclick = closeDialog;
+}
+
+// Replace your existing code with this
+if (status === 200) {
+    showDialog('success', 'Success', body.message);
+} else if (status === 401) {
+    showDialog('warning', 'Logged In ', body.error);
+} else if (status === 400) {
+    showDialog('error', 'Bad Request', body.error);
+} else {
+    showDialog('warning', 'Unexpected Error', body.error);
+}
     })
     .catch(error => {
         console.error('Error:', error);
