@@ -204,17 +204,46 @@ def classify_w_svm(sentences, model_addr, mode):
     test_embs = encode_all_sents(sentences, model)
     clf = svm.SVC(gamma=0.001, C=100.)#, random_state=r_state)
     clf.fit(np.vstack(train_embs), t_labels)
-    clf_preds = [clf.predict(sent_emb)[0] for sent_emb in test_embs]
+    preds = [clf.predict(sent_emb)[0] for sent_emb in test_embs]
+    return preds, sentences
+
+def return_bn_results(preds, sentences):
+    '''
+    Takes predicted labels and their respective sentences,
+    and returns a list of the incentive sentences
+    '''
     incs = []
-    for i in range(len(clf_preds)):
-        if clf_preds[i] == "incentive":
+    for i in range(len(preds)):
+        if preds[i] == "incentive":
             incs.append(sentences[i])
     return incs
 
+def return_mc_results(preds, sentences):
+    '''
+    Takes predicted labels and their respective sentences,
+    and returns a dictionary of the sentences for each label
+    '''
+    mc_dct ={lbl:[] for lbl in set(preds)}
+    for i in range(len(preds)):
+        mc_dct[preds[i]].append(sentences[i])
+    return mc_dct
+
 def main():
-    sents = pdf_to_sents('uploads/BISS_and_other_2025_Area_Based_Schemes_-_Terms_and_Conditions.pdf')
-    incs = classify_w_svm(sents, 'models/paraphrase-xlm-r-multilingual-v1_bn_e10_r3.pt', 'bn')
-    print(incs)
+    sents = pdf_to_sents('uploads/UKEF_Climate_Change_Strategy_2021.pdf')
+    # uploads/UKEF_Climate_Change_Strategy_2021.pdf
+    # bn_e10_r3 : bn_v1
+    # mc_e10_r6 : mc_v1
+    pred_lbls_b, sents = classify_w_svm(sents, 'models/paraphrase-xlm-r-multilingual-v1_bn_v1.pt', 'bn')
+    inc_sents = return_bn_results(pred_lbls_b, sents)
+    cls_preds, sents = classify_w_svm(inc_sents, 'models/paraphrase-xlm-r-multilingual-v1_mc_v1.pt', 'mc')
+    cls_incs = return_mc_results(cls_preds, sents)
+    #
+    for label in list(cls_incs):
+        if cls_incs[label]:
+            print(f"\n\n{label}\n")
+        for sent in cls_incs[label]:
+            print(sent)
+    # now classify with mc classification
 
 if __name__ == '__main__':
     main()

@@ -18,13 +18,30 @@
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <p><input type="file" name="file" accept=".pdf,.doc,.docx"></p>
                 <p><input type="submit" value="Submit"></p>
+                <!--
+                <button class="btn btn-primary" type="button" disabled>
+                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                <span role="status">Loading...</span>
+                </button>
+                -->
             </form>
+            <div id="inc_result_div">
+                {% if res_dct %}
+                    {% for label in res_dct.keys() %} 
+                        <h4>{{label}}</h4>
+                        {% for sent in res_dct[label] %}
+                            <ul>{{sent}}</ul>
+                        {% endfor %}
+                    {% endfor %}
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
 
 <script>
     console.log("NLP Tool")
+    //for (let i = 0; i < stkLst.length; i++) {
 </script>
 
 {% endblock %}
