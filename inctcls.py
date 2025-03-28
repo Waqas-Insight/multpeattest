@@ -1,6 +1,8 @@
-from PyPDF2 import PdfReader
+import pymupdf
+# textract, tika, deepdoctection
 import nltk
 #nltk.download('punkt')
+#nltk.download('punkt_tab')
 import json
 import unidecode
 import re
@@ -17,38 +19,27 @@ EN_TOKENIZER = nltk.data.load("tokenizers/punkt/english.pickle")
 # Policy Incentive Tool
 ##########
 
-def txt_to_dct(pdfReader):
-    '''
-    Input: 
-        pdfReader (PyPDF2 object): Reader in use in loop
-    Returns:
-        doc_dict (dct): dictionary of single pdf with text
-    '''
-    doc_dict = {}
-    doc_dict["text"]=""
-    for page in range(len(pdfReader.pages)):
-        page_text = pdfReader.pages[page].extract_text()  # extracting pdf text
-        #page_text = text_cleaning(page_text)  # clean pdf text
-        doc_dict["text"] += page_text  # concatenate pages' text
-    return doc_dict
-
 def get_pdf_text(filename):
     '''
     Input:
-        filename (str): path directory or zip folder of pdfs
+        filename (str): path directory 
     Output:
         error messages
     Returns:
         pdf_dict (dct): dictionary of pdfs text
     '''
     try:
-        pdfReader = PdfReader(filename)  # read file
+        doc = pymupdf.open(filename)  # read file
         # doc_dict holds the attributes of each pdf file
-        doc_dict = txt_to_dct(pdfReader)
+        doc_dict = {"text":""}
+        for page in doc:
+            text = page.get_text()
+            doc_dict["text"] += text+" "
         return doc_dict
     except Exception as e:  # In case the file is corrupted
         print(f"Could not read {filename} due to {e}")
         return None
+
 ##########################
 # From Firebanks-Quevedo #
 ##########################
