@@ -977,3 +977,17 @@ input[type="checkbox"]:checked + #glb-fltr-svg {
     .warning .dialog-icon {
         color: #FF9800;
     }
+=======
+/* Incentive Classifier */
+
+div.inc_res_div{
+    background-color: #b8cede;
+    border-radius: 20px;
+    padding: 20px;
+    margin:20px;
+}
+
+div.inc-inpt-grp{
+    border-radius: 10px;
+}
+

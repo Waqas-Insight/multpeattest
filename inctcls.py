@@ -1,46 +1,45 @@
-from PyPDF2 import PdfReader
+import pymupdf
+# textract, tika, deepdoctection
 import nltk
 #nltk.download('punkt')
+#nltk.download('punkt_tab')
 import json
 import unidecode
 import re
 from typing import Dict, List, Any, Set
+from sentence_transformers import SentenceTransformer
+import torch
+import numpy as np
+from sklearn import svm
+from tqdm import tqdm
+
+EN_TOKENIZER = nltk.data.load("tokenizers/punkt/english.pickle")
+
 #########
 # Policy Incentive Tool
 ##########
 
-def txt_to_dct(pdfReader):
-    '''
-    Input: 
-        pdfReader (PyPDF2 object): Reader in use in loop
-    Returns:
-        doc_dict (dct): dictionary of single pdf with text
-    '''
-    doc_dict = {}
-    doc_dict["text"]=""
-    for page in range(len(pdfReader.pages)):
-        page_text = pdfReader.pages[page].extract_text()  # extracting pdf text
-        #page_text = text_cleaning(page_text)  # clean pdf text
-        doc_dict["text"] += page_text  # concatenate pages' text
-    return doc_dict
-
 def get_pdf_text(filename):
     '''
     Input:
-        filename (str): path directory or zip folder of pdfs
+        filename (str): path directory 
     Output:
         error messages
     Returns:
         pdf_dict (dct): dictionary of pdfs text
     '''
     try:
-        pdfReader = PdfReader(filename)  # read file
+        doc = pymupdf.open(filename)  # read file
         # doc_dict holds the attributes of each pdf file
-        doc_dict = txt_to_dct(pdfReader)
+        doc_dict = {"text":""}
+        for page in doc:
+            text = page.get_text()
+            doc_dict["text"] += text+" "
         return doc_dict
     except Exception as e:  # In case the file is corrupted
         print(f"Could not read {filename} due to {e}")
         return None
+
 ##########################
 # From Firebanks-Quevedo #
 ##########################
@@ -150,6 +149,7 @@ def get_nltk_sents(txt: str, tokenizer: nltk.PunktSentenceTokenizer, extra_abbre
 #######################
 ###################
 ###############
+
 def get_clean_eng_sents(pdf_conv, tokenizer):
     '''
     Takes a full text of pdf file and returns all sentences, cleaned, in one list
@@ -168,11 +168,73 @@ def get_clean_eng_sents(pdf_conv, tokenizer):
     postprocessed_sents = remove_short_sents(sents, min_num_words)
     return postprocessed_sents
 
+def pdf_to_sents(pdf_addr, lang='en'):
+    if lang=='en':
+        tok = EN_TOKENIZER
+    raw = get_pdf_text(pdf_addr)
+    sents = get_clean_eng_sents(raw, tok)
+    return sents
+
+def encode_all_sents(all_sents, sbert_model):
+    '''
+    modified from previous repository's latent_embeddings_classifier.py
+    '''
+    stacked = np.vstack([sbert_model.encode(sent) for sent in tqdm(all_sents)])
+    return [torch.from_numpy(element).reshape((1, element.shape[0])) for element in stacked]
+
+def classify_w_svm(sentences, model_addr, mode):
+    with open(f"inputs/{mode}_19Mar.json","r", encoding="utf-8") as f:
+        train_lst = json.load(f)
+    cuda = torch.cuda.is_available()
+    dev = 'cuda' if cuda else 'cpu'
+    model = SentenceTransformer(model_addr, device=dev)
+    t_sents = [item['text'] for item in train_lst]
+    t_labels = [item['label'] for item in train_lst]
+    train_embs = encode_all_sents(t_sents, model)
+    print("Encoding test sentences.")
+    test_embs = encode_all_sents(sentences, model)
+    clf = svm.SVC(gamma=0.001, C=100.)#, random_state=r_state)
+    clf.fit(np.vstack(train_embs), t_labels)
+    preds = [clf.predict(sent_emb)[0] for sent_emb in test_embs]
+    return preds, sentences
+
+def return_bn_results(preds, sentences):
+    '''
+    Takes predicted labels and their respective sentences,
+    and returns a list of the incentive sentences
+    '''
+    incs = []
+    for i in range(len(preds)):
+        if preds[i] == "incentive":
+            incs.append(sentences[i])
+    return incs
+
+def return_mc_results(preds, sentences):
+    '''
+    Takes predicted labels and their respective sentences,
+    and returns a dictionary of the sentences for each label
+    '''
+    mc_dct ={lbl:[] for lbl in set(preds)}
+    for i in range(len(preds)):
+        mc_dct[preds[i]].append(sentences[i])
+    return mc_dct
+
 def main():
-    x = get_pdf_text('uploads/Carbon_Budgets.pdf')
-    EN_TOKENIZER = nltk.data.load("tokenizers/punkt/english.pickle")
-    y = get_clean_eng_sents(x, EN_TOKENIZER)
-    print(y)
+    sents = pdf_to_sents('uploads/UKEF_Climate_Change_Strategy_2021.pdf')
+    # uploads/UKEF_Climate_Change_Strategy_2021.pdf
+    # bn_e10_r3 : bn_v1
+    # mc_e10_r6 : mc_v1
+    pred_lbls_b, sents = classify_w_svm(sents, 'models/paraphrase-xlm-r-multilingual-v1_bn_v1.pt', 'bn')
+    inc_sents = return_bn_results(pred_lbls_b, sents)
+    cls_preds, sents = classify_w_svm(inc_sents, 'models/paraphrase-xlm-r-multilingual-v1_mc_v1.pt', 'mc')
+    cls_incs = return_mc_results(cls_preds, sents)
+    #
+    for label in list(cls_incs):
+        if cls_incs[label]:
+            print(f"\n\n{label}\n")
+        for sent in cls_incs[label]:
+            print(sent)
+    # now classify with mc classification
 
 if __name__ == '__main__':
     main()
