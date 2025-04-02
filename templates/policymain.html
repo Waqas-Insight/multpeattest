@@ -21,19 +21,6 @@
                             Countries
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Belgi%C3%AB", "Belgian")'>Belgium</a></li>
-                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Bulgaria", "Bulgarian")'>Bulgaria</a></li>
-                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Eesti", "Estonian")'>Estonia</a></li>
-                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Finland", "Finnish")'>Finland</a></li>
-                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Deutschland", "German")'>Germany</a></li>
-                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Ireland", "Irish")'>Ireland</a></li>
-                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Italia", "Italian")'>Italy</a></li>
-                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Latvija", "Latvian")'>Latvia</a></li>
-                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Lietuva", "Lithuanian")'>Lithuania</a></li>
-                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Nederland", "Dutch")'>Netherlands</a></li>
-                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Polska", "Polish")'>Poland</a></li>
-                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=Rom%C3%A2nia", "Romanian")'>Romania</a></li>
-                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/country=United%20Kingdom", "British")'>United Kingdom</a></li>
                         </ul>
                     </div>
                 </div>
@@ -43,11 +30,6 @@
                             Governance Level
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/level=Global", "Global")'>Global</a></li>
-                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/level=European", "European")'>EU</a></li>
-                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/level=National", "National")'>National</a></li>
-                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/level=Regional", "Regional")'>Regional</a></li>
-                            <li><a class="dropdown-item" onclick='policyCollectionGetShow("/policy/level=Local", "Local")'>Local</a></li>
                         </ul>
                     </div>
                 </div>
@@ -57,27 +39,23 @@
                             Policy Category
                         </button>
                         <ul class="dropdown-menu" style="padding:0px;">
-                            <li><a class="dropdown-item bio-class-pill" onclick='policyCollectionGetShow("/policy/categ=bio", "Biodiversity")'>Biodiversity</a></li>
-                            <li><a class="dropdown-item clm-class-pill" onclick='policyCollectionGetShow("/policy/categ=clm", "Climate Action")'>Climate Action</a></li>
-                            <li><a class="dropdown-item comm-class-pill" onclick='policyCollectionGetShow("/policy/categ=comm", "Community and Culture")'>Community / Culture</a></li>
-                            <li><a class="dropdown-item econ-class-pill" onclick='policyCollectionGetShow("/policy/categ=econ", "Economy")'>Economy</a></li>
-                            <li><a class="dropdown-item enr-class-pill" onclick='policyCollectionGetShow("/policy/categ=enr", "Energy")'>Energy</a></li>
-                            <li><a class="dropdown-item env-class-pill" onclick='policyCollectionGetShow("/policy/categ=env", "Environmental Quality")'>Environmental Quality</a></li>
-                            <li><a class="dropdown-item land-class-pill" onclick='policyCollectionGetShow("/policy/categ=land", "Land Use and Agriculture")'>Land Use / Agriculture</a></li>
-                            <li><a class="dropdown-item res-class-pill" onclick='policyCollectionGetShow("/policy/categ=res", "Research and Applied Science")'>Research and Applied Sciences</a></li>
                         </ul>
                     </div>
                 </div>
             </div>
 
             <div class="accordion pol-coll-div" id="pol-coll-div" style="margin-bottom: 10px;">
-                <p class="text-center" style="padding: 20px;">Please select a filter to begin exploring policies.</p>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+    //
+    // get all policies on page load
+    // generate filter dropdowns from policy list (with "on change" function)
+    // on change fxn, check if filter boxes checked and return relevant results
+
     const pillDct = 
         {'Economy': `econ-class-pill`,
         'Land-Use / Agriculture': `land-class-pill`,
@@ -99,49 +77,107 @@
         'Biodiversity':`Biodiversity`,
         'Research and applied sciences':`Research`
         };
-
-    async function policyCollectionGetShow(dataAddress, heading){
+    
+    // get data
+    async function datafxn(){
+        const url = '/policydata';
         var polLst = [];
-
         try {
-            const response = await fetch(dataAddress);
+            const response = await fetch(url);
             if (!response.ok) {
             throw new Error(`Response status: ${response.status}`);
             }
             const json = await response.json();
-            json.forEach(pol =>{
+            polcol= json["result"]["response"];
+            polcol.forEach(pol =>{
                 polLst.push(pol);
             })
         } catch (error) {
             console.error(error.message);
         }
-
+        console.log(polLst);
+        // render data
         const polPop = $('#pol-coll-div');
         polPop.html('');
-        var element = `<h4 id="pol-res-he" class="text-center" style="padding-bottom:20px">${heading} Policies</h4>`;
-        polPop.append(element);
+        polPop.append(`<h4 id="pol-res-he" class="text-center" style="padding-bottom:20px">Policies</h4>`);
+        var anyresults = false;
         for (let i = 0; i < polLst.length; i++) {
             var policy = polLst[i];
+            console.log(policy);
+            anyresults = true;
             var element = `<div class="accordion-item polcol-acc-itm" style="margin-bottom:5px;">
                                 <div class="accordion-header polcol-acc-hdr">
                                     <button class="accordion-button collapsed polcol-acc-btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${i}" aria-expanded="true" aria-controls="collapse${i}">
                                         <div class="container">
-                                            <p class="d-inline" style="font-weight:bold;">${ policy[0] } </p>
-                                            <p>${ policy[1] } | ${ policy[4] }</p>
+                                            <p class="d-inline" style="font-weight:bold;">${ policy['name'] } </p>
+                                            <p>${ policy['country'] } | ${ policy['policy_level'] }</p>
                                         </div>
                                     </button>
                                 </div>
                                 <div id="collapse${i}" class="accordion-collapse collapse polcol-acc-coll">
                                     <div class="accordion-body polcol-acc-bdy">
-                                        <a href="${ policy[5] }" class="polcol-lnk d-inline" target="_blank">LINK</a>
-                                        <p class="d-inline"> | <em>${ policy[6] }</em> | ${ policy[7] }</p>
-                                        <p>${ policy[2] }</p>
-                                        <p class="badge rounded-pill ${pillDct[policy[3]]}">${pillNames[policy[3]]}</p>
+                                        <a href="${ policy['data_link'] }" class="polcol-lnk d-inline" target="_blank">LINK</a>
+                                        <p>${ policy['abstract_english'] }</p>
                                     </div>
                                 </div>
                             </div>`
-        polPop.append(element);
+            polPop.append(element);
         };
+        if(!anyresults){
+            polPop.append(`<p class="text-center" style="color:black;">No policies found. Please try other filter combinations.</p>`);
+        }
+    }
+    datafxn();
+    async function policyCollectionGetShow(dataAddress, heading){
+        var polLst = [];
+        // get data
+        const url = '/stakeholderdata/0';
+        var polLst = [];
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+            }
+            const json = await response.json();
+            polcol= json["result"]["response"];
+            //console.log(polcol);
+            polcol.forEach(pol =>{
+                polLst.push(pol);
+            })
+        } catch (error) {
+            console.error(error.message);
+        }
+        // render data
+        const polPop = $('#pol-coll-div');
+        polPop.html('');
+        polPop.append(`<h4 id="pol-res-he" class="text-center" style="padding-bottom:20px">Stakeholders</h4>`);
+        var anyresults = false;
+        for (let i = 0; i < polLst.length; i++) {
+            var policy = polLst[i];
+            if(fltr_dct['country'].includes(policy['country']) && fltr_dct['level'].includes(policy['level'])){
+                anyresults = true;
+                var element = `<div class="accordion-item polcol-acc-itm" style="margin-bottom:5px;">
+                                                <div class="accordion-header polcol-acc-hdr">
+                                                    <button class="accordion-button collapsed polcol-acc-btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${i}" aria-expanded="true" aria-controls="collapse${i}">
+                                                        <div class="container">
+                                                            <p class="d-inline" style="font-weight:bold;">${ policy['name'] } </p>
+                                                            <p>${ policy['country'] } | ${ policy['level'] }</p>
+                                                        </div>
+                                                    </button>
+                                                </div>
+                                                <div id="collapse${i}" class="accordion-collapse collapse polcol-acc-coll">
+                                                    <div class="accordion-body polcol-acc-bdy">
+                                                        <a href="${ policy['stakeholder_link'] }" class="polcol-lnk d-inline" target="_blank">LINK</a>
+                                                        <p>${ policy['description'] }</p>
+                                                    </div>
+                                                </div>
+                                            </div>`
+                polPop.append(element);
+            }
+        };
+        if(!anyresults){
+            polPop.append(`<p class="text-center" style="color:black;">No stakeholders found. Please try other filter combinations.</p>`);
+        }
     }
 </script>
 {% endblock %}

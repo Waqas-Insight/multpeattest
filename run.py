@@ -566,6 +566,11 @@ def getcateg():
     url = 'http://140.203.154.253:8016/aspect/category/'
     return create_dataendpoint(url)
 
+@app.route('/policydata')
+def getpols():
+    url = 'http://140.203.154.253:8016/aspect/policies/'
+    return create_dataendpoint(url)
+
 @app.route('/countrydata')
 def getctry():
     url = 'http://140.203.154.253:8016/aspect/countries/'
