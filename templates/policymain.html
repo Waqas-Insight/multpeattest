@@ -117,7 +117,9 @@
                                 <div id="collapse${i}" class="accordion-collapse collapse polcol-acc-coll">
                                     <div class="accordion-body polcol-acc-bdy">
                                         <a href="${ policy['data_link'] }" class="polcol-lnk d-inline" target="_blank">LINK</a>
+                                        <p class="d-inline"> | ${ policy['year_from'] } | ${ policy['publisher'][0] }</p>
                                         <p>${ policy['abstract_english'] }</p>
+                                        <p class="badge rounded-pill ${ pillDct[policy['category'][0]] }">${ pillNames[policy['category'][0]] }</p>
                                     </div>
                                 </div>
                             </div>`
