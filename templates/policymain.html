@@ -64,7 +64,12 @@
         'Climate':`clm-class-pill`,
         'Energy':`enr-class-pill`,
         'Biodiversity':`bio-class-pill`,
-        'Research and applied sciences':`res-class-pill`
+        'Research and applied sciences':`res-class-pill`,
+        //
+        'Land Use / Agriculture': `land-class-pill`,
+        'Climate Action':`clm-class-pill`,
+        'Research and Applied Sciences':`res-class-pill`,
+        'Environment Quality':`env-class-pill`,
         };
 
     const pillNames = 
@@ -75,10 +80,27 @@
         'Climate':`Climate`,
         'Energy':`Energy`,
         'Biodiversity':`Biodiversity`,
-        'Research and applied sciences':`Research`
+        'Research and applied sciences':`Research`,
+        //
+        'Land Use / Agriculture': `Land-Use / Agriculture`,
+        'Climate Action':`Climate`,
+        'Research and Applied Sciences':`Research`,
+        'Environment Quality':`Environmental Quality`,
         };
-    
-    // get data
+    //https://www.alt-codes.net/flags
+    const flagmojis = {
+        "Global":"🌐",
+        "European":`🇪🇺`,
+        "Finland":`🇫🇮`,
+        "Germany":`🇩🇪`, 
+        "Latvia":"🇱🇻",
+        "United Kingdom":"🇬🇧"
+    }
+    // remove gap between lines for LINK | DATE | LEVEL try 1.0
+    // put download emoji next to file, northeast emoji for site
+    // bigger gap between meta info and abstract
+    // put date with country/ level
+    // person emoji next to publisher
     async function datafxn(){
         const url = '/policydata';
         var polLst = [];
@@ -95,7 +117,7 @@
         } catch (error) {
             console.error(error.message);
         }
-        console.log(polLst);
+        //console.log(polLst);
         // render data
         const polPop = $('#pol-coll-div');
         polPop.html('');
@@ -103,26 +125,72 @@
         var anyresults = false;
         for (let i = 0; i < polLst.length; i++) {
             var policy = polLst[i];
-            console.log(policy);
+            //console.log(policy);
             anyresults = true;
+            // categories html, gets all categories in their pill form
+            var categ_coll = [];
+            policy["category"].forEach(category => 
+                categ_coll.push(`<p class="badge rounded-pill ${ pillDct[category] }">${ pillNames[category] }</p>`)
+            );
+            var categs_html = categ_coll.join(" ")
+            // publishers html, gets all publishers
+            var publs_coll = [];
+            policy["publisher"].forEach(publisher =>
+                publs_coll.push(`<em>${publisher}</em>`)
+            );
+            var publs_html = publs_coll.join(", 👤 ");
+            // level / sublevel html, accounts for global and european, adds emojis
+            var lvl_area_html = ``;
+            if(["European", "Global"].includes(policy['policy_level'])){
+                lvl_area_html = `<p> ${ flagmojis[policy['policy_level']] } ${ policy['policy_level'] } </p>`;
+            }else{
+                if(policy["country"] in flagmojis){
+                    lvl_area_html = `<p> ${ flagmojis[policy['country']] } ${policy['country']} | ${ policy['policy_level'] } </p>`;
+                }else{
+                    lvl_area_html = `<p> ${ policy['country'] } | ${ policy['policy_level'] } </p>`;
+                }
+            }
+            // duration html, accounts for missing dates
+            var duratn_html = ``;
+            if(policy['year_from'] && policy['year_to']){
+                duratn_html = `${policy['year_from']}-${policy['year_to']}`;
+            }else{
+                if(policy['year_from']){
+                    duratn_html = `${policy['year_from']}-`;
+                }else if(policy['year_to']){
+                    duratn_html = `-${policy['year_to']}`;
+                }
+            }
+            // try to split abstract by \n to retain line breaks?
+            var abst_html = `${ policy['abstract_english'] }`;
+            // title
+            var title_html = `${ policy['name'] }`;
+            // links
+            var links_html = `<a href="${ policy['data_link'] }" class="polcol-lnk d-inline" target="_blank">Policy Document</a> | 
+                        <a href="${ policy['documentation_link'] }" class="polcol-lnk d-inline" target="_blank">Policy Info Page</a>`
             var element = `<div class="accordion-item polcol-acc-itm" style="margin-bottom:5px;">
                                 <div class="accordion-header polcol-acc-hdr">
                                     <button class="accordion-button collapsed polcol-acc-btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${i}" aria-expanded="true" aria-controls="collapse${i}">
                                         <div class="container">
-                                            <p class="d-inline" style="font-weight:bold;">${ policy['name'] } </p>
-                                            <p>${ policy['country'] } | ${ policy['policy_level'] }</p>
+                                            <p class="d-inline" style="font-weight:bold;">${ title_html }</p>
+                                            ${ lvl_area_html }
                                         </div>
                                     </button>
                                 </div>
                                 <div id="collapse${i}" class="accordion-collapse collapse polcol-acc-coll">
                                     <div class="accordion-body polcol-acc-bdy">
-                                        <a href="${ policy['data_link'] }" class="polcol-lnk d-inline" target="_blank">LINK</a>
-                                        <p class="d-inline"> | ${ policy['year_from'] } | ${ policy['publisher'][0] }</p>
-                                        <p>${ policy['abstract_english'] }</p>
-                                        <p class="badge rounded-pill ${ pillDct[policy['category'][0]] }">${ pillNames[policy['category'][0]] }</p>
+                                        <div style="line-height: 1;">
+                                            <p class="d-inline"> ${ duratn_html } | 👤 ${ publs_html } </p>
+                                        </div>
+                                        <p class="poltxt" style="margin-top:5px">${ abst_html }</p>
+                                        ${ links_html }
+                                        <br>
+                                        <div style="margin-top:5px">
+                                            ${ categs_html }
+                                        </div>
                                     </div>
                                 </div>
-                            </div>`
+                            </div>`;
             polPop.append(element);
         };
         if(!anyresults){
