@@ -90,17 +90,15 @@
     //https://www.alt-codes.net/flags
     const flagmojis = {
         "Global":"🌐",
-        "European":`🇪🇺`,
-        "Finland":`🇫🇮`,
-        "Germany":`🇩🇪`, 
+        "European":"🇪🇺",
+        "Finland":"🇫🇮",
+        "Germany":"🇩🇪", 
         "Latvia":"🇱🇻",
+        "Lithuania":"🇱🇹",
+        "Spain":"🇪🇸",
         "United Kingdom":"🇬🇧"
     }
-    // remove gap between lines for LINK | DATE | LEVEL try 1.0
-    // put download emoji next to file, northeast emoji for site
-    // bigger gap between meta info and abstract
-    // put date with country/ level
-    // person emoji next to publisher
+    // put download emoji next to file, northeast emoji for site???
     async function datafxn(){
         const url = '/policydata';
         var polLst = [];
@@ -132,20 +130,20 @@
             policy["category"].forEach(category => 
                 categ_coll.push(`<p class="badge rounded-pill ${ pillDct[category] }">${ pillNames[category] }</p>`)
             );
-            var categs_html = categ_coll.join(" ")
+            var categs_html = categ_coll.join(" ");
             // publishers html, gets all publishers
             var publs_coll = [];
             policy["publisher"].forEach(publisher =>
-                publs_coll.push(`<em>${publisher}</em>`)
+                publs_coll.push(`<p class="d-inline">${publisher}</p>`)
             );
-            var publs_html = publs_coll.join(", 👤 ");
+            var publs_html = publs_coll.join(`, <p class="d-inline" style="font-size:14px">👤</p><p class="d-inline">`);
             // level / sublevel html, accounts for global and european, adds emojis
             var lvl_area_html = ``;
             if(["European", "Global"].includes(policy['policy_level'])){
-                lvl_area_html = `<p> ${ flagmojis[policy['policy_level']] } ${ policy['policy_level'] } </p>`;
+                lvl_area_html = `<p class="d-inline" style="font-size:14px">${ flagmojis[policy['policy_level']] }</p> <p class="d-inline">${ policy['policy_level'] } </p>`;
             }else{
                 if(policy["country"] in flagmojis){
-                    lvl_area_html = `<p> ${ flagmojis[policy['country']] } ${policy['country']} | ${ policy['policy_level'] } </p>`;
+                    lvl_area_html = `<p class="d-inline" style="font-size:14px">${ flagmojis[policy['country']] }</p> <p class="d-inline">${policy['country']} | ${ policy['policy_level'] } </p>`;
                 }else{
                     lvl_area_html = `<p> ${ policy['country'] } | ${ policy['policy_level'] } </p>`;
                 }
@@ -162,30 +160,36 @@
                 }
             }
             // try to split abstract by \n to retain line breaks?
-            var abst_html = `${ policy['abstract_english'] }`;
+            var abst_sents = policy['abstract_english'].split("\n");
+            var abst_ps = [];
+            abst_sents.forEach(sentence =>
+                abst_ps.push(`<p class="poltxt">${ sentence }</p>`)
+            );
+            var abst_html = abst_ps.join(`<p style="margin-bottom:5px;"></p>`);
             // title
             var title_html = `${ policy['name'] }`;
             // links
-            var links_html = `<a href="${ policy['data_link'] }" class="polcol-lnk d-inline" target="_blank">Policy Document</a> | 
-                        <a href="${ policy['documentation_link'] }" class="polcol-lnk d-inline" target="_blank">Policy Info Page</a>`
+            var links_html = `<div style="margin-top:10px;margin-bottom:10px;">
+                        <a href="${ policy['data_link'] }" class="polcol-lnk d-inline" style="font-weight:500" target="_blank">Policy Document ↗</a> | 
+                        <a href="${ policy['documentation_link'] }" class="polcol-lnk d-inline" style="font-weight:500" target="_blank">Policy Info Page ↗</a>
+                        </div>`;
             var element = `<div class="accordion-item polcol-acc-itm" style="margin-bottom:5px;">
                                 <div class="accordion-header polcol-acc-hdr">
                                     <button class="accordion-button collapsed polcol-acc-btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${i}" aria-expanded="true" aria-controls="collapse${i}">
                                         <div class="container">
-                                            <p class="d-inline" style="font-weight:bold;">${ title_html }</p>
+                                            <p style="font-weight:bold;">${ title_html }</p>
                                             ${ lvl_area_html }
                                         </div>
                                     </button>
                                 </div>
                                 <div id="collapse${i}" class="accordion-collapse collapse polcol-acc-coll">
                                     <div class="accordion-body polcol-acc-bdy">
-                                        <div style="line-height: 1;">
-                                            <p class="d-inline"> ${ duratn_html } | 👤 ${ publs_html } </p>
+                                        <div style="line-height: 1; margin-bottom:15px;">
+                                            <p class="d-inline"> ${ duratn_html } | </p><p class="d-inline" style="font-size:14px">👤</p> ${ publs_html }
                                         </div>
-                                        <p class="poltxt" style="margin-top:5px">${ abst_html }</p>
+                                        ${ abst_html }
                                         ${ links_html }
-                                        <br>
-                                        <div style="margin-top:5px">
+                                        <div>
                                             ${ categs_html }
                                         </div>
                                     </div>
