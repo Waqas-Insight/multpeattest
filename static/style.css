@@ -10,6 +10,36 @@ p.poltxt{
     line-height: 1.15;
 }
 
+div.abst-collapse.collapse:not(.show){
+    display: block;
+    height: 2.5rem;
+    overflow: hidden;
+}
+div.abst-collapse.collapsing{
+    height: 2.5rem;
+}
+.abst-div > a.collapsed:after {
+    content: 'Show More';
+}
+.abst-div > a:not(.collapsed):after {
+    content: 'Show Less';
+}
+
+div.exc-collapse.collapse:not(.show){
+    display: block;
+    height: 2.5rem;
+    overflow: hidden;
+}
+div.exc-collapse.collapsing{
+    height: 2.5rem;
+}
+.exc-div > a.collapsed:after {
+    content: 'Show More';
+}
+.exc-div > a:not(.collapsed):after {
+    content: 'Show Less';
+}
+
 .form-label, .form-check-label{
     color:  #1a1a1a;
     font-family: Calibri, 'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', sans-serif;
@@ -819,7 +849,6 @@ input[type="checkbox"]:checked + #glb-fltr-svg {
     outline:none}
 
 .polcol-lnk, .stkcol-lnk{
-    font-weight: bold;
     color: #3191a2;
     text-decoration: none;
 }

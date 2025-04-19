@@ -122,12 +122,12 @@
     }
     // how to display policies
     function policyCollectionGetShow(polLst){
+        console.log(polLst[0]);
         const polPop = $('#pol-coll-div');
         polPop.html('');
         polPop.append(`<h4 id="pol-res-he" class="text-center" style="padding-bottom:20px">Policies</h4>`);
         for (let i = 0; i < polLst.length; i++) {
             var policy = polLst[i];
-            console.log(policy);
             // categories html, gets all categories in their pill form
             var categ_coll = [`<p class="badge rounded-pill ${ pillDct[policy["primary_category"]] }">${ pillNames[policy["primary_category"]] }</p>`];
             var categ_lst = policy["category"].sort();
@@ -179,8 +179,8 @@
             var title_html = `${ policy['name'] }`;
             // links
             var links_html = `<div style="margin-top:10px;margin-bottom:10px;">
-                        <a href="${ policy['data_link'] }" class="polcol-lnk d-inline" style="font-weight:500" target="_blank">Policy Document ⬇️</a> | 
-                        <a href="${ policy['documentation_link'] }" class="polcol-lnk d-inline" style="font-weight:500" target="_blank">Policy Info Page ↗</a>
+                        <a href="${ policy['data_link'] }" class="polcol-lnk d-inline" target="_blank">Policy Document ⬇️</a> | 
+                        <a href="${ policy['documentation_link'] }" class="polcol-lnk d-inline" target="_blank">Policy Info Page ↗</a>
                         </div>`;
             var element = `<div class="accordion-item polcol-acc-itm" style="margin-bottom:5px;">
                                 <div class="accordion-header polcol-acc-hdr">
@@ -196,7 +196,22 @@
                                         <div style="line-height: 1; margin-bottom:15px;">
                                             <p class="d-inline"> ${ duratn_html } | </p><p class="d-inline" style="font-size:14px">👤</p> ${ publs_html }
                                         </div>
-                                        ${ abst_html }
+                                        <div class="abst-div">
+                                            <p>Overview</p>
+                                            <div class="collapse abst-collapse" id="abscoll${i}">
+                                                ${ abst_html }
+                                            </div>
+                                            <a role="button" class="collapsed d-flex polcol-lnk" data-bs-toggle="collapse" href="#abscoll${i}" style="font-size:14px;justify-self:end;padding-right:15px;">
+                                            </a>
+                                        </div>
+                                        <div class="abst-div">
+                                            <p>Excerpt</p>
+                                            <div class="collapse exc-collapse" id="exccoll${i}">
+                                                <p class="poltxt">${policy["excerpt_english"]}</p>
+                                            </div>
+                                            <a role="button" class="collapsed d-flex polcol-lnk" data-bs-toggle="collapse" href="#exccoll${i}" style="font-size:14px;justify-self:end;padding-right:15px;">
+                                            </a>
+                                        </div>
                                         ${ links_html }
                                         <div>
                                             ${ categs_html }
