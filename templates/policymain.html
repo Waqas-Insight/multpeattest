@@ -13,14 +13,13 @@
                 At the moment, you can filter the policies by country, governance level, and category.
                 We will be adding further polices and querying methods as we grow our portal.
             </p>
-
             <div class="row justify-content-center">
                 <div class="col-3">
                     <div class="dropdown">
                         <button class="btn btn-success dropdown-toggle" style="width: 100%;" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Countries
                         </button>
-                        <ul class="dropdown-menu">
+                        <ul class="dropdown-menu overflow-auto" id="pol-ctry-select" style="max-height: 400px;">
                         </ul>
                     </div>
                 </div>
@@ -30,6 +29,26 @@
                             Governance Level
                         </button>
                         <ul class="dropdown-menu">
+                            <li>
+                                <input class="form-check-input stk-chk" type="checkbox" value="Global" id="pol-chk-lvl-gb" checked>
+                                <label class="form-check-label" for="flexCheckDefault">Global</label>
+                            </li>
+                            <li>
+                                <input class="form-check-input stk-chk" type="checkbox" value="European" id="pol-chk-lvl-eu" checked>
+                                <label class="form-check-label" for="flexCheckDefault">European</label>
+                            </li>
+                            <li>
+                                <input class="form-check-input stk-chk" type="checkbox" value="National" id="pol-chk-lvl-nt" checked>
+                                <label class="form-check-label" for="flexCheckDefault">National</label>
+                            </li>
+                            <li>
+                                <input class="form-check-input stk-chk" type="checkbox" value="Regional" id="pol-chk-lvl-rg" checked>
+                                <label class="form-check-label" for="flexCheckDefault">Regional</label>
+                            </li>
+                            <li>
+                                <input class="form-check-input stk-chk" type="checkbox" value="Local" id="pol-chk-lvl-lc" checked>
+                                <label class="form-check-label" for="flexCheckDefault">Local</label>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -39,11 +58,58 @@
                             Policy Category
                         </button>
                         <ul class="dropdown-menu" style="padding:0px;">
+                            <li>
+                                <div class="bio-cls-clr">
+                                    <input type="checkbox" id="pol-chk-cat-bio" class="form-check-input stk-chk" checked>
+                                    <label class="form-check-label" for="pol-chk-cat-bio">Biodiversity</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="clm-cls-clr">
+                                    <input type="checkbox" id="pol-chk-cat-clm" class="form-check-input stk-chk" checked>
+                                    <label class="form-check-label" for="pol-chk-cat-clm">Climate Action</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="comm-cls-clr">
+                                    <input type="checkbox" id="pol-chk-cat-comm" class="form-check-input stk-chk" checked>
+                                    <label class="form-check-label" for="pol-chk-cat-comm">Culture</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="econ-cls-clr">
+                                    <input type="checkbox" id="pol-chk-cat-econ" class="form-check-input stk-chk" checked>
+                                    <label class="form-check-label" for="pol-chk-cat-econ">Economy</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="enr-cls-clr">
+                                    <input type="checkbox" id="pol-chk-cat-enr" class="form-check-input stk-chk" checked>
+                                    <label class="form-check-label" for="pol-chk-cat-enr">Energy</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="env-cls-clr">
+                                    <input type="checkbox" id="pol-chk-cat-env" class="form-check-input stk-chk" checked>
+                                    <label class="form-check-label" for="pol-chk-cat-env">Env. Quality</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="land-cls-clr">
+                                    <input type="checkbox" id="pol-chk-cat-land" class="form-check-input stk-chk" checked>
+                                    <label class="form-check-label" for="pol-chk-cat-land">Land Use</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="res-cls-clr">
+                                    <input type="checkbox" id="pol-chk-cat-res" class="form-check-input stk-chk" checked>
+                                    <label class="form-check-label" for="pol-chk-cat-res">Research</label>
+                                </div>
+                            </li>
                         </ul>
                     </div>
                 </div>
             </div>
-
             <div class="accordion pol-coll-div" id="pol-coll-div" style="margin-bottom: 10px;">
             </div>
         </div>
@@ -67,7 +133,6 @@
         'Research and Applied Sciences':`res-class-pill`,
         'Environment Quality':`env-class-pill`,
         };
-
     const pillNames = 
         {'Economy': `Economy`,
         'Land-Use / Agriculture': `Land-Use / Agriculture`,
@@ -119,6 +184,58 @@
         "Sweden":"🇸🇪",
         "Switzerland":"🇨🇭",
         "United Kingdom":"🇬🇧"
+    }
+    const country_select = {
+        "Austria":"at",
+        "Belgium":"be",
+        "Bulgaria":"bg",
+        "Croatia":"hr",
+        "Cyprus":"cy",
+        "Czech Republic":"cz",
+        "Denmark":"dk",
+        "Estonia":"ee",
+        "Finland":"fi",
+        "France":"fr",
+        "Germany":"de",
+        "Greece":"gr",
+        "Hungary":"hu",
+        "Iceland":"is",
+        "Ireland":"ie",
+        "Italy":"it",
+        "Latvia":"lv",
+        "Liechtenstein":"li",
+        "Lithuania":"lt",
+        "Luxembourg":"lu",
+        "Malta":"mt",
+        "Netherlands":"nl",
+        "Norway":"no",
+        "Poland":"pl",
+        "Portugal":"pt",
+        "Romania":"ro",
+        "Slovakia":"sk",
+        "Slovenia":"si",
+        "Spain":"es",
+        "Sweden":"se",
+        "Switzerland":"ch",
+        "United Kingdom":"gb"
+    }
+    // add filters
+    const ctry_sel_hl = $("#pol-ctry-select");
+    ctry_sel_hl.html('');
+    ctry_sel_hl.append(`
+        <li>
+            <input class="form-check-input stk-chk" type="checkbox" value="Toggle all" id="pol-chk-nat-all" checked>
+            <label class="form-check-label">Toggle all</label>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+    `);
+    for(let key in country_select){
+        ctry_sel_hl.append(`
+            <li>
+                <input class="form-check-input stk-chk" type="checkbox" value="${key}" id="pol-chk-nat-${country_select[key]}" checked>
+                <label class="form-check-label">${key}</label>
+            </li>
+        `);
     }
     // how to display policies
     function policyCollectionGetShow(polLst){
