@@ -51,10 +51,7 @@
 </div>
 
 <script>
-    //
-    // get all policies on page load
-    // generate filter dropdowns from policy list (with "on change" function)
-    // on change fxn, check if filter boxes checked and return relevant results
+    // defining dictionaries
     const pillDct = 
         {'Economy': `econ-class-pill`,
         'Land-Use / Agriculture': `land-class-pill`,
@@ -123,45 +120,32 @@
         "Switzerland":"🇨🇭",
         "United Kingdom":"🇬🇧"
     }
-    // put download emoji next to file, northeast emoji for site???
-    async function datafxn(){
-        const url = '/policydata';
-        var polLst = [];
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
-            }
-            const json = await response.json();
-            polcol= json["result"]["response"];
-            polcol.forEach(pol =>{
-                polLst.push(pol);
-            })
-        } catch (error) {
-            console.error(error.message);
-        }
-        //console.log(polLst);
-        // render data
+    // how to display policies
+    function policyCollectionGetShow(polLst){
         const polPop = $('#pol-coll-div');
         polPop.html('');
         polPop.append(`<h4 id="pol-res-he" class="text-center" style="padding-bottom:20px">Policies</h4>`);
-        var anyresults = false;
         for (let i = 0; i < polLst.length; i++) {
             var policy = polLst[i];
-            //console.log(policy);
-            anyresults = true;
+            console.log(policy);
             // categories html, gets all categories in their pill form
-            var categ_coll = [];
-            policy["category"].forEach(category => 
-                categ_coll.push(`<p class="badge rounded-pill ${ pillDct[category] }">${ pillNames[category] }</p>`)
-            );
+            var categ_coll = [`<p class="badge rounded-pill ${ pillDct[policy["primary_category"]] }">${ pillNames[policy["primary_category"]] }</p>`];
+            var categ_lst = policy["category"].sort();
+            if(categ_lst.length > 1){
+                categ_coll.push(`|`);
+            }
+            for (let c=0; c < categ_lst.length; c++){
+                if(categ_lst[c] != policy["primary_category"]){
+                    categ_coll.push(`<p class="badge rounded-pill ${ pillDct[categ_lst[c]] }">${ pillNames[categ_lst[c]] }</p>`);
+                }
+            }
             var categs_html = categ_coll.join(" ");
             // publishers html, gets all publishers
             var publs_coll = [];
             policy["publisher"].forEach(publisher =>
                 publs_coll.push(`<p class="d-inline">${publisher}</p>`)
             );
-            var publs_html = publs_coll.join(`, <p class="d-inline" style="font-size:14px">👤</p><p class="d-inline">`);
+            var publs_html = publs_coll.join(`; <p class="d-inline" style="font-size:14px">👤</p><p class="d-inline">`);
             // level / sublevel html, accounts for global and european, adds emojis
             var lvl_area_html = ``;
             if(["European", "Global"].includes(policy['policy_level'])){
@@ -195,7 +179,7 @@
             var title_html = `${ policy['name'] }`;
             // links
             var links_html = `<div style="margin-top:10px;margin-bottom:10px;">
-                        <a href="${ policy['data_link'] }" class="polcol-lnk d-inline" style="font-weight:500" target="_blank">Policy Document ↗</a> | 
+                        <a href="${ policy['data_link'] }" class="polcol-lnk d-inline" style="font-weight:500" target="_blank">Policy Document ⬇️</a> | 
                         <a href="${ policy['documentation_link'] }" class="polcol-lnk d-inline" style="font-weight:500" target="_blank">Policy Info Page ↗</a>
                         </div>`;
             var element = `<div class="accordion-item polcol-acc-itm" style="margin-bottom:5px;">
@@ -222,15 +206,14 @@
                             </div>`;
             polPop.append(element);
         };
-        if(!anyresults){
+        if(!polLst){
             polPop.append(`<p class="text-center" style="color:black;">No policies found. Please try other filter combinations.</p>`);
         }
     }
-    datafxn();
-    async function policyCollectionGetShow(dataAddress, heading){
-        var polLst = [];
-        // get data
-        const url = '/stakeholderdata/0';
+    // get ALL policies and display them
+    // also return all policies
+    async function datafxn(){
+        const url = '/policydata';
         var polLst = [];
         try {
             const response = await fetch(url);
@@ -239,44 +222,21 @@
             }
             const json = await response.json();
             polcol= json["result"]["response"];
-            //console.log(polcol);
             polcol.forEach(pol =>{
                 polLst.push(pol);
             })
         } catch (error) {
             console.error(error.message);
         }
-        // render data
-        const polPop = $('#pol-coll-div');
-        polPop.html('');
-        polPop.append(`<h4 id="pol-res-he" class="text-center" style="padding-bottom:20px">Stakeholders</h4>`);
-        var anyresults = false;
-        for (let i = 0; i < polLst.length; i++) {
-            var policy = polLst[i];
-            if(fltr_dct['country'].includes(policy['country']) && fltr_dct['level'].includes(policy['level'])){
-                anyresults = true;
-                var element = `<div class="accordion-item polcol-acc-itm" style="margin-bottom:5px;">
-                                                <div class="accordion-header polcol-acc-hdr">
-                                                    <button class="accordion-button collapsed polcol-acc-btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${i}" aria-expanded="true" aria-controls="collapse${i}">
-                                                        <div class="container">
-                                                            <p class="d-inline" style="font-weight:bold;">${ policy['name'] } </p>
-                                                            <p>${ policy['country'] } | ${ policy['level'] }</p>
-                                                        </div>
-                                                    </button>
-                                                </div>
-                                                <div id="collapse${i}" class="accordion-collapse collapse polcol-acc-coll">
-                                                    <div class="accordion-body polcol-acc-bdy">
-                                                        <a href="${ policy['stakeholder_link'] }" class="polcol-lnk d-inline" target="_blank">LINK</a>
-                                                        <p>${ policy['description'] }</p>
-                                                    </div>
-                                                </div>
-                                            </div>`
-                polPop.append(element);
-            }
-        };
-        if(!anyresults){
-            polPop.append(`<p class="text-center" style="color:black;">No stakeholders found. Please try other filter combinations.</p>`);
-        }
+        //console.log(polLst);
+        policyCollectionGetShow(polLst);
+        return polLst;
     }
+    // update policy list based on filter values
+    function filterPolicies(polLst){
+        console.log(polLst)
+    }
+    var firstPolLst = datafxn();
+    //console.log(firstPolLst);
 </script>
 {% endblock %}
