@@ -3,7 +3,6 @@
 {% block title %}Policy Collection{% endblock %}
 
 {% block content %}
-
 <div class="container" style="min-height: 760px;">
     <div class="row justify-content-center">
         <div class="col-lg-10">
@@ -30,23 +29,23 @@
                         </button>
                         <ul class="dropdown-menu">
                             <li>
-                                <input class="form-check-input stk-chk" type="checkbox" value="Global" id="pol-chk-lvl-gb" checked>
+                                <input class="form-check-input stk-chk" type="checkbox" value="Global" id="pol-chk-lvl-gb" onchange="filterPolicies()" checked>
                                 <label class="form-check-label" for="flexCheckDefault">Global</label>
                             </li>
                             <li>
-                                <input class="form-check-input stk-chk" type="checkbox" value="European" id="pol-chk-lvl-eu" checked>
+                                <input class="form-check-input stk-chk" type="checkbox" value="European" id="pol-chk-lvl-eu" onchange="filterPolicies()" checked>
                                 <label class="form-check-label" for="flexCheckDefault">European</label>
                             </li>
                             <li>
-                                <input class="form-check-input stk-chk" type="checkbox" value="National" id="pol-chk-lvl-nt" checked>
+                                <input class="form-check-input stk-chk" type="checkbox" value="National" id="pol-chk-lvl-nt" onchange="filterPolicies()" checked>
                                 <label class="form-check-label" for="flexCheckDefault">National</label>
                             </li>
                             <li>
-                                <input class="form-check-input stk-chk" type="checkbox" value="Regional" id="pol-chk-lvl-rg" checked>
+                                <input class="form-check-input stk-chk" type="checkbox" value="Regional" id="pol-chk-lvl-rg" onchange="filterPolicies()" checked>
                                 <label class="form-check-label" for="flexCheckDefault">Regional</label>
                             </li>
                             <li>
-                                <input class="form-check-input stk-chk" type="checkbox" value="Local" id="pol-chk-lvl-lc" checked>
+                                <input class="form-check-input stk-chk" type="checkbox" value="Local" id="pol-chk-lvl-lc" onchange="filterPolicies()" checked>
                                 <label class="form-check-label" for="flexCheckDefault">Local</label>
                             </li>
                         </ul>
@@ -60,49 +59,49 @@
                         <ul class="dropdown-menu" style="padding:0px;">
                             <li>
                                 <div class="bio-cls-clr">
-                                    <input type="checkbox" id="pol-chk-cat-bio" class="form-check-input stk-chk" checked>
+                                    <input type="checkbox" id="pol-chk-cat-bio" class="form-check-input stk-chk" value="Biodiversity" onchange="filterPolicies()" checked>
                                     <label class="form-check-label" for="pol-chk-cat-bio">Biodiversity</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="clm-cls-clr">
-                                    <input type="checkbox" id="pol-chk-cat-clm" class="form-check-input stk-chk" checked>
+                                    <input type="checkbox" id="pol-chk-cat-clm" class="form-check-input stk-chk" value="Climate Action" onchange="filterPolicies()" checked>
                                     <label class="form-check-label" for="pol-chk-cat-clm">Climate Action</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="comm-cls-clr">
-                                    <input type="checkbox" id="pol-chk-cat-comm" class="form-check-input stk-chk" checked>
+                                    <input type="checkbox" id="pol-chk-cat-comm" class="form-check-input stk-chk" value="Community and Culture" onchange="filterPolicies()" checked>
                                     <label class="form-check-label" for="pol-chk-cat-comm">Culture</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="econ-cls-clr">
-                                    <input type="checkbox" id="pol-chk-cat-econ" class="form-check-input stk-chk" checked>
+                                    <input type="checkbox" id="pol-chk-cat-econ" class="form-check-input stk-chk" value="Economy" onchange="filterPolicies()" checked>
                                     <label class="form-check-label" for="pol-chk-cat-econ">Economy</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="enr-cls-clr">
-                                    <input type="checkbox" id="pol-chk-cat-enr" class="form-check-input stk-chk" checked>
+                                    <input type="checkbox" id="pol-chk-cat-enr" class="form-check-input stk-chk" value="Energy" onchange="filterPolicies()" checked>
                                     <label class="form-check-label" for="pol-chk-cat-enr">Energy</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="env-cls-clr">
-                                    <input type="checkbox" id="pol-chk-cat-env" class="form-check-input stk-chk" checked>
+                                    <input type="checkbox" id="pol-chk-cat-env" class="form-check-input stk-chk" value="Environment Quality" onchange="filterPolicies()" checked>
                                     <label class="form-check-label" for="pol-chk-cat-env">Env. Quality</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="land-cls-clr">
-                                    <input type="checkbox" id="pol-chk-cat-land" class="form-check-input stk-chk" checked>
+                                    <input type="checkbox" id="pol-chk-cat-land" class="form-check-input stk-chk" value="Land Use / Agriculture" onchange="filterPolicies()" checked>
                                     <label class="form-check-label" for="pol-chk-cat-land">Land Use</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="res-cls-clr">
-                                    <input type="checkbox" id="pol-chk-cat-res" class="form-check-input stk-chk" checked>
+                                    <input type="checkbox" id="pol-chk-cat-res" class="form-check-input stk-chk" value="Research and Applied Sciences" onchange="filterPolicies()" checked>
                                     <label class="form-check-label" for="pol-chk-cat-res">Research</label>
                                 </div>
                             </li>
@@ -110,6 +109,7 @@
                     </div>
                 </div>
             </div>
+            <div id="policyliststore" value="{{ [] }}" style="display:none"></div>
             <div class="accordion pol-coll-div" id="pol-coll-div" style="margin-bottom: 10px;">
             </div>
         </div>
@@ -224,7 +224,7 @@
     ctry_sel_hl.html('');
     ctry_sel_hl.append(`
         <li>
-            <input class="form-check-input stk-chk" type="checkbox" value="Toggle all" id="pol-chk-nat-all" checked>
+            <input class="form-check-input stk-chk" type="checkbox" value="Toggle all" id="pol-chk-nat-all" onchange="toggle_countries()" checked>
             <label class="form-check-label">Toggle all</label>
         </li>
         <li><hr class="dropdown-divider"></li>
@@ -232,14 +232,13 @@
     for(let key in country_select){
         ctry_sel_hl.append(`
             <li>
-                <input class="form-check-input stk-chk" type="checkbox" value="${key}" id="pol-chk-nat-${country_select[key]}" checked>
+                <input class="form-check-input stk-chk" type="checkbox" value="${key}" id="pol-chk-nat-${country_select[key]}" onchange="filterPolicies()" checked>
                 <label class="form-check-label">${key}</label>
             </li>
         `);
     }
     // how to display policies
-    function policyCollectionGetShow(polLst){
-        console.log(polLst[0]);
+    function policyCollectionShow(polLst){
         const polPop = $('#pol-coll-div');
         polPop.html('');
         polPop.append(`<h4 id="pol-res-he" class="text-center" style="padding-bottom:20px">Policies</h4>`);
@@ -323,11 +322,9 @@
                                         </div>
                                         <div class="abst-div">
                                             <p>Excerpt</p>
-                                            <div class="collapse exc-collapse" id="exccoll${i}">
+                                            <div>
                                                 <p class="poltxt">${policy["excerpt_english"]}</p>
                                             </div>
-                                            <a role="button" class="collapsed d-flex polcol-lnk" data-bs-toggle="collapse" href="#exccoll${i}" style="font-size:14px;justify-self:end;padding-right:15px;">
-                                            </a>
                                         </div>
                                         ${ links_html }
                                         <div>
@@ -361,12 +358,106 @@
             console.error(error.message);
         }
         //console.log(polLst);
-        policyCollectionGetShow(polLst);
+        policyCollectionShow(polLst);
+        //
+        $('#policyliststore').val(JSON.stringify(polLst));
+        //
         return polLst;
     }
     // update policy list based on filter values
-    function filterPolicies(polLst){
-        console.log(polLst)
+    function filterPolicies(){
+        polLst = JSON.parse($('#policyliststore').val());
+        //console.log(polLst.length)
+        // countries
+        var ctry_at = $('#pol-chk-nat-at:checked').val();
+        var ctry_be = $('#pol-chk-nat-be:checked').val();
+        var ctry_bg = $('#pol-chk-nat-bg:checked').val();
+        var ctry_hr = $('#pol-chk-nat-hr:checked').val();
+        var ctry_cy = $('#pol-chk-nat-cy:checked').val();
+        var ctry_cz = $('#pol-chk-nat-cz:checked').val();
+        var ctry_dk = $('#pol-chk-nat-dk:checked').val();
+        var ctry_ee = $('#pol-chk-nat-ee:checked').val();
+        var ctry_fi = $('#pol-chk-nat-fi:checked').val();
+        var ctry_fr = $('#pol-chk-nat-fr:checked').val();
+        var ctry_de = $('#pol-chk-nat-de:checked').val();
+        var ctry_gr = $('#pol-chk-nat-gr:checked').val();
+        var ctry_hu = $('#pol-chk-nat-hu:checked').val();
+        var ctry_is = $('#pol-chk-nat-is:checked').val();
+        var ctry_ie = $('#pol-chk-nat-ie:checked').val();
+        var ctry_it = $('#pol-chk-nat-it:checked').val();
+        var ctry_lv = $('#pol-chk-nat-lv:checked').val();
+        var ctry_li = $('#pol-chk-nat-li:checked').val();
+        var ctry_lt = $('#pol-chk-nat-lt:checked').val();
+        var ctry_lu = $('#pol-chk-nat-lu:checked').val();
+        var ctry_mt = $('#pol-chk-nat-mt:checked').val();
+        var ctry_nl = $('#pol-chk-nat-nl:checked').val();
+        var ctry_no = $('#pol-chk-nat-no:checked').val();
+        var ctry_pl = $('#pol-chk-nat-pl:checked').val();
+        var ctry_pt = $('#pol-chk-nat-pt:checked').val();
+        var ctry_ro = $('#pol-chk-nat-ro:checked').val();
+        var ctry_sk = $('#pol-chk-nat-sk:checked').val();
+        var ctry_si = $('#pol-chk-nat-si:checked').val();
+        var ctry_es = $('#pol-chk-nat-es:checked').val();
+        var ctry_se = $('#pol-chk-nat-se:checked').val();
+        var ctry_ch = $('#pol-chk-nat-ch:checked').val();
+        var ctry_gb = $('#pol-chk-nat-gb:checked').val();
+        // levels
+        var lvl_gb = $('#pol-chk-lvl-gb:checked').val();
+        var lvl_eu = $('#pol-chk-lvl-eu:checked').val();
+        var lvl_nat = $('#pol-chk-lvl-nt:checked').val();
+        var lvl_rg = $('#pol-chk-lvl-rg:checked').val();
+        var lvl_lc = $('#pol-chk-lvl-lc:checked').val();
+        // categories
+        var catg_bio = $('#pol-chk-cat-bio:checked').val();    
+        var catg_clm = $('#pol-chk-cat-clm:checked').val();   
+        var catg_comm = $('#pol-chk-cat-comm:checked').val();    
+        var catg_econ = $('#pol-chk-cat-econ:checked').val();    
+        var catg_enr = $('#pol-chk-cat-enr:checked').val();    
+        var catg_env = $('#pol-chk-cat-env:checked').val();   
+        var catg_land = $('#pol-chk-cat-land:checked').val();    
+        var catg_res = $('#pol-chk-cat-res:checked').val();
+        //
+        var ctry_lst = [ctry_at, ctry_be, ctry_bg, ctry_hr, ctry_cy, ctry_cz,
+            ctry_dk, ctry_ee, ctry_fi, ctry_fr, ctry_de, ctry_gr, ctry_hu,
+            ctry_is, ctry_ie, ctry_it, ctry_lv, ctry_li, ctry_lt, ctry_lu,
+            ctry_mt, ctry_nl, ctry_no, ctry_pl, ctry_pt, ctry_ro, ctry_sk,
+            ctry_si, ctry_es, ctry_se, ctry_ch, ctry_gb
+        ];
+        var lvl_lst = [lvl_gb, lvl_eu, lvl_nat, lvl_rg, lvl_lc];
+        var categ_lst=[catg_bio, catg_clm, catg_comm, catg_econ, 
+            catg_enr, catg_env, catg_land, catg_res
+        ];
+        //console.log(ctry_lst, lvl_lst, categ_lst);
+        var newLst = [];
+        polLst.forEach(policy =>{
+            // filter level
+            if(lvl_lst.includes(policy["policy_level"])){
+                // filter category
+                var categfltr = categ_lst.some(categ => policy["category"].includes(categ));
+                if(categfltr){
+                    // if sub-EU, filter country
+                    if(!(["European", "Global"].includes(policy['policy_level']))){
+                        if(ctry_lst.includes(policy["country"])){
+                            newLst.push(policy);
+                        }
+                    }else{
+                        newLst.push(policy);
+                    }
+                }
+            }
+        });
+        policyCollectionShow(newLst);
+    }
+    function toggle_countries(){
+        var id_lst = [];
+        for(let key in country_select){
+            id_lst.push(`pol-chk-nat-${country_select[key]}`);
+        }
+        var val = $('#pol-chk-nat-all').is(":checked");
+        id_lst.forEach(id =>{
+                $(`#${id}`).prop('checked', val);
+            });
+        filterPolicies();
     }
     var firstPolLst = datafxn();
     //console.log(firstPolLst);
