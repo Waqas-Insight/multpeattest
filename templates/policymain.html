@@ -239,6 +239,7 @@
     }
     // how to display policies
     function policyCollectionShow(polLst){
+        console.log(polLst[0]);
         const polPop = $('#pol-coll-div');
         polPop.html('');
         polPop.append(`<h4 id="pol-res-he" class="text-center" style="padding-bottom:20px">Policies</h4>`);
@@ -291,6 +292,25 @@
                 abst_ps.push(`<p class="poltxt">${ sentence }</p>`)
             );
             var abst_html = abst_ps.join(`<p style="margin-bottom:5px;"></p>`);
+            // split table of contents by \n to retain line breaks
+            var toc_html = ``;
+            var toc_html_section = ``;
+            if(policy['toc_english']){
+                var toc_lines = policy['toc_english'].split("\n");
+                var toc_ps = [];
+                toc_lines.forEach(line =>
+                    toc_ps.push(`<p class="poltxt">${ line }</p>`)
+                );
+                toc_html = toc_ps.join(`<p style="margin-bottom:5px;"></p>`);
+                toc_html_section = `<div class="abst-div">
+                                        <p>Table of Contents</p>
+                                        <div class="collapse abst-collapse" id="toccoll${i}">
+                                            ${ toc_html }
+                                        </div>
+                                        <a role="button" class="collapsed d-flex polcol-lnk" data-bs-toggle="collapse" href="#toccoll${i}" style="font-size:14px;justify-self:center;padding-right:15px;">
+                                        </a>
+                                    </div>`
+            }
             // title
             var title_html = `${ policy['name'] }`;
             // links
@@ -326,6 +346,7 @@
                                             <a role="button" class="collapsed d-flex polcol-lnk" data-bs-toggle="collapse" href="#abscoll${i}" style="font-size:14px;justify-self:center;padding-right:15px;">
                                             </a>
                                         </div>
+                                        ${ toc_html_section }
                                         ${ links_html }
                                         <div>
                                             ${ categs_html }
