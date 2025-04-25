@@ -16,7 +16,7 @@ import csv
 import time
 import pandas as pd
 import glob
-
+import logging
 #
 from modules import assum_json_to_dict, usrinp_json_to_dict
 from inctcls import pdf_to_sents, classify_w_svm, return_bn_results, return_mc_results
@@ -35,6 +35,10 @@ app.config['UPLOAD_PATH'] = 'uploads'
 
 csrf = CSRFProtect(app)
 
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 '''
 APP CONFIGURATION
 '''
@@ -486,6 +490,81 @@ def incentive_tool():
     if 'username' not in session:
         return render_template('incentive_tool.html', res_dct=cls_incs, filename=filename, time_st=time_st)
     return render_template('incentive_tool.html', username=session['username'], res_dct=cls_incs, filename=filename, time_st=time_st)
+
+@app.route('/qa-tool', methods=['GET', 'POST'])
+def qa_tool():
+    if request.method == 'GET':
+        return render_template("qa_tool.html")
+    elif request.method=='POST':
+        reasoning = None
+        policies = []
+        # Get user input
+        question = request.form.get('question')
+        language = request.form.get('language')
+        category = request.form.get('category')
+        country = request.form.get('country')
+        governance = request.form.get('governance')
+        # Build query parameters
+        query_params = {"query": question}
+        if language: query_params['language'] = language
+        if category: query_params['category'] = category
+        if country: query_params['country'] = country
+        if governance: query_params['governance_level'] = governance
+        if question:
+            try:
+                response = requests.get(
+                    "http://140.203.155.230:8000/ask",
+                    params=query_params,
+                    headers={'accept': 'application/json'},
+                    timeout=200
+                )
+                logging.info("Response status code: %s", response.status_code)
+                try:
+                    logging.info("Response JSON:\n%s", json.dumps(response.json(), indent=2))
+                except Exception:
+                    logging.warning("Response content is not valid JSON: %s", response.text)
+                if response.status_code == 200:
+                    response_data = response.json()
+                    reasoning = response_data.get('answer', "No answer provided.")
+                    sources = response_data.get('sources', [])
+                    fallback_phrases = [
+                        "do not contain",
+                        "does not provide information",
+                        "not found in the provided documents",
+                        "no relevant documents"
+                    ]
+                    lowered = reasoning.lower()
+                    is_fallback = any(phrase in lowered for phrase in fallback_phrases)
+                    is_too_short = len(reasoning.strip()) < 50
+                    if not is_fallback and not is_too_short:
+                        max_score = max([s['score'] for s in sources], default=1)
+                        for src in sources:
+                            policies.append({
+                                "title": src.get("author", "Unknown"),
+                                "pdf_url": f"/files/{src['filename']}",
+                                "read_more_url": "#",
+                                "thumbnail_url": "/static/images/pdf_thumbnail.png",
+                                "country": src.get("country", "Unknown"),
+                                "language": src.get("language", "Unknown"),
+                                "author": src.get("author", "Unknown"),
+                                "evidence_location": f"Score: {src['score']}",
+                                "similarity": round((src['score'] / max_score) * 100, 1)
+                            })
+                else:
+                    reasoning = f"❌ API Error {response.status_code}: {response.text}"
+            except Exception as e:
+                reasoning = f"❌ Failed to get response: {str(e)}"
+                logging.error("Exception occurred while fetching response: %s", str(e))
+        return render_template(
+            "qa_tool.html",
+            reasoning=reasoning,
+            policies=policies,
+            asked_question=question,
+            selected_language=language,
+            selected_category=category,
+            selected_country=country,
+            selected_governance=governance
+        )
 
 # DATA ENDPOINTS
 
