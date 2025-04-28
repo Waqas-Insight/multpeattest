@@ -762,6 +762,7 @@ def get_latest_csv(username):
         return None  # No valid file found
 
     return max(valid_files, key=os.path.getctime)  # Return latest file
+
 def get_all_csv_files(username):
     """Get all CSV files for a specific user"""
     # Define the path where user CSV files are stored
@@ -790,6 +791,7 @@ def get_all_csv_files(username):
         print(f"Error listing CSV files: {str(e)}")
     
     return csv_files
+
 @app.route("/getAvailableSites", methods=["GET"])
 def get_available_sites():
     if "username" not in session:
@@ -860,6 +862,7 @@ def extract_site_name_from_csv(csv_file):
     except Exception as e:
         print(f"Error extracting site name from {csv_file}: {str(e)}")
         return None
+    
 @app.route("/fetchSiteData/<file_name>", methods=["GET"])
 def fetch_site_data(file_name):
     """Fetch data from a specific CSV file"""
