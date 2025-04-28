@@ -513,7 +513,7 @@ def qa_tool():
         if question:
             try:
                 response = requests.get(
-                    "http://140.203.155.230:8000/ask",
+                    "http://140.203.155.51:8001/ask",
                     params=query_params,
                     headers={'accept': 'application/json'},
                     timeout=200
