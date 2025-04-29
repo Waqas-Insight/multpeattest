@@ -286,11 +286,14 @@
                 }
             }
             // try to split abstract by \n to retain line breaks?
-            var abst_sents = policy['abstract_english'].split("\n");
             var abst_ps = [];
-            abst_sents.forEach(sentence =>
-                abst_ps.push(`<p class="poltxt">${ sentence }</p>`)
-            );
+            var abst_sents = [];
+            if(policy['abstract_english']){
+                abst_sents = policy['abstract_english'].split("\n");
+                abst_sents.forEach(sentence =>
+                    abst_ps.push(`<p class="poltxt">${ sentence }</p>`)
+                );
+            };
             var abst_html = abst_ps.join(`<p style="margin-bottom:5px;"></p>`);
             // split table of contents by \n to retain line breaks
             var toc_html = ``;
