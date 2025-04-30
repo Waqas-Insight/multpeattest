@@ -236,5 +236,30 @@ def main():
             print(sent)
     # now classify with mc classification
 
+###############################
+# API section
+from fastapi import FastAPI, File, UploadFile, Form, Query
+from fastapi.responses import JSONResponse
+from typing import Optional, Dict, Any
+import uuid, os, tempfile, requests
+from collections import defaultdict
+import numpy as np
+from pypdf import PdfReader
+from sentence_transformers import SentenceTransformer
+import werkzeug
+from werkzeug.utils import secure_filename
+
+app = FastAPI()
+
+@app.get("/incentive")
+def get_incentives(text: str): #uploaded_file: werkzeug.datastructures.FileStorage):
+    if text:
+        sents = get_clean_eng_sents({"text":text}, EN_TOKENIZER)
+        pred_lbls_b, sents = classify_w_svm(sents, 'models/paraphrase-xlm-r-multilingual-v1_bn_v1.pt', 'bn')
+        inc_sents = return_bn_results(pred_lbls_b, sents)
+        cls_preds, sents = classify_w_svm(inc_sents, 'models/paraphrase-xlm-r-multilingual-v1_mc_v1.pt', 'mc')
+        cls_incs = return_mc_results(cls_preds, sents)
+        return cls_incs
+
 if __name__ == '__main__':
     main()

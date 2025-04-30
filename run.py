@@ -8,7 +8,6 @@ from flask_wtf import FlaskForm
 from flask_wtf.csrf import CSRFProtect
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from werkzeug.utils import secure_filename
 from wtforms import StringField, PasswordField, SubmitField, validators
 import psycopg2
 from datetime import datetime
@@ -19,7 +18,7 @@ import glob
 import logging
 #
 from modules import assum_json_to_dict, usrinp_json_to_dict
-from inctcls import pdf_to_sents, classify_w_svm, return_bn_results, return_mc_results
+from inctcls import pdf_to_sents, classify_w_svm, return_bn_results, return_mc_results, get_pdf_text
 import requests
 #added remarks for run.py
 # powershell: $env:FLASK_APP = "run"
@@ -476,11 +475,24 @@ def incentive_tool():
             if file_ext not in ['.pdf','.doc','.docx']:
                 abort(400)
             uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
-            sents = pdf_to_sents(os.path.join(app.config['UPLOAD_PATH'], filename))
-            pred_lbls_b, sents = classify_w_svm(sents, 'models/paraphrase-xlm-r-multilingual-v1_bn_v1.pt', 'bn')
-            inc_sents = return_bn_results(pred_lbls_b, sents)
-            cls_preds, sents = classify_w_svm(inc_sents, 'models/paraphrase-xlm-r-multilingual-v1_mc_v1.pt', 'mc')
-            cls_incs = return_mc_results(cls_preds, sents)
+            text_dct = get_pdf_text(os.path.join(app.config['UPLOAD_PATH'], filename))
+            query_params = {"text": text_dct["text"]}
+            try:
+                response = requests.get(
+                    #"http://140.203.155.230:8000/incentive",
+                    "http://127.0.0.1:8000/incentive",
+                    params=query_params,
+                    headers={'accept': 'application/json'},
+                    timeout=200
+                )
+                logging.info("Response status code: %s", response.status_code)
+                try:
+                    logging.info("Response JSON:\n%s", json.dumps(response.json(), indent=2))
+                    cls_incs = response.json()
+                except Exception:
+                    logging.warning("Response content is not valid JSON: %s", response.text)
+            except:
+                print("An error has occurred.")
             dur = time.time()-st
             time_st = f"{round(dur/60,2)} min" if dur>60 else f"{round(dur,2)} s"
             #print(cls_incs)
