@@ -85,7 +85,7 @@
       {% if asked_question %}
       <p class="text-muted mb-2"><i class="bi bi-question-circle"></i> <strong>Question:</strong> {{ asked_question }}</p>
       {% endif %}
-      <p class="card-text">{{ reasoning }}</p>
+      <div class="card-text markdown-content">{{ reasoning|safe }}</div>
     </div>
   </div>
   {% endif %}
@@ -103,9 +103,27 @@
           <p class="mb-1"><i class="bi bi-geo-alt-fill text-muted"></i> {{ policy.country }}</p>
           <p class="mb-1"><i class="bi bi-translate text-muted"></i> Language: {{ policy.language }}</p>
         </div>
-        <div class="card-footer d-flex justify-content-between bg-light">
-          <a href="{{ policy.pdf_url }}" class="btn btn-sm btn-outline-success" download><i class="bi bi-download"></i> PDF</a>
-          <a href="{{ policy.read_more_url }}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-book"></i> Read More</a>
+        <div class="card-footer bg-light">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            
+            <!-- Downloads left side -->
+            <div class="d-flex flex-wrap gap-2">
+              {% if policy.files %}
+                {% for file in policy.files %}
+                  <a href="{{ file.url }}" class="download-icon" download title="{{ file.name }}">
+                    <i class="bi bi-download"></i>
+                  </a>
+                {% endfor %}
+              {% endif %}
+            </div>
+
+            <!-- Read More right side -->
+            <div>
+              <a href="{{ policy.read_more_url }}" class="small text-primary text-decoration-none" target="_blank">
+                <i class="bi bi-book"></i> Read More
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -128,6 +146,7 @@
   function setExample(text) {
     document.getElementById('questionInput').value = text;
   }
+
   document.getElementById('questionForm').addEventListener('submit', function () {
     document.getElementById('loadingOverlay').style.display = 'flex';
   });
