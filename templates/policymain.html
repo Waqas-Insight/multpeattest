@@ -302,15 +302,24 @@
                 }
             }
             // try to split abstract by \n to retain line breaks?
-            var abst_ps = [];
-            var abst_sents = [];
+            var abst_html = ``;
+            var abst_html_section = ``;
             if(policy['abstract_english']){
-                abst_sents = policy['abstract_english'].split("\n");
+                var abst_sents = policy['abstract_english'].split("\n");
+                var abst_ps = [];
                 abst_sents.forEach(sentence =>
                     abst_ps.push(`<p class="poltxt">${ sentence }</p>`)
                 );
+                abst_html = abst_ps.join(`<p style="margin-bottom:5px;"></p>`);
+                abst_html_section = `<div class="abst-div">
+                                            <p>Summary</p>
+                                            <div class="collapse abst-collapse" id="abscoll${i}">
+                                                ${ abst_html }
+                                            </div>
+                                            <a role="button" class="collapsed d-flex polcol-lnk" data-bs-toggle="collapse" href="#abscoll${i}" style="font-size:14px;justify-self:center;padding-right:15px;">
+                                            </a>
+                                        </div>`
             };
-            var abst_html = abst_ps.join(`<p style="margin-bottom:5px;"></p>`);
             // split table of contents by \n to retain line breaks
             var toc_html = ``;
             var toc_html_section = ``;
@@ -357,14 +366,7 @@
                                         <div style="line-height: 1; margin-bottom:15px;">
                                             <p class="d-inline"> ${ duratn_html } | </p><p class="d-inline" style="font-size:14px">👤</p> ${ publs_html }
                                         </div>
-                                        <div class="abst-div">
-                                            <p>Overview</p>
-                                            <div class="collapse abst-collapse" id="abscoll${i}">
-                                                ${ abst_html }
-                                            </div>
-                                            <a role="button" class="collapsed d-flex polcol-lnk" data-bs-toggle="collapse" href="#abscoll${i}" style="font-size:14px;justify-self:center;padding-right:15px;">
-                                            </a>
-                                        </div>
+                                        ${ abst_html_section }
                                         ${ toc_html_section }
                                         ${ links_html }
                                         <div>
