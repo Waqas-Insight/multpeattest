@@ -566,6 +566,11 @@ def qa_tool():
             selected_governance=governance
         )
 
+@app.route('/policy/rando')
+def any_policy():
+    info = "hi"
+    return render_template("anypol.html")
+
 # DATA ENDPOINTS
 
 @app.route('/policy/level=<level>')
