@@ -39,7 +39,7 @@
         "publisher_link": false,
         "stakholder_ids": [],
         "toc": "Sissejuhatus ................................................................................................................................................. 20\nKliimakava metoodika ja protsess............................................................................................................... 21\nKasvuhoonegaaside heite baasinventuur (2019) ........................................................................................ 24\nTuule- ja päikeseenergia rajatised (2020) ................................................................................................... 29\nSopi tuulepark (endine Tootsi) - ehitamisel ................................................................................................ 30\nMaismaa tuuleparkide eriplaneeringud - menetluses ................................................................................ 31\nMeretuuleparkide hoonestusloa taotlused - menetluses .......................................................................... 33\nSüsiniku salvestamine maakasutuses ja looduslikult .................................................................................. 35\nKliimamuutus Pärnumaal ............................................................................................................................ 36\nÜleujutusrisk ........................................................................................................................................... 41\nKuumasaared .......................................................................................................................................... 44\nKriisivõimekus ......................................................................................................................................... 45\nKliimakava rakendamine ............................................................................................................................. 46\nKasutatud lühendite ja mõistete seletused ................................................................................................ 48 ",
-        "toc_english": "Introduction ................................................................................................................................................ 20\nClimate Plan Methodology and Process.................................................................................................................. 21\nGreenhouse Gas Emissions Baseline Inventory (2019) ............................................................................................... 24\nWind and Solar Energy Facilities (2020) ..................................................................................................... 29\nSopi Wind Farm (formerly Tootsi) - under construction ................................................................................................ 30\nSpecial plans for onshore wind farms - in process .................................................................................. 31\nOffshore wind farm building permit applications - in process .................................................................................. 33\nCarbon storage in land use and naturally .................................................................................. 35\nClimate change in Pärnu County ............................................................................................................................ 36\nFlood risk ............................................................................................................................................ 41\nHeat islands .................................................................................................................................................. 44\nCrisis capacity ........................................................................................................................................ 45\nImplementation of the Climate Action Plan .................................................................................................................. 46\nExplanations of abbreviations and terms used .................................................................................................. 48",
+        "toc_english": "Introduction................................................................................................................................................ 20\nClimate Plan Methodology and Process.................................................................................................................. 21\nGreenhouse Gas Emissions Baseline Inventory (2019)............................................................................................... 24\nWind and Solar Energy Facilities (2020)..................................................................................................... 29\nSopi Wind Farm (formerly Tootsi) - under construction................................................................................................ 30\nSpecial plans for onshore wind farms - in process.................................................................................. 31\nOffshore wind farm building permit applications - in process.................................................................................. 33\nCarbon storage in land use and naturally.................................................................................. 35\nClimate change in Pärnu County............................................................................................................................ 36\nFlood risk............................................................................................................................................ 41\nHeat islands.................................................................................................................................................. 44\nCrisis capacity........................................................................................................................................ 45\nImplementation of the Climate Action Plan.................................................................................................................. 46\nExplanations of abbreviations and terms used.................................................................................................. 48",
         "year_from": "2022",
         "year_to": "2030"
     };
@@ -113,41 +113,230 @@
         "Switzerland":"🇨🇭",
         "United Kingdom":"🇬🇧"
     }
+    // traductions for the word "Overview" in different languages
+    const trad_overview = {
+        "Austria":"Überblick",
+        "Belgium":"Aperçu",
+        "Bulgaria":"Общ преглед",
+        "Croatia":"Pregled",
+        "Cyprus":"Επισκόπηση",
+        "Czech Republic":"Přehled",
+        "Denmark":"Oversigt",
+        "Estonia":"Ülevaade",
+        "Finland":"Yleiskatsaus",
+        "France":"Aperçu",
+        "Germany":"Überblick",
+        "Greece":"Επισκόπηση",
+        "Hungary":"Áttekintés",
+        "Iceland":"Yfirlit",
+        "Ireland":"Overview",
+        "Italy":"Panoramica",
+        "Latvia":"Pārskats",
+        "Liechtenstein":"Übersicht",
+        "Lithuania":"Apžvalga",
+        "Luxembourg":"Übersicht",
+        "Malta":"Übersicht",
+        "Netherlands":"Overzicht",
+        "Norway":"Oversikt",
+        "Poland":"Przegląd",
+        "Portugal":"Visão geral",
+        "Romania":"Prezentare generală",
+        "Slovakia":"Prehľad",
+        "Slovenia":"Pregled",
+        "Spain":"Resumen",
+        "Sweden":"Översikt",
+        "Switzerland":"Übersicht",
+        "United Kingdom":"Overview"
+    }
+
+    // traductions for the word "Table of Contents" in different languages
+    const trad_toc = {
+        "Austria":"Inhaltsverzeichnis",
+        "Belgium":"Table des matières",
+        "Bulgaria":"Съдържание",
+        "Croatia":"Sadržaj",
+        "Cyprus":"Πίνακας περιεχομένων",
+        "Czech Republic":"Obsah",
+        "Denmark":"Indholdsfortegnelse",
+        "Estonia":"Sisukord", 
+        "Finland":"Sisällysluettelo",
+        "France":"Table des matières",
+        "Germany":"Inhaltsverzeichnis",
+        "Greece":"Πίνακας περιεχομένων",
+        "Hungary":"Tartalomjegyzék",
+        "Iceland":"Efnisyfirlit",
+        "Ireland":"Table of Contents",
+        "Italy":"Indice",
+        "Latvia":"Saturs",
+        "Liechtenstein":"Inhaltsverzeichnis",
+        "Lithuania":"Turinys",
+        "Luxembourg":"Inhaltsverzeichnis",
+        "Malta":"Wer",
+        "Netherlands":"Inhoudsopgave",
+        "Norway":"Innholdsfortegnelse",
+        "Poland":"Spis treści",
+        "Portugal":"Índice",
+        "Romania":"Cuprins",
+        "Slovakia":"Obsah",
+        "Slovenia":"Kazalo",
+        "Spain":"Índice",
+        "Sweden":"Innehållsförteckning",
+        "Switzerland":"Inhaltsverzeichnis",
+        "United Kingdom":"Table of Contents"
+    };
+
+        // traductions for country names in their native languages
+        const trad_countries = {
+        "Austria": "Österreich",
+        "Belgium": "Belgique", 
+        "Bulgaria": "България",
+        "Croatia": "Hrvatska",
+        "Cyprus": "Κύπρος",
+        "Czech Republic": "Česká republika",
+        "Denmark": "Danmark",
+        "Estonia": "Eesti",
+        "Finland": "Suomi",
+        "France": "France",
+        "Germany": "Deutschland",
+        "Greece": "Ελλάδα",
+        "Hungary": "Magyarország",
+        "Iceland": "Ísland",
+        "Ireland": "Ireland",
+        "Italy": "Italia",
+        "Latvia": "Latvija",
+        "Liechtenstein": "Liechtenstein",
+        "Lithuania": "Lietuva",
+        "Luxembourg": "Lëtzebuerg", 
+        "Malta": "Malta",
+        "Netherlands": "Nederland",
+        "Norway": "Norge",
+        "Poland": "Polska",
+        "Portugal": "Portugal",
+        "Romania": "România",
+        "Slovakia": "Slovensko",
+        "Slovenia": "Slovenija",
+        "Spain": "España",
+        "Sweden": "Sverige",
+        "Switzerland": "Schweiz",
+        "United Kingdom": "United Kingdom"
+    };
+
+    // traductions for "Policy Document" in different languages
+    const trad_policy_document = {
+        "Austria": "Politikdokument",
+        "Belgium": "Document de la politique",
+        "Bulgaria": "Политически документ",
+        "Croatia": "Dokument politike",
+        "Cyprus": "Έγγραφο πολιτικής",
+        "Czech Republic": "Politický dokument",
+        "Denmark": "Politikdokument",
+        "Estonia": "Poliitikadokument",
+        "Finland": "Toimintalinjadokumentti",
+        "France": "Document de la politique", 
+        "Germany": "Politikdokument",
+        "Greece": "Έγγραφο πολιτικής",
+        "Hungary": "Politikai dokumentum",
+        "Iceland": "Stefnumálaskjal",
+        "Ireland": "Policy Document",
+        "Italy": "Documento di politica",
+        "Latvia": "Politikas dokuments",
+        "Liechtenstein": "Politikdokument",
+        "Lithuania": "Politikos dokumentas",
+        "Luxembourg": "Politikdokument",
+        "Malta": "Dokument tal-Politika",
+        "Netherlands": "Beleidsdocument",
+        "Norway": "Policy Dokument",
+        "Poland": "Dokument polityczny",
+        "Portugal": "Documento de política",
+        "Romania": "Document de politică",
+        "Slovakia": "Politický dokument",
+        "Slovenia": "Dokument politike",
+        "Spain": "Documento de política",
+        "Sweden": "Policydokument",
+        "Switzerland": "Politikdokument",
+        "United Kingdom": "Policy Document"
+    };
+
+    // traductions for "Policy Info Page" in different languages
+    const trad_policy_info_page = {
+        "Austria": "Politikinformationsseite",
+        "Belgium": "Page d'information sur la politique",
+        "Bulgaria": "Информационна страница за политиката",
+        "Croatia": "Stranica s informacijama o politici",
+        "Cyprus": "Σελίδα πληροφοριών πολιτικής",
+        "Czech Republic": "Informační stránka o politice",
+        "Denmark": "Informationsside om politik",
+        "Estonia": "Poliitika infoleht",
+        "Finland": "Toimintalinjan infosivu",
+        "France": "Page d'information sur la politique",
+        "Germany": "Politikinformationsseite",
+        "Greece": "Σελίδα πληροφοριών πολιτικής",
+        "Hungary": "Politikai információs oldal",
+        "Iceland": "Upplýsingasíða stefnu",
+        "Ireland": "Policy Info Page",
+        "Italy": "Pagina info politica",
+        "Latvia": "Politikas informācijas lapa",
+        "Liechtenstein": "Politikinformationsseite",
+        "Lithuania": "Politikos informacijos puslapis",
+        "Luxembourg": "Page d'information sur la politique",
+        "Malta": "Paġna ta' Informazzjoni dwar il-Politika",
+        "Netherlands": "Beleidsinfopagina",
+        "Norway": "Informasjonsside for policy",
+        "Poland": "Strona informacyjna polityki",
+        "Portugal": "Página de informação da política",
+        "Romania": "Pagină de informații despre politică",
+        "Slovakia": "Informačná stránka politiky",
+        "Slovenia": "Stran s podatki o politiki",
+        "Spain": "Página de información de la política",
+        "Sweden": "Policysida",
+        "Switzerland": "Page d'information sur la politique",
+        "United Kingdom": "Policy Info Page"
+    };
+
+
     // how to display policies
-    function policyShow(policy){
+    function policyShow(policy, currentLang = 'english'){
         console.log(policy);
         const polPop = $('#policy_div');
         polPop.html('');
-        polPop.append(`<h4 id="pol-res-he" class="text-center" style="padding-bottom:20px">Policies</h4>`);
+
         // categories html, gets all categories in their pill form
-        var categ_coll = [`<p class="badge rounded-pill ${ pillDct[policy["primary_category"]] }">${ pillNames[policy["primary_category"]] }</p>`];
+        var categ_coll = [`<p class="badge rounded-pill ${ pillDct[policy["primary_category" ]] }" style="font-size:17px">${ pillNames[policy["primary_category"]] }</p>`];
         var categ_lst = policy["category"].sort();
         if(categ_lst.length > 1){
             categ_coll.push(`|`);
         }
         for (let c=0; c < categ_lst.length; c++){
             if(categ_lst[c] != policy["primary_category"]){
-                categ_coll.push(`<p class="badge rounded-pill ${ pillDct[categ_lst[c]] }">${ pillNames[categ_lst[c]] }</p>`);
+                categ_coll.push(`<p class="badge rounded-pill ${ pillDct[categ_lst[c]] }" style="font-size:17px">${ pillNames[categ_lst[c]] }</p>`);
             }
         }
         var categs_html = categ_coll.join(" ");
+
         // publishers html, gets all publishers
         var publs_coll = [];
         policy["publisher"].forEach(publisher =>
             publs_coll.push(`<p class="d-inline">${publisher}</p>`)
         );
         var publs_html = publs_coll.join(`; <p class="d-inline" style="font-size:14px">👤</p><p class="d-inline">`);
+
         // level / sublevel html, accounts for global and european, adds emojis
         var lvl_area_html = ``;
+        var name_country_english= policy['country'];
+        var name_country_native= trad_countries[policy['country']];
+
+        let name_country_to_display = (currentLang === 'english') ? name_country_english : name_country_native;
+
         if(["European", "Global"].includes(policy['policy_level'])){
-            lvl_area_html = `<p class="d-inline" style="font-size:14px">${ flagmojis[policy['policy_level']] }</p> <p class="d-inline">${ policy['policy_level'] } </p>`;
+            lvl_area_html = `<p class="d-inline" style="font-size:25px">${ flagmojis[policy['policy_level']] }</p> <p class="d-inline">${ policy['policy_level'] } </p>`;
         }else{
             if(policy["country"] in flagmojis){
-                lvl_area_html = `<p class="d-inline" style="font-size:14px">${ flagmojis[policy['country']] }</p> <p class="d-inline">${policy['country']} | ${ policy['policy_level'] } </p>`;
+                lvl_area_html = `<p class="d-inline" style="font-size:25px">${ flagmojis[name_country_english] }</p> <p class="d-inline" style="font-size:25px">${name_country_to_display} | ${ policy['policy_level'] } </p>`;
             }else{
-                lvl_area_html = `<p> ${ policy['country'] } | ${ policy['policy_level'] } </p>`;
+                lvl_area_html = `<p style="font-size:25px"> ${ name_country_to_display } | ${ policy['policy_level'] } </p>`;
             }
         }
+
         // duration html, accounts for missing dates
         var duratn_html = ``;
         if(policy['year_from'] && policy['year_to']){
@@ -159,81 +348,162 @@
                 duratn_html = `-${policy['year_to']}`;
             }
         }
+
+        // excerpt html
+        var excerpt_html_english = `<p class="excerpt-text"> ${policy['excerpt_english']}</p>`;
+        var excerpt_html_native = `<p class="excerpt-text"> ${policy['excerpt']}</p>`;
+
+        let excerpt_html_to_display = (currentLang === 'english') ? excerpt_html_english : excerpt_html_native;
+
         // try to split abstract by \n to retain line breaks?
-        var abst_sents = policy['abstract_english'].split("\n");
-        var abst_ps = [];
-        abst_sents.forEach(sentence =>
-            abst_ps.push(`<p class="poltxt">${ sentence }</p>`)
+        var abst_sents_english = policy['abstract_english'].split("\n");
+        var abst_ps_english = [];
+        abst_sents_english.forEach(sentence =>
+            abst_ps_english.push(`<p class="poltxt">${ sentence }</p>`)
         );
-        var abst_html = abst_ps.join(`<p style="margin-bottom:5px;"></p>`);
-        // split table of contents by \n to retain line breaks
-        var toc_html = ``;
-        var toc_html_section = ``;
-        if(policy['toc_english']){
-            var toc_lines = policy['toc_english'].split("\n");
-            var toc_ps = [];
-            toc_lines.forEach(line =>
-                toc_ps.push(`<p class="poltxt">${ line }</p>`)
-            );
-            toc_html = toc_ps.join(`<p style="margin-bottom:5px;"></p>`);
-            toc_html_section = `<div class="abst-div">
-                                    <p>Table of Contents</p>
-                                    <div class="collapse abst-collapse" id="toccoll">
-                                        ${ toc_html }
+        var abst_html_english = abst_ps_english.join(`<p style="margin-bottom:10px;"></p>`);
+        var abst_html_section_english = `<div>
+                                    <h3 class="section-title-container"><div class="section-title-box">Overview</div></h3>
+                                    <div style="margin-bottom:10px">
+                                        ${ abst_html_english }
                                     </div>
-                                    <a role="button" class="collapsed d-flex polcol-lnk" data-bs-toggle="collapse" href="#toccoll" style="font-size:14px;justify-self:center;padding-right:15px;">
-                                    </a>
+                                </div>`
+
+        var abst_sents_native = policy['abstract'].split("\n");
+        var abst_ps_native = [];
+        abst_sents_native.forEach(sentence =>
+            abst_ps_native.push(`<p class="poltxt">${ sentence }</p>`)
+        );
+        var abst_html_native = abst_ps_native.join(`<p style="margin-bottom:10px;"></p>`);
+        var abst_html_section_native = `<div>
+                                    <h3 class="section-title-container"><div class="section-title-box">${trad_overview[policy['country']]}</div></h3>
+                                    <div style="margin-bottom:20px">
+                                        ${ abst_html_native }
+                                    </div>
+                                </div>`
+
+        let abst_html_section_to_display = (currentLang === 'english') ? abst_html_section_english : abst_html_section_native;
+
+        // split table of contents by \n to retain line breaks
+        var toc_html_english = ``;
+        var toc_html_section_english = ``;
+        if(policy['toc_english']){
+            var toc_lines_english = policy['toc_english'].split("\n");
+            var toc_ps_english = [];
+            toc_lines_english.forEach(line =>
+                toc_ps_english.push(`<p class="poltxt">${ line }</p>`)
+            );
+            toc_html_english = toc_ps_english.join(`<p style="margin-bottom:10px;"></p>`);
+            toc_html_section_english = `<div>
+                                    <h3 class="section-title-container"><div class="section-title-box">Table of Contents</div></h3>
+                                    <div style="margin-bottom:20px">
+                                        ${ toc_html_english }
+                                    </div>
                                 </div>`
         }
-        // title
-        var title_html = `${ policy['name'] }`;
+
+        var toc_html_native = ``;
+        var toc_html_section_native = ``;
+        if(policy['toc']){
+            var toc_lines_native = policy['toc'].split("\n");
+            var toc_ps_native = [];
+            toc_lines_native.forEach(line =>
+                toc_ps_native.push(`<p class="poltxt">${ line }</p>`)
+            );
+            toc_html_native = toc_ps_native.join(`<p style="margin-bottom:10px;"></p>`);
+            toc_html_section_native = `<div>
+                                    <h3 class="section-title-container"><div class="section-title-box">${trad_toc[policy['country']]}</div></h3>
+                                    <div style="margin-bottom:20px">
+                                        ${ toc_html_native }
+                                    </div>
+                                </div>`
+        }
+
+        let toc_html_section_to_display = (currentLang === 'english') ? toc_html_section_english : toc_html_section_native;
+           
+        // create button to switch between languages
+        var button_native=`<button data-lang="native" class="btn btn-outline-dark" style="font-size:14px" >${ flagmojis[policy['country']] } ${ policy['language']}</button>`
+        var button_english=`<button data-lang="english" class="btn btn-outline-dark" style="font-size:14px" >${ flagmojis['United Kingdom'] } English</button>`
+        
         // links
+        var name_link_doc_english = 'Policy Document'
+        var name_link_doc_native = trad_policy_document[policy['country']];
+        let name_link_doc_to_display = (currentLang === 'english') ? name_link_doc_english : name_link_doc_native;
+
+        var name_link_info_english = 'Policy Info Page'
+        var name_link_info_native = trad_policy_info_page[policy['country']];
+        let name_link_info_to_display = (currentLang === 'english') ? name_link_info_english : name_link_info_native;
+
         var links_html = `<div style="margin-top:10px;margin-bottom:10px;">
                     <a href="${ policy['data_link'] }" class="polcol-lnk d-inline" target="_blank">
-                        Policy Document 
+                        ${name_link_doc_to_display}
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
                             <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
                             <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
                         </svg>
                         </a> | 
-                    <a href="${ policy['documentation_link'] }" class="polcol-lnk d-inline" target="_blank">Policy Info Page ↗</a>
+                    <a href="${ policy['documentation_link'] }" class="polcol-lnk d-inline" target="_blank">${name_link_info_to_display} ↗</a>
                     </div>`;
-        var element = `<div class="accordion-item polcol-acc-itm" style="margin-bottom:5px;">
-                            <div class="accordion-header polcol-acc-hdr">
-                                <button class="accordion-button collapsed polcol-acc-btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapse" aria-expanded="true" aria-controls="collapse">
-                                    <div class="container">
-                                        <p style="font-weight:bold;">${ title_html }</p>
-                                        ${ lvl_area_html }
-                                    </div>
-                                </button>
+        
+        // element to append to the policy           
+        var element = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;margin-top:5px;">
+                        <div style="margin-top:3px">
+                            ${categs_html}
+                        </div>    
+                            <div style="margin-top:3px">
+                                <p class="d-inline" style="font-size:16px">👤</p> ${publs_html}
                             </div>
-                            <div id="collapse" class="accordion-collapse collapse polcol-acc-coll">
-                                <div class="accordion-body polcol-acc-bdy">
-                                    <div style="line-height: 1; margin-bottom:15px;">
-                                        <p class="d-inline"> ${ duratn_html } | </p><p class="d-inline" style="font-size:14px">👤</p> ${ publs_html }
-                                    </div>
-                                    <div class="abst-div">
-                                        <p>Overview</p>
-                                        <div class="collapse abst-collapse" id="abscoll">
-                                            ${ abst_html }
-                                        </div>
-                                        <a role="button" class="collapsed d-flex polcol-lnk" data-bs-toggle="collapse" href="#abscoll" style="font-size:14px;justify-self:center;padding-right:15px;">
-                                        </a>
-                                    </div>
-                                    ${ toc_html_section }
-                                    ${ links_html }
-                                    <div>
-                                        ${ categs_html }
-                                    </div>
-                                </div>
+                            <div id="lang-btns">
+                                ${button_native}
+                                ${button_english}
+                            </div>  
+                               
+                    </div>
+                    <h1 id="pol-res-he" class="policy-name-header">${policy["name"]}</h1>
+                    <div>
+                        ${lvl_area_html}
+                        <p class="d-inline" style="font-size:25px"> | ${duratn_html} </p>
+                    </div> 
+                    <div id="excerpt-content">
+                        ${excerpt_html_to_display}
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 20px;">
+                        <div style="flex: 1; padding-right: 20px;">
+                            <div id="abstract-content">  
+                                ${abst_html_section_to_display}
                             </div>
-                        </div>`;
+                            <div id="toc-content">        
+                                ${toc_html_section_to_display}
+                            </div>
+                        </div>
+                
+                        <div>
+                            <div class="pdf-viewer-container">
+                                <iframe src="${policy['data_link']}" class="pdf-iframe"></iframe>
+                            </div>
+                            <div align=center>
+                                ${links_html}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    `;
+
         polPop.append(element);
         if(!policy){
             polPop.append(`<p class="text-center" style="color:black;">Policy not found.</p>`);
         }
+
+        // add event listeners to the buttons
+        document.querySelectorAll('#lang-btns button').forEach(button => {
+            button.addEventListener('click', () => {
+                const lang = button.getAttribute('data-lang');
+                policyShow(policy, lang); // Rappeler policyShow avec la nouvelle langue
+        });
+    });
     }
-    policyShow(pol);
+    policyShow(pol, 'english');
 </script>
 
 {% endblock %}
