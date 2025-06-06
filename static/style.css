@@ -1195,8 +1195,6 @@ div.inc-inpt-grp{
 .card-footer { background-color: #f1f1f1; }
 
 /* Anypol template */
-
-
 .excerpt-text {
     font-size: 22px;
     padding-bottom: 5px;
@@ -1276,4 +1274,38 @@ div.inc-inpt-grp{
 
 .hidden {
     display: none !important; 
+}
+.markdown-content h1, .markdown-content h2, .markdown-content h3 {
+margin-top: 1.5rem;
+margin-bottom: 0.75rem;
+font-weight: 600;
+}
+.markdown-content p {
+margin-bottom: 1rem;
+}
+.markdown-content ul {
+padding-left: 1.25rem;
+margin-bottom: 1rem;
+}
+.markdown-content li {
+margin-bottom: 0.5rem;
+}
+.download-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid #0d6efd;
+    border-radius: 50%;
+    color: #0d6efd;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 18px;
+}
+
+.download-icon:hover {
+    background-color: #0d6efd;
+    color: #ffffff;
+    transform: scale(1.1);
 }
