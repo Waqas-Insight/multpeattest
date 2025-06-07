@@ -577,6 +577,40 @@ def qa_tool():
             selected_governance=governance
         )
 
+@app.route('/policy/rando', methods=['GET'])
+def any_policy():
+    info = {
+        "abstract": "Kliimakava tegevussuunad\n1. Vähendada 2030. aastaks kasvuhoonegaaside heidet 30%, aidates avalikul ja erasektoril ning kodumajapidamistel minna üle puhtale energiale ja vähese süsinikusisaldusega kütuste kasutamisele.\n2. Toetada taastuvenergia arendamist omavalitsuse korraldustes ja menetlustes.\n3. Tõsta energiatõhusust hoonetes ja elukorralduses vähemalt 20%, rakendades omavalitsuse haldusalas (digitaalseid) energiajuhtimissüsteeme ning korrastades hoonefondi kasutust.\n4. Täiustada liikuvussüsteeme nõnda, et vähendatakse fossiilsete transpordikütuste kasutamist.\n5. Arendada süsteemselt ringmajandust ning saavutada olmejäätmetes 100% liigiti kogumine.\n6. Talletada süsinikku maakasutuslikult ja looduslikult, taastades looduslikkust maastikel ja märgaladel, toetades kestlikku metsandust ja põllumajandust ning võttes kasutusele kliimaneutraalse ja süsinikku salvestava maakasutuse planeerimisvahendid.\n7. Täiendada riskijuhtimist ja tõsta valmisolekut kliimariskideks.\n8. Muuta hoiakuid ja suhtumist kliima- ja energiateadlikkuse suunal. ",
+        "abstract_english": "Climate Action Plan\n1. Reduce greenhouse gas emissions by 30% by 2030, helping the public and private sectors and households to switch to clean energy and low-carbon fuels.\n2. Support the development of renewable energy in municipal regulations and procedures.\n3. Increase energy efficiency in buildings and living arrangements by at least 20%, by implementing (digital) energy management systems in the municipal area and by improving the use of the building stock.\n4. Improve mobility systems in such a way as to reduce the use of fossil transport fuels.\n5. Systematically develop a circular economy and achieve 100% separate collection of municipal waste.\n6. Store carbon through land use and nature, restoring natural landscapes and wetlands, supporting sustainable forestry and agriculture, and introducing climate-neutral and carbon-storing land use planning tools.\n7. Improve risk management and increase preparedness for climate risks.\n8. Change attitudes and behaviour towards climate and energy awareness.",
+        "category": [
+            "Climate Action",
+            "Energy"
+        ],
+        "country": "Estonia",
+        "data_link": "https://pol.parnumaa.ee/content/editor/files/P%C3%A4rnumaa%20kliimakava%20(20.12.22).pdf",
+        "documentation_link": "https://pol.parnumaa.ee/projektid-analuusid/parnumaa-kliimakava-2030",
+        "excerpt": "5. Koostada märgalade taastamise näidisplaneering turbaalade kasutuseks ja CO2 sidumiseks WaterLANDS projekti raames Lavassaares. Laiendada selle pilootprojekti najal märgalade taastamist. ",
+        "excerpt_english": "5. Develop a pilot wetland restoration plan for peatland use and CO2 sequestration in the WaterLANDS project in Lavassaare. Expand wetland restoration based on this pilot project.",
+        "id": 270,
+        "keywords": [],
+        "language": "Estonian / Eesti keel",
+        "localauthority": "Pärnumaa",
+        "name": "Pärnu Climate Plan 2030",
+        "nuts_level": False,
+        "policy_level": "Local",
+        "primary_category": "Climate Action",
+        "publisher": [
+            "Pärnu County (Pärnu maakond)"
+        ],
+        "publisher_link": False,
+        "stakholder_ids": [],
+        "toc": "Sissejuhatus ................................................................................................................................................. 20\nKliimakava metoodika ja protsess............................................................................................................... 21\nKasvuhoonegaaside heite baasinventuur (2019) ........................................................................................ 24\nTuule- ja päikeseenergia rajatised (2020) ................................................................................................... 29\nSopi tuulepark (endine Tootsi) - ehitamisel ................................................................................................ 30\nMaismaa tuuleparkide eriplaneeringud - menetluses ................................................................................ 31\nMeretuuleparkide hoonestusloa taotlused - menetluses .......................................................................... 33\nSüsiniku salvestamine maakasutuses ja looduslikult .................................................................................. 35\nKliimamuutus Pärnumaal ............................................................................................................................ 36\nÜleujutusrisk ........................................................................................................................................... 41\nKuumasaared .......................................................................................................................................... 44\nKriisivõimekus ......................................................................................................................................... 45\nKliimakava rakendamine ............................................................................................................................. 46\nKasutatud lühendite ja mõistete seletused ................................................................................................ 48 ",
+        "toc_english": "Introduction ................................................................................................................................................ 20\nClimate Plan Methodology and Process.................................................................................................................. 21\nGreenhouse Gas Emissions Baseline Inventory (2019) ............................................................................................... 24\nWind and Solar Energy Facilities (2020) ..................................................................................................... 29\nSopi Wind Farm (formerly Tootsi) - under construction ................................................................................................ 30\nSpecial plans for onshore wind farms - in process .................................................................................. 31\nOffshore wind farm building permit applications - in process .................................................................................. 33\nCarbon storage in land use and naturally .................................................................................. 35\nClimate change in Pärnu County ............................................................................................................................ 36\nFlood risk ............................................................................................................................................ 41\nHeat islands .................................................................................................................................................. 44\nCrisis capacity ........................................................................................................................................ 45\nImplementation of the Climate Action Plan .................................................................................................................. 46\nExplanations of abbreviations and terms used .................................................................................................. 48",
+        "year_from": "2022",
+        "year_to": "2030"
+    }
+    return render_template("anypol.html")#, info=info)#info=json.dumps(info))
+
 # DATA ENDPOINTS
 
 @app.route('/categorydata')
