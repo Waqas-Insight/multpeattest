@@ -5,186 +5,13 @@
 {% block content %}
 <div class="container" style="min-height: 760px;">
     <!-- this policy-store passes the information from the python flask app to the html for storage, so javascript can access it-->
-    <div id="policy-store" value={{info}} style="display:none"></div>
+    <div id="pol_id-store" style="display:none">{{pol_id}}</div>
     <div id="policy_div"></div>
 </div>
 
 <script>
-    //console.log("I can print");
-    //console.log(JSON.stringify($('#policy-store').val()));
-    //var pol = JSON.parse($('#policy-store').val());
-    var pol_est = {
-        "abstract": "Kliimakava tegevussuunad\n1. Vähendada 2030. aastaks kasvuhoonegaaside heidet 30%, aidates avalikul ja erasektoril ning kodumajapidamistel minna üle puhtale energiale ja vähese süsinikusisaldusega kütuste kasutamisele.\n2. Toetada taastuvenergia arendamist omavalitsuse korraldustes ja menetlustes.\n3. Tõsta energiatõhusust hoonetes ja elukorralduses vähemalt 20%, rakendades omavalitsuse haldusalas (digitaalseid) energiajuhtimissüsteeme ning korrastades hoonefondi kasutust.\n4. Täiustada liikuvussüsteeme nõnda, et vähendatakse fossiilsete transpordikütuste kasutamist.\n5. Arendada süsteemselt ringmajandust ning saavutada olmejäätmetes 100% liigiti kogumine.\n6. Talletada süsinikku maakasutuslikult ja looduslikult, taastades looduslikkust maastikel ja märgaladel, toetades kestlikku metsandust ja põllumajandust ning võttes kasutusele kliimaneutraalse ja süsinikku salvestava maakasutuse planeerimisvahendid.\n7. Täiendada riskijuhtimist ja tõsta valmisolekut kliimariskideks.\n8. Muuta hoiakuid ja suhtumist kliima- ja energiateadlikkuse suunal. ",
-        "abstract_english": "Climate Action Plan\n1. Reduce greenhouse gas emissions by 30% by 2030, helping the public and private sectors and households to switch to clean energy and low-carbon fuels.\n2. Support the development of renewable energy in municipal regulations and procedures.\n3. Increase energy efficiency in buildings and living arrangements by at least 20%, by implementing (digital) energy management systems in the municipal area and by improving the use of the building stock.\n4. Improve mobility systems in such a way as to reduce the use of fossil transport fuels.\n5. Systematically develop a circular economy and achieve 100% separate collection of municipal waste.\n6. Store carbon through land use and nature, restoring natural landscapes and wetlands, supporting sustainable forestry and agriculture, and introducing climate-neutral and carbon-storing land use planning tools.\n7. Improve risk management and increase preparedness for climate risks.\n8. Change attitudes and behaviour towards climate and energy awareness.",
-        "category": [
-            "Climate Action",
-            "Energy"
-        ],
-        "country": "Estonia",
-        "data_link": "https://pol.parnumaa.ee/content/editor/files/P%C3%A4rnumaa%20kliimakava%20(20.12.22).pdf",
-        "documentation_link": "https://pol.parnumaa.ee/projektid-analuusid/parnumaa-kliimakava-2030",
-        "excerpt": "5. Koostada märgalade taastamise näidisplaneering turbaalade kasutuseks ja CO2 sidumiseks WaterLANDS projekti raames Lavassaares. Laiendada selle pilootprojekti najal märgalade taastamist. ",
-        "excerpt_english": "5. Develop a pilot wetland restoration plan for peatland use and CO2 sequestration in the WaterLANDS project in Lavassaare. Expand wetland restoration based on this pilot project.",
-        "id": 270,
-        "keywords": [],
-        "language": "Estonian / Eesti keel",
-        "localauthority": "Pärnumaa",
-        "name": "Pärnu Climate Plan 2030",
-        "nuts_level": false,
-        "policy_level": "Local",
-        "primary_category": "Climate Action",
-        "publisher": [
-            "Pärnu County (Pärnu maakond)"
-        ],
-        "publisher_link": false,
-        "stakholder_ids": [],
-        "toc": "Sissejuhatus ................................................................................................................................................. 20\nKliimakava metoodika ja protsess............................................................................................................... 21\nKasvuhoonegaaside heite baasinventuur (2019) ........................................................................................ 24\nTuule- ja päikeseenergia rajatised (2020) ................................................................................................... 29\nSopi tuulepark (endine Tootsi) - ehitamisel ................................................................................................ 30\nMaismaa tuuleparkide eriplaneeringud - menetluses ................................................................................ 31\nMeretuuleparkide hoonestusloa taotlused - menetluses .......................................................................... 33\nSüsiniku salvestamine maakasutuses ja looduslikult .................................................................................. 35\nKliimamuutus Pärnumaal ............................................................................................................................ 36\nÜleujutusrisk ........................................................................................................................................... 41\nKuumasaared .......................................................................................................................................... 44\nKriisivõimekus ......................................................................................................................................... 45\nKliimakava rakendamine ............................................................................................................................. 46\nKasutatud lühendite ja mõistete seletused ................................................................................................ 48 ",
-        "toc_english": "Introduction................................................................................................................................................ 20\nClimate Plan Methodology and Process.................................................................................................................. 21\nGreenhouse Gas Emissions Baseline Inventory (2019)............................................................................................... 24\nWind and Solar Energy Facilities (2020)..................................................................................................... 29\nSopi Wind Farm (formerly Tootsi) - under construction................................................................................................ 30\nSpecial plans for onshore wind farms - in process.................................................................................. 31\nOffshore wind farm building permit applications - in process.................................................................................. 33\nCarbon storage in land use and naturally.................................................................................. 35\nClimate change in Pärnu County............................................................................................................................ 36\nFlood risk............................................................................................................................................ 41\nHeat islands.................................................................................................................................................. 44\nCrisis capacity........................................................................................................................................ 45\nImplementation of the Climate Action Plan.................................................................................................................. 46\nExplanations of abbreviations and terms used.................................................................................................. 48",
-        "year_from": "2022",
-        "year_to": "2030"
-    };
-
-    var pol_belg1={
-        "abstract": "Op 12 mei 2023 heeft de Vlaamse Regering een nieuw Vlaams Energie- en Klimaatplan (VEKP) goedgekeurd. Het gaat om een update van het initiële VEKP dat in 2019 werd goedgekeurd. Met dit plan worden de inspanningen in de sectoren transport, gebouwen, landbouw, (lichte) industrie en de afvalsector, de zogenaamde ESR-sectoren, aangescherpt. De ambitie in het nieuwe VEKP 2021-2030 wat betreft de reductie van broeikasgasemissies in de ESR-sectoren wordt zo opgeschroefd tot -40% tegen 2030",
-        "abstract_english": "On 12 May 2023, the Flemish Government approved a new Flemish Energy and Climate Plan (VEKP). It is an update of the initial VEKP that was approved in 2019. This plan will strengthen efforts in the transport, construction, agriculture, (slight) industry and waste sectors, the so-called ESA sectors. The ambition in the new VEKP 2021-2030 in terms of the reduction of greenhouse gas emissions in the ESA sectors will thus be increased to -40% by 2030",
-        "category": [
-            "Climate Action",
-            "Economy",
-            "Energy",
-            "Research and Applied Sciences"
-        ],
-        "country": "Belgium",
-        "data_link": "https://assets.vlaanderen.be/image/upload/v1683894247/Vlaams_Energie-_en_Klimaatplan_actualisatie_12_mei_2023_tpletf.pdf",
-        "documentation_link": "https://www.vlaanderen.be/veka/energie-en-klimaatbeleid/vlaams-energie-en-klimaatplan-vekp-2021-2030",
-        "excerpt": "Herstel en klimaatbestendig beheer van natuur, bos en open ruimte: ...Veenecosystemen verdienen extra aandacht en bescherming omwille van hun rol bij zowel klimaatadaptatie als -mitigatie. De Vlaamse Overheid zet in op zowel veenherstel als nieuwe veengebieden. In functie van een strikte bescherming van veenbodems als waardevolle water_xFFFE_en koolstofbuffer laat Vlaanderen momenteel een veenkartering uitvoeren. Daarnaast wordt er een beleidskader uitgewerkt met maatregelen om veengebieden beter te beschermen en succesvol te herstellen.",
-        "excerpt_english": "Restoration and climate-proof management of nature,forests and open space: ...Peat ecosystems deserve extra attention and protection because of their role in both climate adaptation and mitigation. The Flemish Government is committed to both peat restoration and new peat areas. In order to ensure strict protection of peat soils as a valuable water and carbon buffer, Flanders is currently having a peat mapping carried out. In addition, a policy framework is being developed with measures to better protect and successfully restore peat areas.",
-        "id": 317,
-        "keywords": [],
-        "language": "Flemish / Vlaams",
-        "localauthority": false,
-        "name": "Flemish Energy and Climate Plan 2021-2030 (VEKP)",
-        "nuts_level": "Belgium - BE2 - Level:1 - Label:Vlaams Gewest",
-        "policy_level": "Regional",
-        "primary_category": "Energy",
-        "publisher": [
-            "Vlaams Energie en Klimaatagentschap",
-            "Flemish Energy and Climate Agency (VEKA)"
-        ],
-        "publisher_link": false,
-        "stakholder_ids": [],
-        "toc": false,
-        "toc_english": "",
-        "year_from": "2021",
-        "year_to": "2030"
-    };
-
-    var pol_belg2={
-        "abstract": "Le présent document intègre les troisièmes Plans de gestion 2022-2027 qui ont été soumis à enquête publique. Il rassemble en outre les généralités et les éléments communs déjà détaillés lors des précédents Plans de gestion. ... Les Plans de gestion des risques d'inondation englobent tous les aspects de la gestion des risques d'inondation, en mettant l'accent sur la prévention, la protection, la préparation, la réparation et l’analyste post-crise, y compris la prévision des inondations et les systèmes d'alerte précoce, et en tenant compte des caractéristiques du bassin hydrographique ou du sous-bassin considéré. Les Plans de gestion des risques d'inondation peuvent également comprendre l'encouragement à des modes durables d'occupation des sols, l'amélioration de la rétention de l'eau, ainsi que l'inondation contrôlée de certaines zones en cas d'épisodes de crue. La Région wallonne a pris la décision de rédiger des Plans de gestion distincts pour l’application de la Directivecadre sur l’Eau et la Directive relative à l’évaluation et la gestion des risques d’inondation. Cependant, la coordination des travaux de la mise en œuvre des deux Directives a favorisé une vision intégrée de la gestion régionale de l’eau. ",
-        "abstract_english": "This document incorporates the third Management Plans for 2022-2027, which were submitted for public consultation. It also brings together the general information and common elements already detailed in the previous Management Plans. ... Flood Risk Management Plans encompass all aspects of flood risk management, focusing on prevention, protection, preparedness, recovery, and post-crisis analysis, including flood forecasting and early warning systems, and taking into account the characteristics of the river basin or sub-basin under consideration. Flood Risk Management Plans may also include encouraging sustainable land use patterns, improving water retention, and the controlled flooding of certain areas in the event of flood events. The Walloon Region has decided to draw up separate management plans for the implementation of the Water Framework Directive and the Flood Risk Assessment and Management Directive. However, the coordination of the implementation of the two Directives has fostered an integrated vision of regional water management",
-        "category": [
-            "Environment Quality",
-            "Land Use / Agriculture"
-        ],
-        "country": "Belgium",
-        "data_link": "https://eau.wallonie.be/PG3/FR/1_HB_PGDH3_GW_FR.pdf",
-        "documentation_link": "https://eau.wallonie.be/spip.php?rubrique82",
-        "excerpt": "Les tendances évolutives passées et futures des dégradations de l'état de certaines masses d'eau sous l'effet combiné des pressions diffuses minières et urbaines et de leur état naturel alluvial et tourbeux sont bien plus difficiles à estimer. Il est très délicat de présumer d'un effet quelconque de tous les efforts que l'on pourrait imaginer en matière d'assainissement de pollutions locales, d'amélioration du réseau d'égouttage et de gestion des terrils et remblais miniers. Ces travaux risquent de n'avoir que des effets trop locaux, trop faibles, voire parfois antagonistes (certains polluants industriels atténuent localement les concentrations de ceux présents de manière plus diffuse, l'évacuation ou la valorisation d'anciens terrils provoque temporairement un pic d'émission de sulfates durant le remaniement du massif de schistes…).",
-        "excerpt_english": "Past and future trends in the deterioration of the state of certain water bodies under the combined effect of diffuse mining and urban pressures and their natural alluvial and peaty state are much more difficult to estimate. It is very difficult to assume any effect of all the efforts that could be imagined in terms of cleaning up local pollution, improving the drainage network and managing mine spoil heaps and embankments. These works risk having only too local, too weak, or sometimes even antagonistic effects (certain industrial pollutants locally attenuate the concentrations of those present in a more diffuse manner, the evacuation or recovery of old spoil heaps temporarily causes a peak in sulfate emissions during the reworking of the schist massif, etc.).",
-        "id": 589,
-        "keywords": [],
-        "language": "French (BE) / Français (BE)",
-        "localauthority": false,
-        "name": "Third Management Plan for Walloon River Basin Districts (2022)",
-        "nuts_level": "Belgium - BE3 - Level:1 - Label:Région wallonne",
-        "policy_level": "Regional",
-        "primary_category": "Environment Quality",
-        "publisher": [
-            "Service public de Wallonie (SPW)",
-            "Public Service of Wallonia"
-        ],
-        "publisher_link": "http://eau.wallonie.be/spip.php?rubrique82",
-        "stakholder_ids": [],
-        "toc": "TABLES DES MATIERES...................................................................................................................3\nLISTE DES TABLEAUX................................................................................................................... 13\nLISTE DES FIGURES ....................................................................................................................... 19\nLISTE DES ANNEXES...................................................................................................................... 23\nCHAPITRE 1 : GENERALITES ...................................................................................................... 27\nCHAPITRE 2 : DESCRIPTION GENERALE DES CARACTERISTIQUES DES PARTIES\nCHAPITRE 3 : REGISTRE DES ZONES PROTEGEES .............................................................. 47\nCHAPITRE 4 : RESUME DES PRESSIONS ET INCIDENCES IMPORTANTES DES\nCHAPITRE 5 : ÉTAT DES MASSES D’EAU...............................................................................115\nCHAPITRE 6 : OBJECTIFS ENVIRONNEMENTAUX..............................................................143\nCHAPITRE 7 : ANALYSE ECONOMIQUE .................................................................................173\nCHAPITRE 8 : QUESTIONS IMPORTANTES EN MATIERE DE GESTION DE L’EAU DANS\nCHAPITRE 9 : PROGRAMME DE MESURES...........................................................................187\nCHAPITRE 10 : REGISTRE DES AUTRES PROGRAMMES ET PLANS DE GESTION....207\nCHAPITRE 11 : INFORMATION ET CONSULTATION.........................................................217\nCHAPITRE 12 : LISTE DES AUTORITES COMPETENTES..................................................225\nCHAPITRE 13 : POINTS DE CONTACT POUR L’OBTENTION DE DOCUMENTS DE\nCHAPITRE 14 : ACRONYMES.....................................................................................................235\nCHAPITRE 15 : GLOSSAIRE .......................................................................................................243",
-        "toc_english": "TABLE OF CONTENTS................................................................................................................................3\nLIST OF TABLES.................................................................................................................................. 13\nLIST OF FIGURES.................................................................................................................................. 19\nLIST OF ANNEXES.................................................................................................................................. 23\nCHAPTER 1: GENERAL .................................................................................................................. 27\nCHAPTER 2: GENERAL DESCRIPTION OF THE CHARACTERISTICS OF THE WALLOON PARTS OF THE INTERNATIONAL HYDROGRAPHIC DISTRICTS................ ... \nCHAPTER 3: REGISTER OF PROTECTED AREAS.................................................................. 47\nCHAPTER 4: SUMMARY OF THE PRESSURES AND SIGNIFICANT IMPACTS OF\nHUMAN ACTIVITIES ON THE STATE OF SURFACE WATER AND GROUNDWATER............................................................................................................................................... 59\nCHAPTER 5: STATE OF WATER BODIES ..................................................................................115\nCHAPTER 6: ENVIRONMENTAL OBJECTIVES............................................................................. 143\nCHAPTER 7: ECONOMIC ANALYSIS............................................................................................173\nCHAPTER 8: IMPORTANT QUESTIONS IN WATER MANAGEMENT IN HYDROGRAPHIC DISTRICTS ........................................................................................................................181\nCHAPTER 9: PROGRAMME OF MEASURES ................................................................................187\nCHAPTER 10: REGISTER OF OTHER PROGRAMMES AND MANAGEMENT PLANS..207\nCHAPTER 11: INFORMATION AND CONSULTATION .................................................. 217\nCHAPTER 13: CONTACT POINTS FOR OBTAINING REFERENCE DOCUMENTS.....................................................................................................................................231\nCHAPTER 14: ACRONYMS.............................................................................................................235\nCHAPTER 15: GLOSSARY.............................................................................................................243",
-        "year_from": "2022",
-        "year_to": "2027"
-    }; 
-
-    var pol_belg3={
-        "abstract": "Lors du Comité de concertation du 19 février 2020, un accord a été trouvé sur la stratégie climatique belge à l’horizon 2050. Cette stratégie comprend des objectifs de réduction des émissions de gaz à effet de serre à l’horizon 2050, ainsi que les principales orientations et les conditions préalables/points d''attention à considérer en vue d’atteindre ces objectifs. Elle est basée sur les stratégies à long terme développées par les gouvernements flamand, wallon et bruxellois pour leurs régions respectives (qui sont annexées à la stratégie à long terme de la Belgique), ainsi que sur le document stratégique de l''administration fédérale.",
-        "abstract_english": "At the Conciliation Committee of 19 February 2020, agreement was reached on the Belgian climate strategy by 2050. The strategy includes targets for the reduction of greenhouse gas emissions by 2050, as well as the main guidelines and preconditions/points of attention to be considered with a view to achieving these objectives. It is based on the long-term strategies developed by the Flemish, Walloon and Brussels governments for their respective regions (which are annexed to Belgium's long-term strategy), as well as on the Federal Administration''s strategy paper.",
-        "category": [
-            "Climate Action"
-        ],
-        "country": "Belgium",
-        "data_link": "https://climat.be/doc/national-lt-strategy-fr.pdf",
-        "documentation_link": "https://climat.be/politique-climatique/belge/nationale/strategie-a-long-terme",
-        "excerpt": "LULUCF: Enfin, des efforts sont prévus en vue de maintenir ou de renforcer la séquestration du carbone dans les sols et la biomasse. Il s’agit entre autres de l’extension des espaces verts (forêts, zones naturelles, parcs, etc.), de la gestion durable des forêts et de la nature ainsi que de la promotion des pratiquesagricoles favorisant la séquestration du carbone dans les terres agricoles.",
-        "excerpt_english": "LULUCF: Finally, efforts are planned to maintain or strengthen carbon sequestration in soils and biomass. These include, among other things, the extension of green spaces (forests, natural areas, parks, etc.), the sustainable management of forests and nature as well as the promotion of agricultural activities promoting carbon sequestration in agricultural lands",
-        "id": 351,
-        "keywords": [],
-        "language": "French (BE) / Français (BE)",
-        "localauthority": false,
-        "name": "Belgium's Long-Term Strategy",
-        "nuts_level": "Belgium",
-        "policy_level": "National",
-        "primary_category": "Climate Action",
-        "publisher": [
-            "SPF Santé publique Sécurité de la Chaîne alimentaire et Environnement",
-            "The Federal Public Service (FPS) Health, Food Chain Safety and Environment"
-        ],
-        "publisher_link": false,
-        "stakholder_ids": [],
-        "toc": "Introduction : la nécessité d’une stratégie climatique flamande ......................................................................... 4\nUne stratégie qui pose les jalons d’une transition réussie .................................................................................... 4\nUne stratégie pour les émissions directes et indirectes .......................................................................................... 4\nUne stratégie fondée sur les initiatives existantes et les contributions de parties prenantes ..... 5\nUne stratégie comme point de départ d’un processus soutenu ....................................................................... 7\n1 Le contexte international et européen ..................................................................................................................... 9\nL’accord de Paris .............................................................................................................................................................................. 9\nLes objectifs climatiques européens ................................................................................................................................... 10\n2 Objectif pour la Flandre ....................................................................................................................................................... 11\n3 Vision d’avenir pour les différents secteurs ........................................................................................................... 15\n4 Vers une Flandre à l’épreuve du climat ................................................................................................................... 34\n5 Conditions préalables pour une transition réussie .......................................................................................... 40\n",
-        "toc_english": "Introduction: the need for a Flemish climate strategy ................................................................................................ 4\nA strategy that lays the foundations for a successful transition ........................................................................................... 4\nA strategy for direct and indirect emissions .................................................................................................. 4\nA strategy based on existing initiatives and stakeholder contributions .................................................. 5\nA strategy as a starting point for a sustained process .................................................................................. 7\n1 The international and European context .................................................................................................................. 9\nThe Paris Agreement ................................................................................................................................................................ 9\nEuropean climate objectives ........................................................................................................................................... 10\n2 Objective for Flanders ........................................................................................................................................................ 11\n3 Future vision for the different sectors ................................................................................................................ 15\n4 Towards a climate-proof Flanders ................................................................................................................................ 34\n5 Prerequisites for a successful transition ................................................................................................................ 40",
-        "year_from": "2020",
-        "year_to": "2050"
-    };
-
-    var pol_belg4={
-        "abstract": false,
-        "abstract_english": "The National Biodiversity Strategy (NBS) is Belgium’s response to the CBD’s formal commitment to submit a revised or updated National Biodiversity Strategy and Action Plans, including national targets, by the 16th Conference of the Parties (COP-16, October 2024). It provides a framework for policy development and future action development. It incorporates existing regional and federal frameworks and action plans and supports their integration and adaptation. It aims to provide strategic policy guidance so that biodiversity stakeholders in Belgium can work together in partnership to contribute at national and international levels to achieving the target of halting biodiversity loss by 2030. This will be achieved by ensuring a more effective and coherent implementation of the three targets of the CBD. The strategy pays particular attention to creating greater coherence and filling gaps in existing Belgian instruments, and to optimising biodiversity integration at national and international levels.",
-        "category": [
-            "Biodiversity",
-            "Climate Action",
-            "Community and Culture",
-            "Economy",
-            "Research and Applied Sciences"
-        ],
-        "country": "Belgium",
-        "data_link": "https://www.biodiv.be/sites/be/files/2025-04/EN_NatBioStrat-final.pdf#",
-        "documentation_link": "https://www.biodiv.be/implementation/updated-belgian-national-biodiversity-strategy-2030",
-        "excerpt": false,
-        "excerpt_english": "The increasing impact of climate change on biodiversity and the consequences of certain actions to mitigate climate change may be relevant to the objectives of the CBD. On the other hand, biodiversity protection can contribute to climate change mitigation (healthy forests, peatlands and other habitats can reduce greenhouse gas concentrations by storing carbon) and can provide protection against natural disasters exacerbated by climate change.",
-        "id": 941,
-        "keywords": [
-            "Peatland",
-            "Carbon",
-            "Rewet",
-            "Restoration",
-            "Drain",
-            "Ecosystem services",
-            "Biodiversity",
-            "Bog",
-            "Wetland"
-        ],
-        "language": "English (US)",
-        "localauthority": false,
-        "name": "Updated Belgian National Biodiversity Strategy for 2030",
-        "nuts_level": "Belgium",
-        "policy_level": "National",
-        "primary_category": "Biodiversity",
-        "publisher": [
-            "Institut Royal des Sciences Naturelles de Belgique (IRSNB)",
-            "Royal Institute of Natural Sciences of Belgium (IRSNB)"
-        ],
-        "publisher_link": false,
-        "stakholder_ids": [],
-        "toc": false,
-        "toc_english": "Updated Belgian National Biodiversity Strategy for 2030............................................................................. 3\nContext and development process ........................................................................................................ 4\nForeword ....................................................................................................................................... 6\nThe updated Strategy in brief ............................................................................................................ 8\nPart I: Introduction ........................................................................................................................ 15\nI.1 Definition of biodiversity and ecosystem services*.............................................................................. 16\nI.2. Why is biodiversity important?.........................................................................................................17\nI.3. Current state of biodiversity in Belgium .............................................................................................19\nI.4. Threats to biodiversity .................................................................................................................21\nPart II: The Belgian political framework............................................................................................... 24\nII.1. International environmental treaties ratified by Belgium ........................................................................25\nII.2 Competent authorities in Belgium.....................................................................................................25\nII.3 Place of the strategy in the Belgian political context and its implementation................................................26\nThe Flemish Region......................................................................................................................27\nThe Brussels-Capital Region............................................................................................................29\nThe Walloon Region......................................................................................................................29\nThe federal level ........................................................................................................................30\nPart III: Guiding principles, concepts and approaches............................................................................... 32\n1. Principle of preventive action ..........................................................................................................33\n2. Precautionary principle...................................................................................................................33\n3. Polluter pays principle ....................................................................................................................33\n4. Participation and public access to information justice in environmental cases ................................................33\n5. Good governance ..........................................................................................................................33\n6. Sectoral integration .......................................................................................................................34\n7. Ecosystem approach.......................................................................................................................34\n8. Ecological networks .......................................................................................................................34\n9. Subsidiarity principle......................................................................................................................35\n10. Compensation principle .................................................................................................................35\nPart IV: The updated strategy to 2030.................................................................................................. 36\nIV.1 Vision and ambition .....................................................................................................................37\nVision to 2050 ............................................................................................................................37\nOverall objective of the strategy to 2030...........................................................................................37\nIV.2 Strategic and operational objectives .................................................................................................37\nObjective 1: Identify and monitor biodiversity in Belgium ......................................................................38\nObjective 2: study, monitor and address key direct drivers of biodiversity loss .............................................40\nTarget 3: Protect, preserve and restore biodiversity and ecosystem services in Belgium to a favourable conservation status ..................................................................................47\nTarget 4: Ensure the sustainable use of biodiversity components and the full integration of biodiversity and its many values in all sectors, particularly agriculture, forestry, fisheries, aquaculture, finance, tourism, health, manufacturing, infrastructure, energy and mining ....................................................................................................55\n4.a) Wild species ......................................................................................................................55\n4.b) Agriculture........................................................................................................................56\n4.c) Fishing in marine and inland waters ..........................................................................................59\n4.d) Forestry ...........................................................................................................................61\n4.e) Hunting............................................................................................................................62\n4.f) Other sectors .....................................................................................................................63\n4a: Reduce the ecological footprint of Belgian consumption on global biodiversity .......................................66\nTarget 5: Integrate biodiversity across society and relevant sectoral policies ................................................66\nObjective 6: Ensure the fair and equitable sharing of benefits arising from the use of genetic resources and digital sequencing information on genetic resources (“Access and Benefit Sharing, ABS”); facilitate access to genetic resources and promote a significant increase in shared benefits.............................................................................72\nObjective 7: Regulate, manage or control the risks associated with the use and release of living GMOs ................76\nTarget 8: Improve and communicate scientific knowledge on biodiversity and ecosystem services .......................77\nObjective 9: Engage the community through communication, education, awareness and training .......................81\nTarget 10: Strengthen the biodiversity regulatory framework and ensure implementation, compliance and enforcement of biodiversity legislation ..........................................83\nTarget 11: Ensure coherent implementation of biodiversity-related commitments and agreements, and between them ...........................................85\nObjective 12: Strengthen Belgium’s international cooperation to protect biodiversity .....................................86\nTarget 13: Ensure active and effective involvement in biodiversity-related conventions and forums at international and European level ....................................................................88\nTarget 14: Ensure full, fair, inclusive and effective representation and participation of diverse communities in biodiversity conservation and decision making ..................90\nTarget 15: Significantly and gradually increase mobilisation of financial resources from all sources for biodiversity, including national, international, public and private resources, in an efficient and easily accessible ...................91\nPart V: Monitoring the strategy .......................................................................................................... 98\nV.1 Governance................................................................................................................................99\nV.2 Follow-up and support mechanisms ...................................................................................................99\nV.3 Duration, reporting, assessment and review....................................................................................... 100\nList of abbreviations ......................................................................................................................102\nBiodiversity 2030, Update of Belgium's National Strategy Glossary .....................................................................................................................................105\nReferences ..................................................................................................................................108\nAnnexes......................................................................................................................................113\nAnnex 1: Biodiversity actors in Belgium ................................................................................................ 114\n1.1. Ministries and administrations ...................................................................................................... 114\n1.2. Advisory and consultative bodies ................................................................................................... 117\n1.3. Research institutions ................................................................................................................. 117\n1.4. Other actors............................................................................................................................ 118\nAnnex 2: Main international agreements and instruments of direct relevance to biodiversity ................................ 119\nHere are some of the key agreements related to biodiversity protection ......................................................... 120\nOther important agreements.............................................................................................................. 125\nAnnex 3: Main international organisations impacting biodiversity ................................................................ 126\nAnnex 4: Alignment with other international and European biodiversity strategies............................................ 128",
-        "year_from": "2025",
-        "year_to": "2030"
-    };
+    var pol_id = parseInt(document.getElementById("pol_id-store").innerHTML);
+    //console.log(pol_id);
 
     // defining dictionaries: the formatting of these pills can be found in style.css
     const pillDct = 
@@ -1016,7 +843,6 @@
         const polPop = $('#policy_div');
         polPop.html('');
 
-
         // get the language of the policy
         var lang=policy['language'].split(" ");
         var lang_pol=lang[0];
@@ -1295,7 +1121,29 @@
         });  
         }
     }
-    policyShow(pol_belg2, 'english');
+
+    async function datafxn(pol_id){
+        const url = `/sgpolicy/${pol_id}`;
+        var pol_obj = {};
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+            }
+            const json = await response.json();
+            //console.log(json);
+            pol_obj= json["result"]["policy"];
+        } catch (error) {
+            console.error(error.message);
+        }
+        policyShow(pol_obj, 'english')
+        //
+        //$('#policyliststore').val(JSON.stringify(polLst));
+        //
+        return pol_obj;
+    }
+    //policyShow(policy_obj, 'english');
+    datafxn(pol_id);
 </script>
 
 {% endblock %}
