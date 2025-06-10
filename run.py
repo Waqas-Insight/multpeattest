@@ -549,6 +549,7 @@ def qa_tool():
                                     logging.warning(f"Failed to fetch attachments for policy {policy_id}: {fe}")
 
                             policies.append({
+                                "id":policy_id,
                                 "title": src.get("author", "Unknown"),
                                 "thumbnail_url": "/static/images/pdf_thumbnail.png",
                                 "country": src.get("country", "Unknown"),
