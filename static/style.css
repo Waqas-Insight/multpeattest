@@ -1202,8 +1202,8 @@ div.inc-inpt-grp{
 }
 
 .section-title-container{
-    padding-top: 50px;
-    font-size: 32px;
+    padding-top: 30px;
+    font-size: 25px;
     padding-bottom: 10px;
 }
 
@@ -1216,7 +1216,7 @@ div.inc-inpt-grp{
 .policy-name-header {
     flex: 1;
     padding-top: 35px;
-    font-size: 50px;
+    font-size: 35px;
     margin-bottom: 0px;
 }
 
