@@ -847,12 +847,16 @@
         var lang=policy['language'].split(" ");
         var lang_pol=lang[0];
 
+        var pol_title_english = policy["name"];
+        var pol_title_native = policy["name_language"];
+        let pol_title_to_display = (currentLang === 'english') ? pol_title_english : pol_title_native;
+
         // categories html, gets all categories in their pill form
         var primary_category_english= pillNames[policy["primary_category"]];
         var primary_category_native=transl_categories[lang_pol][pillNames[policy["primary_category"]]];
         let primary_category_to_display = (currentLang === 'english') ? primary_category_english : primary_category_native;
 
-        var categ_coll = [`<p class="badge rounded-pill ${ pillDct[policy["primary_category" ]] }" style="font-size:17px; font-weight:400;">${ primary_category_to_display}</p>`];
+        var categ_coll = [`<p class="badge rounded-pill ${ pillDct[policy["primary_category" ]] }" style="font-size:17px; font-weight:400;margin-bottom:5px;">${ primary_category_to_display}</p>`];
         var categ_lst = policy["category"].sort();
         if(categ_lst.length > 1){
             categ_coll.push(`|`);
@@ -862,7 +866,7 @@
                 var category_native = transl_categories[lang_pol][pillNames[categ_lst[c]]];
                 var category_english = pillNames[categ_lst[c]];
                 let category_to_display = (currentLang === 'english') ? categ_lst[c] : category_native;
-                categ_coll.push(`<p class="badge rounded-pill ${ pillDct[categ_lst[c]] }" style="font-size:17px; font-weight:400;">${ category_to_display }</p>`);
+                categ_coll.push(`<p class="badge rounded-pill ${ pillDct[categ_lst[c]] }" style="font-size:17px; font-weight:400;margin-bottom:5px;">${ category_to_display }</p>`);
             }
         }
         var categs_html = categ_coll.join(" ");
@@ -984,6 +988,7 @@
         var toc_html_native = ``;
         var toc_html_section_native = ``;
         if(policy['toc']){
+            console.log(policy['toc']);
             var toc_lines_native = policy['toc'].split("\n");
             var toc_ps_native = [];
             toc_lines_native.forEach(line =>
@@ -996,6 +1001,8 @@
                                         ${ toc_html_native }
                                     </div>
                                 </div>`
+        }else{
+            console.log("No TOC?");
         }
 
         let toc_html_section_to_display = (currentLang === 'english') ? toc_html_section_english : toc_html_section_native;
@@ -1025,13 +1032,13 @@
         
         // element to append to the policy           
         var element = `
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;margin-top:5px;">  
+                    <div style="display: flex; justify-content: flex-end; align-items: flex-start;margin-top:5px;">  
                         <div id="lang-btns">
                             ${button_native}
                             ${button_english}
                         </div>       
                     </div>
-                    <h1 id="pol-res-he" class="policy-name-header">${policy["name"]}</h1>
+                    <h1 id="pol-res-he" class="policy-name-header">${pol_title_to_display}</h1>
                     <div>
                         ${lvl_area_html}
                         <p class="d-inline" style="font-size:20px"> | ${duratn_html} | </p> 
@@ -1098,7 +1105,6 @@
             }
         }
 
-        // add event listeners to the buttons
         // add event listeners to the buttons
         if (lang_pol !== "English") {
             const button_english = document.querySelector('#lang-btns button[data-lang="english"]');
