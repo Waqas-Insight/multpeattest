@@ -17,9 +17,10 @@ import time
 import pandas as pd
 import glob
 import logging
+from markupsafe import Markup
+import markdown
 #
 from modules import assum_json_to_dict, usrinp_json_to_dict
-from inctcls import pdf_to_sents, classify_w_svm, return_bn_results, return_mc_results
 import requests
 #added remarks for run.py
 # powershell: $env:FLASK_APP = "run"
@@ -460,36 +461,9 @@ def sub_policy():
         return render_template('polsubmit.html')
     return render_template('polsubmit.html', username=session['username'])
 
-@app.route('/incentive-tool', methods=['GET','POST'])
-def incentive_tool():
-    # will need to add language toggle at some point for tokenization
-    cls_incs = {}
-    filename = ""
-    time_st = ""
-    #cls_incs ={'Credit': ['We do this by providing export credit and trade finance support for exports that might otherwise not happen, thereby supporting UK exports and incentivising overseas buyers to source from the UKWe take account of relevant factors beyond the purely financial.'], 'Technical_assistance': ['Learning and development in this area can be through both formal and informal meansLearning and Development of our peopleWewill ensure our staff have the appropriate knowledge, training and awareness to deliver this strategy across the organisation22EnablersStakeholder engagementWe will engage with our stakeholders to help shape and support delivery of our strategyOur customers :We will engage with all our customers through our International Export Finance Executive network and our domestic Export Finance Manger network.']}
-    if request.method == 'POST':
-        st = time.time()
-        uploaded_file = request.files['inc_file']
-        filename = secure_filename(uploaded_file.filename)
-        if filename != '':
-            file_ext = os.path.splitext(filename)[1]
-            if file_ext not in ['.pdf','.doc','.docx']:
-                abort(400)
-            uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
-            sents = pdf_to_sents(os.path.join(app.config['UPLOAD_PATH'], filename))
-            pred_lbls_b, sents = classify_w_svm(sents, 'models/paraphrase-xlm-r-multilingual-v1_bn_v1.pt', 'bn')
-            inc_sents = return_bn_results(pred_lbls_b, sents)
-            cls_preds, sents = classify_w_svm(inc_sents, 'models/paraphrase-xlm-r-multilingual-v1_mc_v1.pt', 'mc')
-            cls_incs = return_mc_results(cls_preds, sents)
-            dur = time.time()-st
-            time_st = f"{round(dur/60,2)} min" if dur>60 else f"{round(dur,2)} s"
-            #print(cls_incs)
-            if 'username' not in session:
-                return render_template('incentive_tool.html', res_dct=cls_incs, filename=filename, time_st=time_st)
-            return render_template('incentive_tool.html', username=session['username'], res_dct=cls_incs, filename=filename, time_st=time_st)
-    if 'username' not in session:
-        return render_template('incentive_tool.html', res_dct=cls_incs, filename=filename, time_st=time_st)
-    return render_template('incentive_tool.html', username=session['username'], res_dct=cls_incs, filename=filename, time_st=time_st)
+def fix_markdown_headings_properly(text):
+    """Dummy markdown fixer. Replace with your actual logic."""
+    return text  # Assuming your original logic will go here
 
 @app.route('/qa-tool', methods=['GET', 'POST'])
 def qa_tool():
@@ -510,50 +484,87 @@ def qa_tool():
         if category: query_params['category'] = category
         if country: query_params['country'] = country
         if governance: query_params['governance_level'] = governance
+
         if question:
             try:
+                # Step 1: Call the RAG backend
                 response = requests.get(
-                    "http://140.203.155.51:8001/ask",
+                    "https://test-multipeat.insight-centre.org/ask",
                     params=query_params,
-                    headers={'accept': 'application/json'},
+                    headers={'Accept': 'application/json'},
                     timeout=200
                 )
-                logging.info("Response status code: %s", response.status_code)
-                try:
-                    logging.info("Response JSON:\n%s", json.dumps(response.json(), indent=2))
-                except Exception:
-                    logging.warning("Response content is not valid JSON: %s", response.text)
+
                 if response.status_code == 200:
                     response_data = response.json()
-                    reasoning = response_data.get('answer', "No answer provided.")
+                    raw_answer = response_data.get('answer', "No answer provided.")
                     sources = response_data.get('sources', [])
+
+                    # Fallback checks
                     fallback_phrases = [
-                        "do not contain",
-                        "does not provide information",
-                        "not found in the provided documents",
-                        "no relevant documents"
+                        "do not contain", "does not provide information",
+                        "not found in the provided documents", "no relevant documents"
                     ]
-                    lowered = reasoning.lower()
+                    lowered = raw_answer.lower()
                     is_fallback = any(phrase in lowered for phrase in fallback_phrases)
-                    is_too_short = len(reasoning.strip()) < 50
+                    is_too_short = len(raw_answer.strip()) < 50
+
                     if not is_fallback and not is_too_short:
+                        # Step 2: Process reasoning
+                        fixed_raw_answer = fix_markdown_headings_properly(raw_answer)
+                        reasoning_html = Markup(markdown.markdown(fixed_raw_answer))
+                        reasoning = reasoning_html
+
                         max_score = max([s['score'] for s in sources], default=1)
+
+                        # Step 3: Process each source
                         for src in sources:
+                            policy_id = src.get("record_id")
+                            file_links = []
+
+                            if policy_id:
+                                try:
+                                    logging.info(f"Fetching attachments for policy ID: {policy_id}")
+                                    file_resp = requests.post(
+                                        f"http://aspect-erp.insight-centre.org:8016/aspect/policy/{policy_id}/files",
+                                        headers={
+                                            'Content-Type': 'application/json',
+                                            'Accept': 'application/json'
+                                        },
+                                        json={},  # Important: send empty JSON
+                                        timeout=30
+                                    )
+                                    logging.info(f"Odoo response status: {file_resp.status_code}")
+                                    logging.info(f"Odoo raw body: {file_resp.text}")
+
+                                    if file_resp.ok:
+                                        file_data = file_resp.json()
+                                        # Correct way to get attachments (inside 'result')
+                                        file_links = file_data.get('result', {}).get('attachments', [])
+                                        logging.info(f"Fetched attachments for policy {policy_id}: {file_links}")
+                                    else:
+                                        logging.warning(f"Odoo responded with status {file_resp.status_code} for policy {policy_id}")
+
+                                except Exception as fe:
+                                    logging.warning(f"Failed to fetch attachments for policy {policy_id}: {fe}")
+
                             policies.append({
                                 "title": src.get("author", "Unknown"),
-                                "pdf_url": f"/files/{src['filename']}",
-                                "read_more_url": "#",
                                 "thumbnail_url": "/static/images/pdf_thumbnail.png",
                                 "country": src.get("country", "Unknown"),
                                 "language": src.get("language", "Unknown"),
                                 "author": src.get("author", "Unknown"),
                                 "evidence_location": f"Score: {src['score']}",
-                                "similarity": round((src['score'] / max_score) * 100, 1)
+                                "similarity": round((src['score'] / max_score) * 100, 1),
+                                "files": file_links  # Corrected: fetched from Odoo
                             })
+                    else:
+                        reasoning = raw_answer
                 else:
-                    reasoning = f"❌ API Error {response.status_code}: {response.text}"
+                    reasoning = f"API Error {response.status_code}: {response.text}"
+
             except Exception as e:
-                reasoning = f"❌ Failed to get response: {str(e)}"
+                reasoning = f"Failed to get response: {str(e)}"
                 logging.error("Exception occurred while fetching response: %s", str(e))
         return render_template(
             "qa_tool.html",
@@ -601,78 +612,6 @@ def any_policy():
     return render_template("anypol.html")#, info=info)#info=json.dumps(info))
 
 # DATA ENDPOINTS
-
-@app.route('/policy/level=<level>')
-def policy_bylevel(level):
-    conn = connect_db()
-    if conn is None:
-        return None  # Return None or handle error as needed
-    cur = conn.cursor()
-    try:
-        cur.execute(f"SELECT engname,dates,engabst,classif,country,link,publisher,level FROM upd_geopol WHERE level='{level}'")
-        data = cur.fetchall()
-    except psycopg2.Error as e:
-        print(f"Error fetching data: {e}")
-        return None
-    finally:
-        cur.close()
-        conn.close()
-        return data
-    
-@app.route('/policy/categ=<categ>')
-def policy_bycateg(categ):
-    categdct = {"bio":"Biodiversity",
-                "clm":"Climate",
-                "enr":"Energy",
-                "econ":"Economy",
-                "land":"Land-Use / Agriculture",
-                "comm":"Community and Culture",
-                "res":"Research and applied sciences",
-                "env":"Environmental quality: water, soil, air"}
-    conn = connect_db()
-    if conn is None:
-        return None  # Return None or handle error as needed
-    cur = conn.cursor()
-    try:
-        cur.execute(f"SELECT engname,dates,engabst,classif,country,link,publisher,level FROM upd_geopol WHERE classif='{categdct[categ]}'")
-        data = cur.fetchall()
-    except psycopg2.Error as e:
-        print(f"Error fetching data: {e}")
-        return None
-    finally:
-        cur.close()
-        conn.close()
-        return data
-
-@app.route('/policy/country=<country>')
-def policyCountry(country):
-    conn = connect_db()
-    if conn is None:
-        return None  # Return None or handle error as needed
-    cur = conn.cursor()
-    try:
-        cur.execute("SELECT engname,dates,engabst,classif,country,link,publisher,level FROM upd_geopol WHERE country LIKE %s", ('%' + country + '%',))
-        data = cur.fetchall()
-    except psycopg2.Error as e:
-        print(f"Error fetching data: {e}")
-        return None
-    finally:
-        cur.close()
-        conn.close()
-        return data
-
-@app.route('/getpols/<int:lint>')
-def getpols_eventual(lint):
-    lvldct = {0:'European',1:'Global'}
-    level = lvldct[lint]
-    #conn = get_db_cnxn()
-    conn = connect_db()
-    cur = conn.cursor()
-    cur.execute(f"SELECT engname, level, classif, link FROM upd_geopol WHERE level='{level}'")
-    policies = cur.fetchall()
-    cur.close()
-    conn.close()
-    return policies
 
 @app.route('/categorydata')
 def getcateg():

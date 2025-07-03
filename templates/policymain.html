@@ -237,12 +237,28 @@
             </li>
         `);
     }
+
+    // sorting policies, level first ascending, then by country
+    function sortPolLst(polLst){
+        var lvl_dct = {"Local":[], "Regional":[], "National":[], "European":[], "Global":[]};
+        polLst.forEach(policy => {
+            lvl_dct[policy['policy_level']].push(policy);
+        });
+        var newLst = [];
+        for(let key in lvl_dct){
+            newLst.push(...lvl_dct[key]);
+        };
+        return newLst;
+    }
+
     // how to display policies
-    function policyCollectionShow(polLst){
+    function policyCollectionShow(polLstu){
+        polLst = sortPolLst(polLstu);
         console.log(polLst[0]);
         const polPop = $('#pol-coll-div');
         polPop.html('');
-        polPop.append(`<h4 id="pol-res-he" class="text-center" style="padding-bottom:20px">Policies</h4>`);
+        polPop.append(`<h4 id="pol-res-he" class="text-center" style="padding-bottom:10px">Policies</h4>`);
+        polPop.append(`<p id="pol-count" style="padding:5px">${polLst.length} results</p>`)
         for (let i = 0; i < polLst.length; i++) {
             var policy = polLst[i];
             // categories html, gets all categories in their pill form
@@ -286,12 +302,24 @@
                 }
             }
             // try to split abstract by \n to retain line breaks?
-            var abst_sents = policy['abstract_english'].split("\n");
-            var abst_ps = [];
-            abst_sents.forEach(sentence =>
-                abst_ps.push(`<p class="poltxt">${ sentence }</p>`)
-            );
-            var abst_html = abst_ps.join(`<p style="margin-bottom:5px;"></p>`);
+            var abst_html = ``;
+            var abst_html_section = ``;
+            if(policy['abstract_english']){
+                var abst_sents = policy['abstract_english'].split("\n");
+                var abst_ps = [];
+                abst_sents.forEach(sentence =>
+                    abst_ps.push(`<p class="poltxt">${ sentence }</p>`)
+                );
+                abst_html = abst_ps.join(`<p style="margin-bottom:5px;"></p>`);
+                abst_html_section = `<div class="abst-div">
+                                            <p>Summary</p>
+                                            <div class="collapse abst-collapse" id="abscoll${i}">
+                                                ${ abst_html }
+                                            </div>
+                                            <a role="button" class="collapsed d-flex polcol-lnk" data-bs-toggle="collapse" href="#abscoll${i}" style="font-size:14px;justify-self:center;padding-right:15px;">
+                                            </a>
+                                        </div>`
+            };
             // split table of contents by \n to retain line breaks
             var toc_html = ``;
             var toc_html_section = ``;
@@ -338,14 +366,7 @@
                                         <div style="line-height: 1; margin-bottom:15px;">
                                             <p class="d-inline"> ${ duratn_html } | </p><p class="d-inline" style="font-size:14px">👤</p> ${ publs_html }
                                         </div>
-                                        <div class="abst-div">
-                                            <p>Overview</p>
-                                            <div class="collapse abst-collapse" id="abscoll${i}">
-                                                ${ abst_html }
-                                            </div>
-                                            <a role="button" class="collapsed d-flex polcol-lnk" data-bs-toggle="collapse" href="#abscoll${i}" style="font-size:14px;justify-self:center;padding-right:15px;">
-                                            </a>
-                                        </div>
+                                        ${ abst_html_section }
                                         ${ toc_html_section }
                                         ${ links_html }
                                         <div>

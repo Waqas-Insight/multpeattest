@@ -87,7 +87,7 @@ const ctryLayer= new TileLayer({
 // Policies
 const ipolSource=new TileWMS({
     url:serverURL,
-    params:{"LAYERS":"multipeat:geo_pol", "VERSION":"1.1.1", "FORMAT":"image/png"}
+    params:{"LAYERS":"multipeat:aspect_policy", "VERSION":"1.1.1", "FORMAT":"image/png"}
 });
 
 const ipolLayer= new TileLayer({
@@ -1659,9 +1659,10 @@ const osmLayer=new TileLayer({
 });
 
 const view=new View({
+    // left bottom right top
     //extent:[-1189593, 6692152.5, -665102.8125, 7450535], // ireland
     //extent:[-2005155, 3723095, 3711745, 8600839], // europe
-    extent:[-2050000, 3500000, 8000000, 15000000], // europe and EEA countries
+    extent:[-4000000, 3500000, 7000000, 13000000], // europe and EEA countries
     center:[2000000,7500000],
     zoom:5,
     projection: mapProjection
