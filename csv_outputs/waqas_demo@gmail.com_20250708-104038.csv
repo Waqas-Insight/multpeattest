@@ -1,0 +1,72 @@
+Results
+Base CH4,-0.05
+Base CO2,157.2
+Base Carbon Emission GWP Subtotal,157.15
+Base N2O Direct,16.24
+Base N2O Indirect,4.12
+Base N2O Emission GWP Subtotal,20.36
+Base Activity GWP Subtotal,0.21
+Base GWP Total,177.72
+Rewet CH4,62.2
+Rewet CO2,-61.9
+Rewet Carbon Emission GWP Subtotal,0.3
+Rewet N2O Direct,20.6
+Rewet N2O Indirect,5.84
+Rewet N2O Emission GWP Subtotal,26.44
+Rewet Activity GWP Subtotal,0.28
+Rewet Product GWP Subtotal,-0.0
+Rewet GWP Total,27.02
+GHG Savings Total per Year per Site,150.7
+GHG Savings Total per Year per Ha,30.14
+GHG Savings Stock per Year per Site,156.85
+GHG Savings Stock per Year per Ha,31.37
+GHG Savings Flow per Year per Site,-6.15
+GHG Savings Flow per Year per Ha,-1.23
+GHG Savings Product Use per Year per Site,0.0
+GHG Savings Product Use per Year per Ha,0.0
+Carbon Stock TCO2 per Site,5039.1
+Carbon Stock Ton C per Site,1374.3
+Carbon Stock TCO2 per Ha,1007.82
+Carbon Stock Ton C per Ha,274.86
+Base Years til Peat Lost,32.06
+Rewet Years til Peat Lost,Infinity
+Inputs
+General Site Data
+Site Name,Test Site
+Total Area,5
+Coordinates,[-56, 100]
+Elevation,30
+Peat Type,Woody
+Peat Thickness,50
+Year Rewetting Starts,2025
+Base
+Median Groundwater Level,-70
+Vegetation Class,G1
+Amount Manure,50
+Amount Organic Fertilizer,30
+Type Synthetic Fertilizer,Ammonium Based
+Amount Synthetic Fertilizer,100
+Type of Grazing Animals,Sheep
+Number of Grazing Animals,10
+Average Number of Grazing Days,200
+Crop Yield,50
+Include Crop Residuals,true
+Crop Name,Peat Moss (Sphagnum Sp.)
+Diesel per Site,50
+Electricity per Site,70
+Rewet
+Median Groundwater Level,0
+Vegetation Class,U17
+Amount Manure,75
+Amount Organic Fertilizer,60
+Type Synthetic Fertilizer,Ammonium Based
+Amount Synthetic Fertilizer,60
+Type of Grazing Animals,Sheep
+Average Number of Grazing Animals,20
+Average Number of Grazing Days,100
+Crop Yield,100
+Include Crop Residuals,true
+Crop Name,Reed (Phragmites Australis)
+Diesel per Site,75
+Electricity per Site,50
+Crop Use,Food Application
