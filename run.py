@@ -16,7 +16,9 @@ import csv
 import time
 import pandas as pd
 import glob
-
+import logging
+from markupsafe import Markup
+import markdown
 #
 from modules import assum_json_to_dict, usrinp_json_to_dict
 import requests
@@ -34,6 +36,10 @@ app.config['UPLOAD_PATH'] = 'uploads'
 
 csrf = CSRFProtect(app)
 
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 '''
 APP CONFIGURATION
 '''
@@ -455,98 +461,142 @@ def sub_policy():
         return render_template('polsubmit.html')
     return render_template('polsubmit.html', username=session['username'])
 
-@app.route('/incentive-tool', methods=['GET','POST'])
-def incentive_tool():
-    if request.method == 'POST':
-        uploaded_file = request.files['file']
-        filename = secure_filename(uploaded_file.filename)
-        if filename != '':
-            file_ext = os.path.splitext(filename)[1]
-            if file_ext not in ['.pdf','.doc','.docx']:
-                abort(400)
-            uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
-        
-    if 'username' not in session:
-        return render_template('incentive_tool.html')
-    return render_template('incentive_tool.html', username=session['username'])
+def fix_markdown_headings_properly(text):
+    """Dummy markdown fixer. Replace with your actual logic."""
+    return text  # Assuming your original logic will go here
+
+@app.route('/qa-tool', methods=['GET', 'POST'])
+def qa_tool():
+    if request.method == 'GET':
+        return render_template("qa_tool.html")
+    elif request.method=='POST':
+        reasoning = None
+        policies = []
+        # Get user input
+        question = request.form.get('question')
+        language = request.form.get('language')
+        category = request.form.get('category')
+        country = request.form.get('country')
+        governance = request.form.get('governance')
+        # Build query parameters
+        query_params = {"query": question}
+        if language: query_params['language'] = language
+        if category: query_params['category'] = category
+        if country: query_params['country'] = country
+        if governance: query_params['governance_level'] = governance
+
+        if question:
+            try:
+                # Step 1: Call the RAG backend
+                response = requests.get(
+                    "https://test-multipeat.insight-centre.org/ask",
+                    params=query_params,
+                    headers={'Accept': 'application/json'},
+                    timeout=200
+                )
+
+                if response.status_code == 200:
+                    response_data = response.json()
+                    raw_answer = response_data.get('answer', "No answer provided.")
+                    sources = response_data.get('sources', [])
+
+                    # Fallback checks
+                    fallback_phrases = [
+                        "do not contain", "does not provide information",
+                        "not found in the provided documents", "no relevant documents"
+                    ]
+                    lowered = raw_answer.lower()
+                    is_fallback = any(phrase in lowered for phrase in fallback_phrases)
+                    is_too_short = len(raw_answer.strip()) < 50
+
+                    if not is_fallback and not is_too_short:
+                        # Step 2: Process reasoning
+                        fixed_raw_answer = fix_markdown_headings_properly(raw_answer)
+                        reasoning_html = Markup(markdown.markdown(fixed_raw_answer))
+                        reasoning = reasoning_html
+
+                        max_score = max([s['score'] for s in sources], default=1)
+
+                        # Step 3: Process each source
+                        for src in sources:
+                            policy_id = src.get("record_id")
+                            file_links = []
+
+                            if policy_id:
+                                try:
+                                    logging.info(f"Fetching attachments for policy ID: {policy_id}")
+                                    file_resp = requests.post(
+                                        f"http://aspect-erp.insight-centre.org:8016/aspect/policy/{policy_id}/files",
+                                        headers={
+                                            'Content-Type': 'application/json',
+                                            'Accept': 'application/json'
+                                        },
+                                        json={},  # Important: send empty JSON
+                                        timeout=30
+                                    )
+                                    logging.info(f"Odoo response status: {file_resp.status_code}")
+                                    logging.info(f"Odoo raw body: {file_resp.text}")
+
+                                    if file_resp.ok:
+                                        file_data = file_resp.json()
+                                        # Correct way to get attachments (inside 'result')
+                                        file_links = file_data.get('result', {}).get('attachments', [])
+                                        logging.info(f"Fetched attachments for policy {policy_id}: {file_links}")
+                                    else:
+                                        logging.warning(f"Odoo responded with status {file_resp.status_code} for policy {policy_id}")
+
+                                except Exception as fe:
+                                    logging.warning(f"Failed to fetch attachments for policy {policy_id}: {fe}")
+
+                            policies.append({
+                                "id":policy_id,
+                                "title": src.get("author", "Unknown"),
+                                "thumbnail_url": "/static/images/pdf_thumbnail.png",
+                                "country": src.get("country", "Unknown"),
+                                "language": src.get("language", "Unknown"),
+                                "author": src.get("author", "Unknown"),
+                                "evidence_location": f"Score: {src['score']}",
+                                "similarity": round((src['score'] / max_score) * 100, 1),
+                                "files": file_links  # Corrected: fetched from Odoo
+                            })
+                    else:
+                        reasoning = raw_answer
+                else:
+                    reasoning = f"API Error {response.status_code}: {response.text}"
+
+            except Exception as e:
+                reasoning = f"Failed to get response: {str(e)}"
+                logging.error("Exception occurred while fetching response: %s", str(e))
+        return render_template(
+            "qa_tool.html",
+            reasoning=reasoning,
+            policies=policies,
+            asked_question=question,
+            selected_language=language,
+            selected_category=category,
+            selected_country=country,
+            selected_governance=governance
+        )
+
+@app.route('/policy/<int:pol_id>', methods=['GET'])
+def any_policy(pol_id):
+    return render_template("anypol.html", pol_id = pol_id)#, info=info)#info=json.dumps(info))
 
 # DATA ENDPOINTS
-
-@app.route('/policy/level=<level>')
-def policy_bylevel(level):
-    conn = connect_db()
-    if conn is None:
-        return None  # Return None or handle error as needed
-    cur = conn.cursor()
-    try:
-        cur.execute(f"SELECT engname,dates,engabst,classif,country,link,publisher,level FROM upd_geopol WHERE level='{level}'")
-        data = cur.fetchall()
-    except psycopg2.Error as e:
-        print(f"Error fetching data: {e}")
-        return None
-    finally:
-        cur.close()
-        conn.close()
-        return data
-    
-@app.route('/policy/categ=<categ>')
-def policy_bycateg(categ):
-    categdct = {"bio":"Biodiversity",
-                "clm":"Climate",
-                "enr":"Energy",
-                "econ":"Economy",
-                "land":"Land-Use / Agriculture",
-                "comm":"Community and Culture",
-                "res":"Research and applied sciences",
-                "env":"Environmental quality: water, soil, air"}
-    conn = connect_db()
-    if conn is None:
-        return None  # Return None or handle error as needed
-    cur = conn.cursor()
-    try:
-        cur.execute(f"SELECT engname,dates,engabst,classif,country,link,publisher,level FROM upd_geopol WHERE classif='{categdct[categ]}'")
-        data = cur.fetchall()
-    except psycopg2.Error as e:
-        print(f"Error fetching data: {e}")
-        return None
-    finally:
-        cur.close()
-        conn.close()
-        return data
-
-@app.route('/policy/country=<country>')
-def policyCountry(country):
-    conn = connect_db()
-    if conn is None:
-        return None  # Return None or handle error as needed
-    cur = conn.cursor()
-    try:
-        cur.execute("SELECT engname,dates,engabst,classif,country,link,publisher,level FROM upd_geopol WHERE country LIKE %s", ('%' + country + '%',))
-        data = cur.fetchall()
-    except psycopg2.Error as e:
-        print(f"Error fetching data: {e}")
-        return None
-    finally:
-        cur.close()
-        conn.close()
-        return data
-
-@app.route('/getpols/<int:lint>')
-def getpols_eventual(lint):
-    lvldct = {0:'European',1:'Global'}
-    level = lvldct[lint]
-    #conn = get_db_cnxn()
-    conn = connect_db()
-    cur = conn.cursor()
-    cur.execute(f"SELECT engname, level, classif, link FROM upd_geopol WHERE level='{level}'")
-    policies = cur.fetchall()
-    cur.close()
-    conn.close()
-    return policies
 
 @app.route('/categorydata')
 def getcateg():
     url = 'http://140.203.154.253:8016/aspect/category/'
+    return create_dataendpoint(url)
+
+@app.route('/policydata')
+def getpols():
+    url = 'http://140.203.154.253:8016/aspect/policies/'
+    return create_dataendpoint(url)
+
+@app.route('/sgpolicy/<int:pol_id>')
+def get_sgpol(pol_id):
+    url = f"http://140.203.154.253:8016/aspect/policy/{pol_id}"
     return create_dataendpoint(url)
 
 @app.route('/countrydata')
@@ -649,6 +699,7 @@ def save_csv():
     except Exception as e:
         print("Exception occurred:", e)
         return jsonify({"error": str(e)}), 500
+    
 UPLOAD_FOLDER = "/Users/waqasshoukatali/multipeattools/test_git_multipeat/csv_outputs"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
@@ -679,6 +730,7 @@ def get_latest_csv(username):
         return None  # No valid file found
 
     return max(valid_files, key=os.path.getctime)  # Return latest file
+
 def get_all_csv_files(username):
     """Get all CSV files for a specific user"""
     # Define the path where user CSV files are stored
@@ -707,7 +759,6 @@ def get_all_csv_files(username):
         print(f"Error listing CSV files: {str(e)}")
     
     return csv_files
-
 
 @app.route("/getAvailableSites", methods=["GET"])
 def get_available_sites():
@@ -779,6 +830,7 @@ def extract_site_name_from_csv(csv_file):
     except Exception as e:
         print(f"Error extracting site name from {csv_file}: {str(e)}")
         return None
+    
 @app.route("/fetchSiteData/<file_name>", methods=["GET"])
 def fetch_site_data(file_name):
     """Fetch data from a specific CSV file"""
