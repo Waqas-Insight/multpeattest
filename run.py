@@ -700,7 +700,7 @@ def save_csv():
         print("Exception occurred:", e)
         return jsonify({"error": str(e)}), 500
     
-UPLOAD_FOLDER = "/home/ales/multipeattools/csv_outputs"
+UPLOAD_FOLDER = "/home/ales/multipeattools/"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 def get_latest_csv(username):
@@ -716,7 +716,7 @@ def get_latest_csv(username):
     latest_file = max(valid_files, key=os.path.getctime)  # Get the most recent file
     return latest_file  # Return only the latest file path
 
-UPLOAD_FOLDER = "/home/ales/multipeattools/csv_outputs"
+UPLOAD_FOLDER = "/home/ales/multipeattools/"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 def get_latest_csv(username):
