@@ -660,7 +660,7 @@ function saveCSVData(rows) {
 function retrieveCSVData() {
     console.log("Retrieving CSV Data...");
 
-    fetch('http://127.0.0.1:5000/get-csv', {
+    fetch('https://test-multipeat.insight-centre.org/get-csv', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json; charset=UTF-8'
