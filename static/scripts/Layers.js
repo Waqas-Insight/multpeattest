@@ -1,4 +1,5 @@
 import {getLayerByName} from "./customFunctions.js";
+import {getLayerByCluster} from "./customFunctions.js";
 
 const map=$('#map').data('map');
 const layers=map.getLayers();

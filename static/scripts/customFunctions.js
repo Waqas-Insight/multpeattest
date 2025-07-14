@@ -20,3 +20,13 @@ export function getLayerByDisplay(layerDisplayName){
     });
     return layer;
 }
+
+export function getLayerByCluster(layerClusterName){
+    let layer=null;
+
+    mapLayers.forEach(lyr => {
+        if(lyr.get('cluster')===layerClusterName)
+        layer=lyr;
+    });
+    return layer;
+}
