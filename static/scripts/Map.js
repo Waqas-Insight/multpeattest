@@ -701,6 +701,7 @@ const beLayer= new TileLayer({
     name:"BE_Peatlands",
     display: 'Belgian Bogs',
     cluster: "BE_Peatlands",
+    region: "Belgium",
     simp_lvl: 0,
     maxResolution: res_dct["max"][0]
 });
@@ -802,6 +803,7 @@ const buLayer= new TileLayer({
     name:"BU_Peatlands",
     display: 'Bulgarian Bogs',
     cluster: "BU_Peatlands",
+    region: "Bulgaria",
     simp_lvl: 0,
     maxResolution: res_dct["max"][0]
 });
@@ -2025,6 +2027,7 @@ const spLayer= new TileLayer({
     name:"SP_Peatlands",
     display: 'Spanish Bogs',
     cluster: "SP_Peatlands",
+    region: "Spain",
     simp_lvl: 0,
     maxResolution: res_dct["max"][0]
 });

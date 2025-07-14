@@ -21,12 +21,12 @@ export function getLayerByDisplay(layerDisplayName){
     return layer;
 }
 
-export function getLayerByCluster(layerClusterName){
-    let layer=null;
+export function getLayersByCluster(layerClusterName){
+    let layers=[];
 
     mapLayers.forEach(lyr => {
         if(lyr.get('cluster')===layerClusterName)
-        layer=lyr;
+        layers.push(lyr);
     });
-    return layer;
+    return layers;
 }
