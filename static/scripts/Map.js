@@ -13,12 +13,12 @@ const serverURL="https://multipeat.insight-centre.org/geoserver/wms";
 
 const res_dct={
     "max":{
-        0: 4, //5.2, // 575K
-        1: 10 //15 //20.7 // 2.3M
+        0: 100, //5.2, // 575K
+        1: 850 //15 //20.7 // 2.3M
     },
     "min":{
-        1: 4, // 425K
-        2: 10 //15 //15.3 // 1.7M
+        1: 100, // 425K
+        2: 850 //15 //15.3 // 1.7M
     }
 };
 
