@@ -279,6 +279,69 @@ def map_page():
         return render_template('map.html')
     return render_template('map.html', username=session['username'])
 
+from flask import request, jsonify, session
+import requests
+
+@app.route('/reset_password', methods=['POST'])
+@csrf.exempt 
+def reset_password():
+    """
+    Proxy route to handle password reset via your existing API
+    """
+    if 'username' not in session and 'email' not in session:
+        return jsonify({'success': False, 'message': 'Not authenticated'}), 401
+    
+    try:
+        data = request.get_json()
+        new_password = data.get('new_password')
+        
+        if not new_password:
+            return jsonify({'success': False, 'message': 'New password is required'}), 400
+        
+        # Get user login from session - adjust based on your session structure
+        user_login = session.get('email') or session.get('username')
+        
+        if not user_login:
+            return jsonify({'success': False, 'message': 'User login not found in session'}), 400
+        
+        # Call your existing API
+        api_url = 'http://aspect-erp.insight-centre.org:8016/aspect/reset_password'
+        api_payload = {
+            'login': user_login,
+            'new_password': new_password
+        }
+        
+        response = requests.post(
+            api_url,
+            json=api_payload,
+            headers={'Content-Type': 'application/json'},
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            return jsonify({'success': True, 'message': 'Password updated successfully'})
+        else:
+            # Handle different error codes from your API
+            error_message = 'Failed to update password'
+            if response.status_code == 404:
+                error_message = 'User not found'
+            elif response.status_code == 400:
+                error_message = 'Invalid request data'
+            elif response.status_code == 500:
+                error_message = 'Server error occurred'
+            
+            return jsonify({'success': False, 'message': error_message}), response.status_code
+            
+    except requests.exceptions.Timeout:
+        return jsonify({'success': False, 'message': 'Request timeout - please try again'}), 408
+    except requests.exceptions.ConnectionError:
+        return jsonify({'success': False, 'message': 'Unable to connect to password service'}), 503
+    except Exception as e:
+        print(f"Password reset error: {str(e)}")
+        return jsonify({'success': False, 'message': 'An unexpected error occurred'}), 500
+
+
+
 @app.route('/ffptool', methods=['GET', 'POST'])
 def ffp_tool():
     username = session.get('username')

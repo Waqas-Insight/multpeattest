@@ -12,6 +12,7 @@ REQUIREMENTS=(
     "flask_cors"
     "psycopg2"
     "requests"
+    "markdown"
 )
 
 # Step 1: Create a virtual environment
