@@ -1309,3 +1309,14 @@ margin-bottom: 0.5rem;
     color: #ffffff;
     transform: scale(1.1);
 }
+
+/* Balance calculator */
+.accordion-button.collapsed {
+  color: #5a646c;
+  font-weight: bold;
+}
+
+.accordion-button:not(.collapsed) {
+  color: black;
+  font-weight: bold;
+}

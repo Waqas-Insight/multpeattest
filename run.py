@@ -300,6 +300,10 @@ def ffp_tool():
     
     return render_template('ffp_tool.html', username=session['username'], aform=aform, uform=uform, results_dict=results_dict)
 
+@app.route('/balance-calculation', methods=['GET'])
+def balance_calculation():
+    return render_template('balance_calculation.html')
+
 @app.route('/settool', methods=['GET', 'POST'])
 def set_tool():
     username = session.get('username')
