@@ -606,7 +606,7 @@ function saveCSVData(rows) {
     const requestOptions = {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json; charset=UTF-8'
+            'Content-Type': 'application/json; charset=UTF-8',
         },
         credentials: 'include',
         body: JSON.stringify({ 
