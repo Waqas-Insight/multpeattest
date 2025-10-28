@@ -606,7 +606,7 @@ function saveCSVData(rows) {
     const requestOptions = {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json; charset=UTF-8'
+            'Content-Type': 'application/json; charset=UTF-8',
         },
         credentials: 'include',
         body: JSON.stringify({ 
@@ -616,7 +616,7 @@ function saveCSVData(rows) {
         })
     };
 
-    fetch('https://test-multipeat.insight-centre.org/save-csv', requestOptions)
+    fetch('http://127.0.0.1:5000/save-csv', requestOptions)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -660,7 +660,7 @@ function saveCSVData(rows) {
 function retrieveCSVData() {
     console.log("Retrieving CSV Data...");
 
-    fetch('https://test-multipeat.insight-centre.org/get-csv', {
+    fetch('http://127.0.0.1/get-csv', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json; charset=UTF-8'

@@ -1,0 +1,45 @@
+Field Name,acrssroad
+Key Project Parameters
+Start Year,2025
+Project Duration (years),60
+Avg. Credits/ha/annum,3000
+Hectares of Potential Restoration,5
+Investment / Financial Inputs (€),74700
+Selling Price of a Carbon Credit (€),80
+Results
+Credits Generated,900000.00
+Cost per Credit,0.52
+Net Present Value,61327276
+Gross Present Value,61668013
+CARG,0.71
+Profit per Credit,68.14
+Profit per Hectare per Year,204424.25
+Rate of Return,13134.29
+Profitable,YES
+Arguments
+Number of Years,60
+Credits per Hectare per Year,3000
+Hectares for Restoration,5
+Investment Amount,74700
+Start Year,2025
+Price per Credit,80
+Investment Costs Included,true
+Registration Costs Included,true
+Assumptions
+Nominal Interest Rate,0.0235
+Inflation Rate,0.021
+Registry Account Opening Fee,0.001
+Registry Listing Cost per Credit,0.05
+Registry Conversion Cost Fee per Inspection,100
+Registry Conversion Cost per Credit above Minimum Threshold,0.05
+Registration Levy Cost per Credit,0.05
+Validation and Verification Application Cost per Inspection,600
+Validation and Verification Statement Cost per Inspection,800
+Validation and Verification Inspector Travel Cost per Inspection,500
+Inspection Cycle Length,5
+Minimum Threshold of Credits,2000
+Interest Rate,0.05
+Payments per Year,12
+Export Information
+Export Date,2025-10-14T15:24:47.360Z
+Export Timestamp,1760455487360

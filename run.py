@@ -132,7 +132,7 @@ def signup():
         name = request.form['name']
         email = request.form['email']
         password = request.form['password']
-        url = 'http://140.203.154.253:8016/aspect/signup/'
+        url = 'https://aspect-erp.insight-centre.org/aspect/signup/'
         headers = {'Content-Type': 'application/json'}
         data = {
         'jsonrpc': '2.0',
@@ -160,7 +160,7 @@ def signup():
 def authenticate_external_api(username, password):
     
     print("authenticate_external_api called with Username:", username) 
-    url = 'http://140.203.154.253:8016/web/session/authenticate'
+    url = 'https://aspect-erp.insight-centre.org/web/session/authenticate'
     headers = {'Content-Type': 'application/json'}
     data = {
     'jsonrpc': '2.0',
@@ -305,7 +305,7 @@ def reset_password():
             return jsonify({'success': False, 'message': 'User login not found in session'}), 400
         
         # Call your existing API
-        api_url = 'http://aspect-erp.insight-centre.org:8016/aspect/reset_password'
+        api_url = 'https://aspect-erp.insight-centre.org/aspect/reset_password'
         api_payload = {
             'login': user_login,
             'new_password': new_password
@@ -340,6 +340,27 @@ def reset_password():
         print(f"Password reset error: {str(e)}")
         return jsonify({'success': False, 'message': 'An unexpected error occurred'}), 500
 
+@app.route('/load_country/<country>', methods=['GET'])
+def load_country(country):
+    country = country.lower()
+    base_path = os.path.join(os.getcwd(), 'datasets')  # Adjust if needed
+
+    # Define your default datasets
+    datasets = {
+        "poland": os.path.join(base_path, "poland.json"),
+        "belgium": os.path.join(base_path, "belgium.json"),
+        "default": os.path.join(base_path, "default.json"),
+    }
+
+    if country not in datasets:
+        return jsonify({"error": "Invalid country"}), 400
+
+    try:
+        with open(datasets[country], 'r') as file:
+            data = json.load(file)
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route('/ffptool', methods=['GET', 'POST'])
@@ -649,52 +670,52 @@ def any_policy(pol_id):
 
 @app.route('/categorydata')
 def getcateg():
-    url = 'http://140.203.154.253:8016/aspect/category/'
+    url = 'https://aspect-erp.insight-centre.org/aspect/category/'
     return create_dataendpoint(url)
 
 @app.route('/policydata')
 def getpols():
-    url = 'http://140.203.154.253:8016/aspect/policies/'
+    url = 'https://aspect-erp.insight-centre.org/aspect/policies/'
     return create_dataendpoint(url)
 
 @app.route('/sgpolicy/<int:pol_id>')
 def get_sgpol(pol_id):
-    url = f"http://140.203.154.253:8016/aspect/policy/{pol_id}"
+    url = f"https://aspect-erp.insight-centre.org/aspect/policy/{pol_id}"
     return create_dataendpoint(url)
 
 @app.route('/countrydata')
 def getctry():
-    url = 'http://140.203.154.253:8016/aspect/countries/'
+    url = 'https://aspect-erp.insight-centre.org/aspect/countries/'
     return create_dataendpoint(url)
 
 @app.route('/localdata/<int:code>')
 def getlocal(code):
-    url = f'http://140.203.154.253:8016/aspect/state/{code}/'
+    url = f'https://aspect-erp.insight-centre.org/aspect/state/{code}/'
     return create_dataendpoint(url)
 
 @app.route('/nutsdata/<int:code>')
 def getnuts(code):
-    url = f'http://140.203.154.253:8016/aspect/nuts/{code}/'
+    url = f'https://aspect-erp.insight-centre.org/aspect/nuts/{code}/'
     return create_dataendpoint(url)
 
 @app.route('/languagedata')
 def getlangs():
-    url = 'http://140.203.154.253:8016/aspect/languages/'
+    url = 'https://aspect-erp.insight-centre.org/aspect/languages/'
     return create_dataendpoint(url)
 
 @app.route('/keyworddata')
 def getkwdsnew():
-    url = 'http://140.203.154.253:8016/aspect/keywords/'
+    url = 'https://aspect-erp.insight-centre.org/aspect/keywords/'
     return create_dataendpoint(url)
 
 @app.route('/stakeholderdata/<int:code>')
 def getstknew(code):
-    url = f'http://140.203.154.253:8016/aspect/stakeholders/{code}/'
+    url = f'https://aspect-erp.insight-centre.org/aspect/stakeholders/{code}/'
     return create_dataendpoint(url)
 
 @app.route('/publisherdata/<int:code>')
 def getpubs(code):
-    url = f'http://140.203.154.253:8016/aspect/publishers/{code}/'
+    url = f'https://aspect-erp.insight-centre.org/aspect/publishers/{code}/'
     return create_dataendpoint(url)
 
 @app.route('/chat', methods=['GET', 'POST'])
@@ -706,7 +727,7 @@ def chat():
         query = request.form['query']
         print(query)
         # Call your FastAPI's /ask endpoint
-        url = f"http://140.203.155.230:8000/ask?query={query}"
+        url = f"https://140.203.155.230:8000/ask?query={query}"
         try:
             res = requests.get(url, timeout=10)
             if res.status_code == 200:
@@ -723,6 +744,7 @@ def save_csv():
     try:
         # Check if username is in session
         if "username" not in session:
+            print("Session data:", dict(session))
             return jsonify({"error": "Login Required, You need to log in to save your data "}), 401  # Unauthorized
 
         username = session["username"]  # Retrieve username from session
@@ -763,7 +785,7 @@ def save_csv():
         print("Exception occurred:", e)
         return jsonify({"error": str(e)}), 500
     
-UPLOAD_FOLDER = "/home/ales/multipeattools/"
+UPLOAD_FOLDER = "/Users/waqasshoukatali/multipeattools/test_git_multipeat"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 def get_latest_csv(username):
@@ -779,7 +801,7 @@ def get_latest_csv(username):
     latest_file = max(valid_files, key=os.path.getctime)  # Get the most recent file
     return latest_file  # Return only the latest file path
 
-UPLOAD_FOLDER = "/home/ales/multipeattools/"
+UPLOAD_FOLDER = "/Users/waqasshoukatali/multipeattools/test_git_multipeat"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 def get_latest_csv(username):

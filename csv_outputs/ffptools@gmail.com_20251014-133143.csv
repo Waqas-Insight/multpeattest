@@ -1,0 +1,45 @@
+Field Name,Belgium
+Key Project Parameters
+Start Year,2025
+Project Duration (years),50
+Avg. Credits/ha/annum,10.4
+Hectares of Potential Restoration,122
+Investment / Financial Inputs (€),650000
+Selling Price of a Carbon Credit (€),80
+Results
+Credits Generated,63440.00
+Cost per Credit,38.63
+Net Present Value,446982
+Gross Present Value,2040189
+CARG,49.01
+Profit per Credit,7.05
+Profit per Hectare per Year,73.28
+Rate of Return,83.25
+Profitable,YES
+Arguments
+Number of Years,50
+Credits per Hectare per Year,10.4
+Hectares for Restoration,122
+Investment Amount,650000
+Start Year,2025
+Price per Credit,80
+Investment Costs Included,true
+Registration Costs Included,true
+Assumptions
+Nominal Interest Rate,0.0235
+Inflation Rate,0.021
+Registry Account Opening Fee,0.001
+Registry Listing Cost per Credit,0.05
+Registry Conversion Cost Fee per Inspection,100
+Registry Conversion Cost per Credit above Minimum Threshold,0.05
+Registration Levy Cost per Credit,0.05
+Validation and Verification Application Cost per Inspection,600
+Validation and Verification Statement Cost per Inspection,800
+Validation and Verification Inspector Travel Cost per Inspection,500
+Inspection Cycle Length,5
+Minimum Threshold of Credits,2000
+Interest Rate,0.05
+Payments per Year,12
+Export Information
+Export Date,2025-10-14T12:31:43.737Z
+Export Timestamp,1760445103737
