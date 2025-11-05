@@ -241,7 +241,7 @@ map.on('singleclick', function (evt) {
         })
     }
 
-  const ieLayer=getLayerByName('IE_dipm');
+  const ieLayer=getLayerByName('IE_ispm');
   const ieSource=ieLayer.getSource();
   const ieUrl=ieSource.getFeatureInfoUrl(coordinate, resolution, projection,
     {'INFO_FORMAT':'application/json'});
@@ -253,9 +253,9 @@ map.on('singleclick', function (evt) {
             success:function(result){
                 const ie=result.features[0];
                 if(ie){
-                    const iegc=ie.properties.site_type;
+                    const iegc=ie.properties.descrip;
 
-                    ieInfo.html(`<p>Site Type: ${iegc}</p>`);
+                    ieInfo.html(`<p>Description: ${iegc}</p>`);
                     noFeatures.html('');
                     }
 
@@ -285,52 +285,6 @@ map.on('singleclick', function (evt) {
         })
     }
 
-const pltLayer=getLayerByName('PL_Torf');
-const pltSource=pltLayer.getSource();
-const pltUrl=pltSource.getFeatureInfoUrl(coordinate, resolution, projection,
-    {'INFO_FORMAT':'application/json'});
-
-    if(pltUrl){
-        $.ajax({
-            url:pltUrl,
-            method:'GET',
-            success:function(result){
-                const plt=result.features[0];
-                if(plt){
-                    const pltTyp=plt.properties.TYP_NAZWA
-                    const pltRos=plt.properties.ROS_NAZWA;
-
-                    pltInfo.html(`<p>Typ: ${pltTyp}</p>
-                        <p>Ros: ${pltRos}</p>`);
-                    noFeatures.html('');
-                    }
-
-            }
-        })
-    }
-/*
-  const corineLayer=getLayerByName('Corine18');
-  const corineSource=corineLayer.getSource();
-  const corineUrl=corineSource.getFeatureInfoUrl(coordinate, resolution, projection,
-    {'INFO_FORMAT':'application/json'});
-
-    if(corineUrl){
-        $.ajax({
-            url:corineUrl,
-            method:'GET',
-            success:function(result){
-                const corine=result.features[0];
-                if(corine){
-                    const corineName=corine.properties.site_type;
-
-                    corineInfo.html(`<p>CORINE-18 Class: ${corineName}</p>`);
-                    noFeatures.html('');
-                    }
-
-            }
-        })
-    }
-*/
   const nlsLayer=getLayerByName('NL_Peat_Soils');
   const nlsSource=nlsLayer.getSource();
   const nlsUrl=nlsSource.getFeatureInfoUrl(coordinate, resolution, projection,
@@ -463,50 +417,7 @@ const pltUrl=pltSource.getFeatureInfoUrl(coordinate, resolution, projection,
             }
         })
     }
-/*
-    // wetlands map of europe
-    const alLayer=getLayerByName('AL_Peatlands');
-    const alSource=alLayer.getSource();
-    const alUrl=alSource.getFeatureInfoUrl(coordinate, resolution, projection,
-    {'INFO_FORMAT':'application/json'});
-    if(alUrl){
-        $.ajax({
-            url:alUrl,
-            method:'GET',
-            success:function(result){
-                const al=result.features[0];
-                if(al){
-                    const styp=al.properties.peatl_type;
-                    alInfo.html(`
-                        <p>Site Type: ${styp}</p>`);
-                    noFeatures.html('');
-                    }
 
-            }
-        })
-    }
-
-    const anLayer=getLayerByName('AN_Peatlands');
-    const anSource=anLayer.getSource();
-    const anUrl=anSource.getFeatureInfoUrl(coordinate, resolution, projection,
-    {'INFO_FORMAT':'application/json'});
-    if(anUrl){
-        $.ajax({
-            url:anUrl,
-            method:'GET',
-            success:function(result){
-                const an=result.features[0];
-                if(an){
-                    const styp=an.properties.peatl_type;
-                    anInfo.html(`
-                        <p>Site Type: ${styp}</p>`);
-                    noFeatures.html('');
-                    }
-
-            }
-        })
-    }
-*/
     const auLayer=getLayerByName('AU_Peatlands');
     const auSource=auLayer.getSource();
     const auUrl=auSource.getFeatureInfoUrl(coordinate, resolution, projection,
@@ -548,28 +459,7 @@ const pltUrl=pltSource.getFeatureInfoUrl(coordinate, resolution, projection,
             }
         })
     }
-/*
-    const boLayer=getLayerByName('BO_Peatlands');
-    const boSource=boLayer.getSource();
-    const boUrl=boSource.getFeatureInfoUrl(coordinate, resolution, projection,
-        {'INFO_FORMAT':'application/json'});
-    if(boUrl){
-        $.ajax({
-            url:boUrl,
-            method:'GET',
-            success:function(result){
-                const bo=result.features[0];
-                if(bo){
-                    const styp=bo.properties.peatland;
-                    boInfo.html(`
-                        <p>Site Type: ${styp}</p>`);
-                    noFeatures.html('');
-                    }
 
-            }
-        })
-    }
-*/
     const buLayer=getLayerByName('BU_Peatlands');
     const buSource=buLayer.getSource();
     const buUrl=buSource.getFeatureInfoUrl(coordinate, resolution, projection,
@@ -737,48 +627,6 @@ const pltUrl=pltSource.getFeatureInfoUrl(coordinate, resolution, projection,
             }
         })
         }
-/*
-    const icLayer=getLayerByName('IC_Peatlands');
-    const icSource=icLayer.getSource();
-    const icUrl=icSource.getFeatureInfoUrl(coordinate, resolution, projection,
-        {'INFO_FORMAT':'application/json'});
-    if(icUrl){
-        $.ajax({
-            url:icUrl,
-            method:'GET',
-            success:function(result){
-                const ic=result.features[0];
-                if(ic){
-                    const styp=ic.properties.peatl_type;
-                    icInfo.html(`
-                        <p>Site Type: ${styp}</p>`);
-                    noFeatures.html('');
-                    }
-
-            }
-        })
-        }
-*/
-    const irLayer=getLayerByName('IR_Peatlands');
-    const irSource=irLayer.getSource();
-    const irUrl=irSource.getFeatureInfoUrl(coordinate, resolution, projection,
-        {'INFO_FORMAT':'application/json'});
-    if(irUrl){
-        $.ajax({
-            url:irUrl,
-            method:'GET',
-            success:function(result){
-                const ir=result.features[0];
-                if(ir){
-                    const styp=ir.properties.peatl_type;
-                    irInfo.html(`
-                        <p>Site Type: ${styp}</p>`);
-                    noFeatures.html('');
-                    }
-
-            }
-        })
-        }
 
     const itLayer=getLayerByName('IT_Peatlands');
     const itSource=itLayer.getSource();
@@ -821,28 +669,7 @@ const pltUrl=pltSource.getFeatureInfoUrl(coordinate, resolution, projection,
             }
         })
         }
-/*
-    const lieLayer=getLayerByName('LIE_Peatlands');
-    const lieSource=lieLayer.getSource();
-    const lieUrl=lieSource.getFeatureInfoUrl(coordinate, resolution, projection,
-        {'INFO_FORMAT':'application/json'});
-    if(lieUrl){
-        $.ajax({
-            url:lieUrl,
-            method:'GET',
-            success:function(result){
-                const lie=result.features[0];
-                if(lie){
-                    const styp=lie.properties.peatl_type;
-                    lieInfo.html(`
-                        <p>Site Type: ${styp}</p>`);
-                    noFeatures.html('');
-                    }
 
-            }
-        })
-        }
-*/
     const litLayer=getLayerByName('LIT_Peatlands');
     const litSource=litLayer.getSource();
     const litUrl=litSource.getFeatureInfoUrl(coordinate, resolution, projection,
@@ -884,49 +711,7 @@ const pltUrl=pltSource.getFeatureInfoUrl(coordinate, resolution, projection,
             }
         })
     }
-/*
-    const maLayer=getLayerByName('MA_Peatlands');
-    const maSource=maLayer.getSource();
-    const maUrl=maSource.getFeatureInfoUrl(coordinate, resolution, projection,
-        {'INFO_FORMAT':'application/json'});
-    if(maUrl){
-        $.ajax({
-            url:maUrl,
-            method:'GET',
-            success:function(result){
-                const ma=result.features[0];
-                if(ma){
-                    const styp=ma.properties.peatl_type;
-                    maInfo.html(`
-                        <p>Probability: ${styp}</p>`);
-                    noFeatures.html('');
-                    }
 
-            }
-        })
-    }
-
-    const moLayer=getLayerByName('MO_Peatlands');
-    const moSource=moLayer.getSource();
-    const moUrl=moSource.getFeatureInfoUrl(coordinate, resolution, projection,
-        {'INFO_FORMAT':'application/json'});
-    if(moUrl){
-        $.ajax({
-            url:moUrl,
-            method:'GET',
-            success:function(result){
-                const mo=result.features[0];
-                if(mo){
-                    const styp=mo.properties.peatl_type;
-                    moInfo.html(`
-                        <p>Site Type: ${styp}</p>`);
-                    noFeatures.html('');
-                    }
-
-            }
-        })
-    }
-*/
     const neLayer=getLayerByName('NE_Peatlands');
     const neSource=neLayer.getSource();
     const neUrl=neSource.getFeatureInfoUrl(coordinate, resolution, projection,
@@ -1010,28 +795,7 @@ const pltUrl=pltSource.getFeatureInfoUrl(coordinate, resolution, projection,
             }
         })
         }
-/*
-    const seLayer=getLayerByName('SE_Peatlands');
-    const seSource=seLayer.getSource();
-    const seUrl=seSource.getFeatureInfoUrl(coordinate, resolution, projection,
-        {'INFO_FORMAT':'application/json'});
-    if(seUrl){
-        $.ajax({
-            url:seUrl,
-            method:'GET',
-            success:function(result){
-                const se=result.features[0];
-                if(se){
-                    const styp=se.properties.peatl_type;
-                    seInfo.html(`
-                        <p>Site Type: ${styp}</p>`);
-                    noFeatures.html('');
-                    }
 
-            }
-        })
-        }
-*/
     const slkLayer=getLayerByName('SLK_Peatlands');
     const slkSource=slkLayer.getSource();
     const slkUrl=slkSource.getFeatureInfoUrl(coordinate, resolution, projection,
@@ -1115,28 +879,6 @@ const pltUrl=pltSource.getFeatureInfoUrl(coordinate, resolution, projection,
             }
         })
     }
-/*
-    const swiLayer=getLayerByName('SWI_Peatlands');
-    const swiSource=swiLayer.getSource();
-    const swiUrl=swiSource.getFeatureInfoUrl(coordinate, resolution, projection,
-        {'INFO_FORMAT':'application/json'});
-    if(swiUrl){
-        $.ajax({
-            url:swiUrl,
-            method:'GET',
-            success:function(result){
-                const swi=result.features[0];
-                if(swi){
-                    const styp=swi.properties.peatl_type;
-                    swiInfo.html(`
-                        <p>Site Type: ${styp}</p>`);
-                    noFeatures.html('');
-                    }
-
-            }
-        })
-    }
-*/
 
     const ukLayer=getLayerByName('GBR_Peatlands');
     const ukSource=ukLayer.getSource();

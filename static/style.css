@@ -60,7 +60,7 @@ p{
 
 p.text-descr, label.text-descr{
     font-size: 16px;
-    color:  #747474;
+    color: #3f3f3f /*#747474*/;
 }
 
 .form-select, .form-control{
@@ -404,8 +404,10 @@ footer{
 }
 
 .form-select{
-    border: transparent;
-    border-radius: 0;
+    border-width: 2px;
+    padding-top: 10px;
+    padding-left: 16px;
+    padding-bottom: 10px;
 }
 
 select::-internal-list-box{
@@ -525,7 +527,7 @@ span.Economy{
     border-color: transparent;
 }
 
-.ie-dipm-box:checked{
+.ie-ispm-box:checked{
     background-color: #8f6543;
     border-color: transparent;
 }
@@ -644,11 +646,6 @@ span.Economy{
 }
 
 .ic-soil-box:checked{
-    background-color: #704405;
-    border-color: transparent;
-}
-
-.ir-soil-box:checked{
     background-color: #704405;
     border-color: transparent;
 }
@@ -1037,10 +1034,9 @@ input[type="checkbox"]:checked + #glb-fltr-svg {
 }
 
 .pol-coll-div, .stk-coll-div{
-    background-color: #b1c8cf;
+    background-color: #cbdfe9;
     border-radius: 20px;
     padding: 20px;
-    margin:20px;
 }
 
 /*Stakeholders page*/
@@ -1194,6 +1190,11 @@ input[type="checkbox"]:checked + #glb-fltr-svg {
     .warning .dialog-icon {
         color: #FF9800;
     }
+
+.tooltip-inner {
+    max-width: 275px !important; 
+    text-align: left;
+}
 
 /* Incentive Classifier */
 
@@ -1470,3 +1471,53 @@ margin-bottom: 0.5rem;
         box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         color: white;
     }
+
+/**/
+.card-body p, .card-body li  {
+  line-height: 1.6;
+}
+
+.accordion-button.sourceacc {
+  font-weight: 600;
+  background-color: #f8f9fa;
+}
+
+.accordion-button.sourceacc:not(.collapsed) {
+  /*color: #0d6efd;*/
+  background-color: #e7f1ff;
+}
+
+.accordion-body.sourceacc ul {
+  margin-left: 1.2rem;
+  padding-left: 0.5rem;
+}
+
+section {
+  margin-bottom: 2rem;
+}
+
+.list-group-item {
+  border: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+ul {
+  margin-left: 1.2rem;
+}
+
+.fw-semibold.text-primary {
+  margin-top: 1rem;
+}
+
+.card.bg-light {
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.card.bg-light:hover {
+  background-color: #eef5ff;
+  transform: translateY(-2px);
+}
+
+.bp-res {
+    padding-bottom: 5px;
+}

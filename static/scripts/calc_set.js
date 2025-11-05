@@ -1253,7 +1253,7 @@ $("#set_csv_btn").on('click', function(event){
         // let csvContent = "data:waqassembled"
         console.log("Sending CSV Data:", csvContent); // Debugging
     
-        fetch('https://test-multipeat.insight-centre.org/save-csv', { 
+        fetch('https://multipeat.insight-centre.org/save-csv', { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json; charset=UTF-8' 
