@@ -86,6 +86,7 @@ SAVE_DIR = "saved_files"
 os.makedirs(SAVE_DIR, exist_ok=True)  # Ensure directory exists
 
 def create_dataendpoint(url):
+    data=None
     headers = {
         'Content-Type': 'application/json'
         #'Cookie': 'session_id='+str(cookie_value)
@@ -132,6 +133,7 @@ def signup():
         name = request.form['name']
         email = request.form['email']
         password = request.form['password']
+        #url = 'http://140.203.154.253:8016/aspect/signup/'
         url = 'https://aspect-erp.insight-centre.org/aspect/signup/'
         headers = {'Content-Type': 'application/json'}
         data = {
@@ -160,6 +162,7 @@ def signup():
 def authenticate_external_api(username, password):
     
     print("authenticate_external_api called with Username:", username) 
+    #url = 'http://140.203.154.253:8016/web/session/authenticate'
     url = 'https://aspect-erp.insight-centre.org/web/session/authenticate'
     headers = {'Content-Type': 'application/json'}
     data = {
@@ -248,37 +251,6 @@ def logout():
     session.pop('username', None)
     return jsonify({'message': 'Logout successful'}), 200
 
-@app.route('/dashboard')
-def dashboard():
-    if 'username' in session:
-     return render_template('map.html', username=session['username'])
-    return redirect(url_for('login'))
-
-@app.route('/uploads/<filename>')
-def upload(filename):
-    return send_from_directory(app.config['UPLOAD_PATH'], filename)
-
-'''
-ROUTES
-'''
-@app.route('/')
-def landingpage():
-    return redirect(url_for('map_page'))
-
-@app.route('/about', methods=['GET', 'POST'])
-def about():
-    username = session.get('username')
-    if username is None:
-        return render_template('about.html')
-    return render_template('about.html', username=session['username'])
-
-@app.route('/map', methods=['GET', 'POST'])
-def map_page():
-    username = session.get('username')
-    if username is None:
-        return render_template('map.html')
-    return render_template('map.html', username=session['username'])
-
 from flask import request, jsonify, session
 import requests
 
@@ -290,34 +262,34 @@ def reset_password():
     """
     if 'username' not in session and 'email' not in session:
         return jsonify({'success': False, 'message': 'Not authenticated'}), 401
-    
+
     try:
         data = request.get_json()
         new_password = data.get('new_password')
-        
+
         if not new_password:
             return jsonify({'success': False, 'message': 'New password is required'}), 400
-        
+
         # Get user login from session - adjust based on your session structure
         user_login = session.get('email') or session.get('username')
-        
+
         if not user_login:
             return jsonify({'success': False, 'message': 'User login not found in session'}), 400
-        
+
         # Call your existing API
         api_url = 'https://aspect-erp.insight-centre.org/aspect/reset_password'
         api_payload = {
             'login': user_login,
             'new_password': new_password
         }
-        
+
         response = requests.post(
             api_url,
             json=api_payload,
             headers={'Content-Type': 'application/json'},
             timeout=30
         )
-        
+
         if response.status_code == 200:
             return jsonify({'success': True, 'message': 'Password updated successfully'})
         else:
@@ -329,9 +301,9 @@ def reset_password():
                 error_message = 'Invalid request data'
             elif response.status_code == 500:
                 error_message = 'Server error occurred'
-            
+
             return jsonify({'success': False, 'message': error_message}), response.status_code
-            
+
     except requests.exceptions.Timeout:
         return jsonify({'success': False, 'message': 'Request timeout - please try again'}), 408
     except requests.exceptions.ConnectionError:
@@ -361,7 +333,50 @@ def load_country(country):
         return jsonify(data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+@app.route('/dashboard')
+def dashboard():
+    if 'username' in session:
+     return render_template('map.html', username=session['username'])
+    return redirect(url_for('login'))
 
+@app.route('/uploads/<filename>')
+def upload(filename):
+    return send_from_directory(app.config['UPLOAD_PATH'], filename)
+
+'''
+ROUTES
+'''
+@app.route('/')
+def landingpage():
+    return redirect(url_for('home'))
+
+@app.route('/home', methods=['GET', 'POST'])
+def home():
+    username = session.get('username')
+    if username is None:
+        return render_template('home.html')
+    return render_template('home.html', username=session['username'])
+
+@app.route('/about', methods=['GET', 'POST'])
+def about():
+    username = session.get('username')
+    if username is None:
+        return render_template('about.html')
+    return render_template('about.html', username=session['username'])
+
+@app.route('/map', methods=['GET', 'POST'])
+def map_page():
+    username = session.get('username')
+    if username is None:
+        return render_template('map.html')
+    return render_template('map.html', username=session['username'])
+
+@app.route('/map-info', methods=['GET', 'POST'])
+def map_info():
+    username = session.get('username')
+    if username is None:
+        return render_template('map_info.html')
+    return render_template('map_info.html', username=session['username'])
 
 @app.route('/ffptool', methods=['GET', 'POST'])
 def ffp_tool():
@@ -402,6 +417,10 @@ def set_tool():
     
     return render_template("set_tool.html", username=session['username'], results=results_dct, inpt=input_dct)
 
+@app.route('/pffptool', methods=['GET'])
+def pffp_tool():
+    return render_template('pffp_tool.html')
+
 @app.route('/keywords', methods=['GET', 'POST'])
 def policy_keywords():
     username = session.get('username')
@@ -415,11 +434,61 @@ def policy():
          return render_template('policymain.html')
     return render_template('policymain.html', username=session['username'])
 
+@app.route('/policy-info', methods=['GET', 'POST'])
+def policy_info():
+    username = session.get('username')
+    if username is None:
+        return render_template('policy_info.html')
+    return render_template('policy_info.html', username=session['username'])
+
 @app.route('/stakeholders', methods=['GET', 'POST'])
 def stakeholders():
     if 'username' not in session:
          return render_template('stakeholders.html')
     return render_template('stakeholders.html', username=session['username'])
+
+@app.route('/feedback', methods=['GET', 'POST'])
+def feedback():
+    if 'username' not in session:
+         return render_template('feedback.html')
+    return render_template('feedback.html', username=session['username'])
+
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    if 'username' not in session:
+         return render_template('contact.html')
+    return render_template('contact.html', username=session['username'])
+
+@app.route('/resources', methods=['GET', 'POST'])
+def resources():
+    if 'username' not in session:
+         return render_template('resources.html')
+    return render_template('resources.html', username=session['username'])
+
+@app.route('/calculators', methods=['GET', 'POST'])
+def calculators():
+    if 'username' not in session:
+         return render_template('calculators.html')
+    return render_template('calculators.html', username=session['username'])
+
+@app.route('/best_practice', methods=['GET', 'POST'])
+def best_practice():
+    if 'username' not in session:
+         return render_template('best_practice.html')
+    return render_template('best_practice.html', username=session['username'])
+    
+@app.route('/project_collection', methods=['GET', 'POST'])
+def project_collection():
+    if 'username' not in session:
+         return render_template('project_collection.html')
+    return render_template('project_collection.html', username=session['username'])
+
+@app.route('/project_map', methods=['GET', 'POST'])
+def project_map():
+    if 'username' not in session:
+         return render_template('project_map.html')
+    return render_template('project_map.html', username=session['username'])
+
     
 @app.route('/policy-suggestion', methods=['GET', 'POST'])
 def sub_policy():
@@ -436,18 +505,14 @@ def sub_policy():
     }
     if request.method == 'POST':
         #url = 'http://localhost:8616/aspect/create_policy/'
-        url = 'http://140.203.154.253:8016/aspect/create_policy/'
+        #url = 'http://140.203.154.253:8016/aspect/create_policy/'
+        url = 'https://aspect-erp.insight-centre.org/aspect/create_policy/'
         # Set up the headers
         headers = {
             'Content-Type': 'application/json',
             #='Cookie': 'session_id='+str(cookie_value)
         }
-        # get policy level for conditional
-        policy_level = request.form['govlvl']
         category_list = []
-        pub_list = []
-        stk_list = []
-        kwd_list=[]
         # get category list
         for key in list(categdct):
             # try/ except so non-selected categories don't trigger bad request 
@@ -456,41 +521,24 @@ def sub_policy():
                     category_list.append(categdct[key])
             except:
                 pass
-        # get publisher list and handle "other"
-        # [int(entry) for entry in request.form.getlist('polpub')] if request.form['polpub'] else [] # triggers error when "other"
-        # try/except for 
-        try:
-            for entry in request.form.getlist('polpub'):
-                if entry != "other":
-                    pub_list.append(int(entry))
-        except:
-            pass
-        # get stakeholder list and handle "other"
-        try:
-            for entry in request.form.getlist('polsta'):
-                if entry != "other":
-                    stk_list.append(int(entry))
-        except:
-            pass
-        # if english name is empty, set to native language name
-        engname = request.form['engtitle']
-        if engname == "":
-            engname = request.form['nattitle']
         # if language, convert to int
         lang = request.form['pollang']
         if lang != "":
             lang = int(request.form['pollang'])
-        # get keyword list [may need to handle 'other' in future]
-        try:
-            for entry in request.form.getlist('polkwd'):
-                kwd_list.append(int(entry))
-        except:
-            pass
         #
+        new_info_format = ""
+        new_info_format+=f"Email: {request.form['email']}"
+        new_info_format+=f"\nRegion: {request.form['reg']}"
+        new_info_format+=f"\nLanguage ID: {lang}"
+        new_info_format+=f"\nStart year: {request.form['startyr']}"
+        new_info_format+=f"\nPublishers: {request.form['polpub']}"
+        new_info_format+=f"\nRelevance: {request.form['relev']}"
+        new_info_format+=f"\nDocumentation Info: {request.form['pglnk']}"
+        new_info_format+=f"\nAdditional Info: {request.form['addtl']}"
         payload = {
             "jsonrpc": "2.0",
             "params": {
-                "name": engname,
+                "name": request.form["engtitle"],
                 "name_language": request.form['nattitle'],
                 "language": lang,
                 "type": "Policy",  
@@ -498,22 +546,22 @@ def sub_policy():
                 "policy_level": request.form['govlvl'],  
                 "country_group": 1,  
                 "country": request.form['ctry'],  
-                "localauthority1": request.form['loc'], 
-                "nuts_level_1": '' if policy_level in ['Global', 'European'] else request.form['reg'],  # Conditional assignment
-                "year_from": request.form['startyr'],  
-                "year_to": request.form['endyr'],
-                "publisher": pub_list,
-                "publisher_char": request.form['polpub_t'],
-                "stakholder_ids": stk_list,
-                "stakeholder_char": request.form['polsta_t'],
+                "localauthority1": "", 
+                "nuts_level_1": '',
+                "year_from": "",  
+                "year_to": "",
+                "publisher": [],
+                "publisher_char": "",
+                "stakholder_ids": [],
+                "stakeholder_char": "",
                 "publisher_link": request.form['pglnk'], 
                 "data_link": request.form['pdflnk'],  
-                "excerpt": request.form['excnat'],  
-                "excerpt_english": request.form['exceng'],  
-                "abstract": request.form['absnat'],  
-                "abstract_english": request.form['abseng'],  
-                "keywords":kwd_list,
-                "additional_info":request.form['addtl'],
+                "excerpt": '',  
+                "excerpt_english": '',  
+                "abstract": '',  
+                "abstract_english": '',  
+                "keywords":[],
+                "additional_info":new_info_format,
                 "state": "Draft"
             }
         }
@@ -670,81 +718,71 @@ def any_policy(pol_id):
 
 @app.route('/categorydata')
 def getcateg():
+    #url = 'http://140.203.154.253:8016/aspect/category/'
     url = 'https://aspect-erp.insight-centre.org/aspect/category/'
     return create_dataendpoint(url)
 
 @app.route('/policydata')
 def getpols():
+    #url = 'http://140.203.154.253:8016/aspect/policies/'
     url = 'https://aspect-erp.insight-centre.org/aspect/policies/'
     return create_dataendpoint(url)
 
 @app.route('/sgpolicy/<int:pol_id>')
 def get_sgpol(pol_id):
-    url = f"https://aspect-erp.insight-centre.org/aspect/policy/{pol_id}"
+    #url = f"http://140.203.154.253:8016/aspect/policy/{pol_id}"
+    url = f'https://aspect-erp.insight-centre.org/aspect/policy/{pol_id}'
     return create_dataendpoint(url)
 
 @app.route('/countrydata')
 def getctry():
+    #url = 'http://140.203.154.253:8016/aspect/countries/'
     url = 'https://aspect-erp.insight-centre.org/aspect/countries/'
     return create_dataendpoint(url)
 
 @app.route('/localdata/<int:code>')
 def getlocal(code):
+    #url = f'http://140.203.154.253:8016/aspect/state/{code}/'
     url = f'https://aspect-erp.insight-centre.org/aspect/state/{code}/'
     return create_dataendpoint(url)
 
 @app.route('/nutsdata/<int:code>')
 def getnuts(code):
+    #url = f'http://140.203.154.253:8016/aspect/nuts/{code}/'
     url = f'https://aspect-erp.insight-centre.org/aspect/nuts/{code}/'
     return create_dataendpoint(url)
 
 @app.route('/languagedata')
 def getlangs():
+    #url = 'http://140.203.154.253:8016/aspect/languages/'
     url = 'https://aspect-erp.insight-centre.org/aspect/languages/'
     return create_dataendpoint(url)
 
 @app.route('/keyworddata')
 def getkwdsnew():
+    #url = 'http://140.203.154.253:8016/aspect/keywords/'
     url = 'https://aspect-erp.insight-centre.org/aspect/keywords/'
     return create_dataendpoint(url)
 
 @app.route('/stakeholderdata/<int:code>')
 def getstknew(code):
+    #url = f'http://140.203.154.253:8016/aspect/stakeholders/{code}/'
     url = f'https://aspect-erp.insight-centre.org/aspect/stakeholders/{code}/'
     return create_dataendpoint(url)
 
 @app.route('/publisherdata/<int:code>')
 def getpubs(code):
+    #url = f'http://140.203.154.253:8016/aspect/publishers/{code}/'
     url = f'https://aspect-erp.insight-centre.org/aspect/publishers/{code}/'
     return create_dataendpoint(url)
 
-@app.route('/chat', methods=['GET', 'POST'])
-@csrf.exempt 
-def chat():
-    answer = None
-    sources = []
-    if request.method == 'POST':
-        query = request.form['query']
-        print(query)
-        # Call your FastAPI's /ask endpoint
-        url = f"https://140.203.155.230:8000/ask?query={query}"
-        try:
-            res = requests.get(url, timeout=10)
-            if res.status_code == 200:
-                data = res.json()
-                answer = data.get("answer")
-                sources = data.get("sources", [])
-        except Exception as e:
-            answer = f"Error fetching answer: {e}"
-    return render_template("chat.html", answer=answer, sources=sources)
-
+from flask import Flask, request, jsonify
 @app.route('/save-csv', methods=['POST'])
 @csrf.exempt 
 def save_csv():
     try:
         # Check if username is in session
         if "username" not in session:
-            print("Session data:", dict(session))
             return jsonify({"error": "Login Required, You need to log in to save your data "}), 401  # Unauthorized
 
         username = session["username"]  # Retrieve username from session
@@ -785,7 +823,7 @@ def save_csv():
         print("Exception occurred:", e)
         return jsonify({"error": str(e)}), 500
     
-UPLOAD_FOLDER = "/Users/waqasshoukatali/multipeattools/test_git_multipeat"
+UPLOAD_FOLDER = "/home/ales/multipeattools/multipeattools"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 def get_latest_csv(username):
@@ -801,7 +839,7 @@ def get_latest_csv(username):
     latest_file = max(valid_files, key=os.path.getctime)  # Get the most recent file
     return latest_file  # Return only the latest file path
 
-UPLOAD_FOLDER = "/Users/waqasshoukatali/multipeattools/test_git_multipeat"
+UPLOAD_FOLDER = "/home/ales/multipeattools/multipeattools"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 def get_latest_csv(username):
@@ -897,7 +935,7 @@ def extract_site_name_from_csv(csv_file):
                 # Look for site name in common locations
                 elif current_section == "General Site Data" and line.startswith("Site Name"):
                     return line.split(",", 1)[1].strip()
-                elif line.startswith("Site Name") or line.startswith("Site Name"):
+                elif line.startswith("Site Name") or line.startswith("Name"):
                     return line.split(",", 1)[1].strip()
                 elif current_section is None and line.startswith("Site:"):
                     return line.split(":", 1)[1].strip()
@@ -1026,26 +1064,26 @@ def fetch_test_data():
 def get_available_fields():
     if "username" not in session:
         return jsonify({"error": "User not logged in"}), 401
-    
+
     username = session["username"]
-    
+
     # Get all available CSV files for this user
     csv_files = get_all_csv_files(username)
-    
+
     sites = []
     for idx, csv_file in enumerate(csv_files):
         try:
             if not os.path.exists(csv_file):
                 print(f"Warning: File not found: {csv_file}")
                 continue
-            
+
             # Extract a meaningful site name from the CSV content
             site_name = extract_field_name_from_csv(csv_file)
-            
+
             # If we couldn't extract a site name, fall back to the filename
             filename = os.path.basename(csv_file)
             display_name = site_name if site_name else filename.replace(f"{username}_", "")
-            
+
             sites.append({
                 "id": idx, 
                 "name": display_name,  # This is what shows in the dropdown
@@ -1053,7 +1091,7 @@ def get_available_fields():
             })
         except Exception as e:
             print(f"Error processing {csv_file}: {str(e)}")
-    
+
     return jsonify(sites)
 
 def extract_field_name_from_csv(csv_file):
@@ -1068,7 +1106,7 @@ def extract_field_name_from_csv(csv_file):
                 line = line.strip()
                 if not line:
                     continue
-                
+
                 if "," not in line:
                     current_section = line
                 # Look for site name in common locations
@@ -1078,7 +1116,7 @@ def extract_field_name_from_csv(csv_file):
                     return line.split(",", 1)[1].strip()
                 elif current_section is None and line.startswith("Field Name"):
                     return line.split(":", 1)[1].strip()
-            
+
             # If we couldn't find a proper site name, look for a date in the filename
             # which might be more meaningful than the full filename
             filename = os.path.basename(csv_file)
@@ -1087,7 +1125,7 @@ def extract_field_name_from_csv(csv_file):
             if date_match:
                 date_str = date_match.group(0)
                 return f"Site data from {date_str}"
-            
+
             return None
     except Exception as e:
         print(f"Error extracting site name from {csv_file}: {str(e)}")
@@ -1098,22 +1136,22 @@ def fetch_field_data(file_name):
     """Fetch data from a specific CSV file"""
     if "username" not in session:
         return jsonify({"error": "User not logged in"}), 401  # Unauthorized
-    
+
     username = session["username"]
-    
+
     # Define the correct path to the CSV files folder
     csv_folder = os.path.join(app.config['UPLOAD_FOLDER'], 'csv_outputs')
-    
+
     # The full path to the file - check both naming patterns
     file_path = os.path.join(csv_folder, file_name)
-    
+
     # Debug information
     print(f"Looking for file: {file_path}")
     print(f"File exists: {os.path.exists(file_path)}")
-    
+
     if not os.path.exists(file_path):
         return jsonify({"error": f"File not found at {file_path}"}), 404
-    
+
     try:
         structured_data = {}
         current_section = None
@@ -1122,7 +1160,7 @@ def fetch_field_data(file_name):
                 line = line.strip()
                 if not line:
                     continue
-                
+
                 if "," not in line:
                     current_section = line
                     structured_data[current_section] = {}
@@ -1137,14 +1175,13 @@ def fetch_field_data(file_name):
                         structured_data[current_section][key] = value
                     else:
                         structured_data[key] = value
-        
+
         return jsonify(structured_data)
     except Exception as e:
         import traceback
         traceback_str = traceback.format_exc()
         print(f"Error reading file {file_path}: {str(e)}\n{traceback_str}")
         return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
-
 
 '''
 Error Handling
