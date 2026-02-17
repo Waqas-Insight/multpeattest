@@ -1,0 +1,72 @@
+Results
+Base CH4,-0.05
+Base CO2,157.20
+Base Carbon Emission GWP Subtotal,157.15
+Base N2O Direct,16.24
+Base N2O Indirect,4.12
+Base N2O Emission GWP Subtotal,20.36
+Base Activity GWP Subtotal,0.21
+Base GWP Total,177.72
+Rewet CH4,34.05
+Rewet CO2,-5.40
+Rewet Carbon Emission GWP Subtotal,28.65
+Rewet N2O Direct,20.60
+Rewet N2O Indirect,5.84
+Rewet N2O Emission GWP Subtotal,26.44
+Rewet Activity GWP Subtotal,0.28
+Rewet Product GWP Subtotal,0.00
+Rewet GWP Total,55.37
+GHG Savings Total per Year per Site,122.35
+GHG Savings Total per Year per Ha,24.47
+GHG Savings Stock per Year per Site,128.50
+GHG Savings Stock per Year per Ha,25.70
+GHG Savings Flow per Year per Site,-6.15
+GHG Savings Flow per Year per Ha,-1.23
+GHG Savings Product Use per Year per Site,0.00
+GHG Savings Product Use per Year per Ha,0.00
+Carbon Stock TCO2 per Site,50391.00
+Carbon Stock Ton C per Site,13743.00
+Carbon Stock TCO2 per Ha,10078.20
+Carbon Stock Ton C per Ha,2748.60
+Base Years til Peat Lost,320.56
+Rewet Years til Peat Lost,Infinity
+Inputs
+General Site Data
+Site Name,Test SiteName1010
+Total Area,5
+Coordinates,[-56, 100]
+Elevation,30
+Peat Type,Woody
+Peat Thickness,500
+Year Rewetting Starts,2025
+Base
+Median Groundwater Level,-70
+Vegetation Class,G1
+Amount Manure,50
+Amount Organic Fertilizer,30
+Type Synthetic Fertilizer,Ammonium Based
+Amount Synthetic Fertilizer,100
+Type of Grazing Animals,Sheep
+Number of Grazing Animals,10
+Average Number of Grazing Days,200
+Crop Yield,50
+Include Crop Residuals,true
+Crop Name,Peat Moss (Sphagnum Sp.)
+Diesel per Site,50
+Electricity per Site,70
+Rewet
+Median Groundwater Level,0
+Vegetation Class,U17
+Amount Manure,75
+Amount Organic Fertilizer,60
+Type Synthetic Fertilizer,Ammonium Based
+Amount Synthetic Fertilizer,60
+Type of Grazing Animals,Sheep
+Average Number of Grazing Animals,20
+Average Number of Grazing Days,100
+Crop Yield,100
+Include Crop Residuals,true
+Crop Name,Reed (Phragmites Australis)
+Diesel per Site,75
+Electricity per Site,50
+Crop Use,Food Application

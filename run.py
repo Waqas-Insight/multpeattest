@@ -3,6 +3,7 @@ import json
 from sys import exit
 from flask import Flask
 from flask import url_for, render_template, send_file, request, redirect, session, send_from_directory, flash, jsonify, abort
+from flask import Flask, render_template, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
 from flask_wtf import FlaskForm
 from flask_wtf.csrf import CSRFProtect
@@ -19,6 +20,8 @@ import glob
 import logging
 from markupsafe import Markup
 import markdown
+import re
+
 #
 from modules import assum_json_to_dict, usrinp_json_to_dict
 import requests
@@ -428,11 +431,144 @@ def policy_keywords():
         return render_template('keywords.html')
     return render_template('keywords.html', username=session['username'])
     
+@app.route('/factsheet', methods=['GET', 'POST'])
+def policy_factsheet():
+    username = session.get('username')
+    if username is None:
+        return render_template('factsheet.html')
+    return render_template('factsheet.html', username=session['username'])
+BLOG_DIR = os.path.join(app.static_folder, 'blog')
+def parse_blog_content(country_code):
+    """Parse the content.txt file for a country"""
+    content_path = os.path.join(BLOG_DIR, country_code, 'content.txt')
+    
+    if not os.path.exists(content_path):
+        return None
+    
+    with open(content_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+    
+    # Parse metadata and sections
+    blog_data = {
+        'country_code': country_code,
+        'metadata': {},
+        'sections': []
+    }
+    
+    # Extract metadata
+    metadata_fields = ['TITLE', 'SUBTITLE', 'AUTHOR', 'DATE', 'READ_TIME', 'HERO_IMAGE']
+    for field in metadata_fields:
+        match = re.search(rf'^{field}:\s*(.+)$', content, re.MULTILINE)
+        if match:
+            blog_data['metadata'][field.lower()] = match.group(1).strip()
+    
+    # Split content into sections
+    sections = re.split(r'\n(?=SECTION:|HIGHLIGHT:|LIST:)', content)
+    
+    for section in sections:
+        section = section.strip()
+        if not section or section.startswith(('TITLE:', 'SUBTITLE:', 'AUTHOR:', 'DATE:', 'READ_TIME:', 'HERO_IMAGE:')):
+            continue
+        
+        if section.startswith('SECTION:'):
+            lines = section.split('\n', 2)
+            title = lines[0].replace('SECTION:', '').strip()
+            icon_match = re.search(r'ICON:\s*(.+)', section)
+            icon = icon_match.group(1).strip() if icon_match else '📄'
+            
+            # Remove ICON line from content
+            section_content = re.sub(r'ICON:.*\n', '', section)
+            section_content = section_content.replace(f'SECTION: {title}\n', '').strip()
+            
+            # Check for images in section
+            image_match = re.search(r'IMAGE:\s*(.+)', section_content)
+            caption_match = re.search(r'CAPTION:\s*(.+)', section_content)
+            
+            image = None
+            caption = None
+            if image_match:
+                image = image_match.group(1).strip()
+                section_content = re.sub(r'IMAGE:.*\n', '', section_content)
+            if caption_match:
+                caption = caption_match.group(1).strip()
+                section_content = re.sub(r'CAPTION:.*\n', '', section_content)
+            
+            blog_data['sections'].append({
+                'type': 'section',
+                'title': title,
+                'icon': icon,
+                'content': section_content.strip(),
+                'image': image,
+                'caption': caption
+            })
+        
+        elif section.startswith('HIGHLIGHT:'):
+            lines = section.split('\n', 1)
+            title = lines[0].replace('HIGHLIGHT:', '').strip()
+            content = lines[1].strip() if len(lines) > 1 else ''
+            
+            blog_data['sections'].append({
+                'type': 'highlight',
+                'title': title,
+                'content': content
+            })
+        
+        elif section.startswith('LIST:'):
+            lines = section.split('\n', 1)
+            title = lines[0].replace('LIST:', '').strip()
+            content = lines[1].strip() if len(lines) > 1 else ''
+            
+            # Extract list items
+            items = [line.strip('- ').strip() for line in content.split('\n') if line.strip().startswith('-')]
+            
+            blog_data['sections'].append({
+                'type': 'list',
+                'title': title,
+                'items': items
+            })
+    
+    return blog_data
 @app.route('/policy', methods=['GET', 'POST'])
 def policy():
     if 'username' not in session:
          return render_template('policymain.html')
     return render_template('policymain.html', username=session['username'])
+@app.route('/api/blog/<country_code>')
+def get_blog(country_code):
+    """API endpoint to get blog content for a country"""
+    blog_data = parse_blog_content(country_code)
+    
+    if blog_data is None:
+        return jsonify({'error': 'Blog not found'}), 404
+    
+    return jsonify(blog_data)
+
+@app.route('/api/blog/list')
+def list_blogs():
+    """API endpoint to list all available blog posts"""
+    blogs = []
+    
+    if os.path.exists(BLOG_DIR):
+        for country_code in os.listdir(BLOG_DIR):
+            country_path = os.path.join(BLOG_DIR, country_code)
+            if os.path.isdir(country_path):
+                content_path = os.path.join(country_path, 'content.txt')
+                if os.path.exists(content_path):
+                    blogs.append(country_code)
+    
+    return jsonify({'blogs': blogs})
+
+@app.route('/blog/images/<country_code>/<filename>')
+def serve_blog_image(country_code, filename):
+    """Serve blog images"""
+    image_dir = os.path.join(BLOG_DIR, country_code, 'images')
+    return send_from_directory(image_dir, filename)
+
+@app.route('/blog/flag/<country_code>/<filename>')
+def serve_flag_image(country_code, filename):
+    """Serve flag images"""
+    flag_dir = os.path.join(BLOG_DIR, country_code, 'flag')
+    return send_from_directory(flag_dir, filename)
 
 @app.route('/policy-info', methods=['GET', 'POST'])
 def policy_info():

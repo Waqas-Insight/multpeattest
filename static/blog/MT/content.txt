@@ -1,0 +1,26 @@
+TITLE: MT Peatland Conservation Strategy
+SUBTITLE: A Comprehensive Analysis
+AUTHOR: Environmental Research Team
+DATE: February 2026
+READ_TIME: 8 min
+HERO_IMAGE: hero.jpg
+
+SECTION: Executive Summary
+ICON: 🌿
+Add your executive summary content here.
+
+SECTION: Key Statistics
+ICON: 📊
+Add your statistics section here.
+
+HIGHLIGHT: Important Note
+Add highlighted information here.
+
+LIST: Key Points
+- Point 1
+- Point 2
+- Point 3
+
+SECTION: Conclusion
+ICON: 📚
+Add your conclusion here.
