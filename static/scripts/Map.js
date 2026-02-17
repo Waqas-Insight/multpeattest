@@ -1,6 +1,7 @@
 import Map from 'https://cdn.skypack.dev/ol/Map.js';
 import View from 'https://cdn.skypack.dev/ol/View.js';
-import TileLayer from 'https://cdn.skypack.dev/ol/layer/Tile.js';
+//import TileLayer from 'https://cdn.skypack.dev/ol/layer/Tile.js';
+import TileLayer from 'https://esm.sh/ol@latest/layer/Tile';
 import OSM from 'https://cdn.skypack.dev/ol/source/OSM.js';
 import TileWMS from 'https://cdn.skypack.dev/ol/source/TileWMS.js';
 import Projection from 'https://cdn.skypack.dev/ol/proj/Projection.js';
@@ -13,9 +14,9 @@ import ImageWMS from 'https://cdn.skypack.dev/ol/source/TileWMS.js';
 //                //
 ////////////////////
 
-const serverURL="https://multipeat.insight-centre.org/geoserver/wms";
+//const serverURL="https://multipeat.insight-centre.org/geoserver/wms";
 //const serverURL="http://140.203.155.66:8080/geoserver/wms";
-//const serverURL="https://test-multipeat.insight-centre.org/geoserver/wms";
+const serverURL="https://test-multipeat.insight-centre.org/geoserver/wms";
 
 const res_dct={
     "max":{

@@ -43,7 +43,7 @@ FLASK_PID=$!
 # Step 7: Open the browser to http://127.0.0.1:5000
 echo "Opening http://127.0.0.1:5000 in your default browser..."
 sleep 2  # Wait for the Flask app to start
-open "http://127.0.0.1:5000"
+#open "http://127.0.0.1:5000"
 
 # Step 8: Wait for the user to press Ctrl+C to stop the script
 echo "Press Ctrl+C to stop the Flask app and exit..."

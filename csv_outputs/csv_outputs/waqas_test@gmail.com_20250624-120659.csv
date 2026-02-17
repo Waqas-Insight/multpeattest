@@ -1,0 +1,45 @@
+Field Name,Nial Farm
+Key Project Parameters
+Start Year,2026
+Project Duration (years),500
+Avg. Credits/ha/annum,30
+Hectares of Potential Restoration,5
+Investment / Financial Inputs (€),74700
+Selling Price of a Carbon Credit (€),80
+Results
+Credits Generated,75000.00
+Cost per Credit,28.71
+Net Present Value,-1025297
+Gross Present Value,-427333
+CARG,35.96
+Profit per Credit,-13.67
+Profit per Hectare per Year,-410.12
+Rate of Return,-19.85
+Profitable,NO
+Arguments
+Number of Years,500
+Credits per Hectare per Year,30
+Hectares for Restoration,5
+Investment Amount,74700
+Start Year,2026
+Price per Credit,80
+Investment Costs Included,true
+Registration Costs Included,true
+Assumptions
+Nominal Interest Rate,0.0235
+Inflation Rate,0.021
+Registry Account Opening Fee,0.001
+Registry Listing Cost per Credit,0.05
+Registry Conversion Cost Fee per Inspection,100
+Registry Conversion Cost per Credit above Minimum Threshold,0.05
+Registration Levy Cost per Credit,0.05
+Validation and Verification Application Cost per Inspection,600
+Validation and Verification Statement Cost per Inspection,800
+Validation and Verification Inspector Travel Cost per Inspection,500
+Inspection Cycle Length,5
+Minimum Threshold of Credits,2000
+Interest Rate,0.05
+Payments per Year,12
+Export Information
+Export Date,2025-06-24T11:06:59.745Z
+Export Timestamp,1750763219745
