@@ -1,6 +1,6 @@
 TITLE: IE Peatland Profile
 SUBTITLE: Ireland Peatland 
-AUTHOR: abc
+AUTHOR: Environmental Research Team
 DATE: February 2026
 READ_TIME:  10
 HERO_IMAGE: ireland-peatland.jpg

@@ -1,6 +1,6 @@
 TITLE: AT Peatland Conservation Strategy
 SUBTITLE: A Comprehensive Analysis
-AUTHOR: Environmental Research Team
+AUTHOR: Sajin
 DATE: February 2026
 READ_TIME: 8 min
 HERO_IMAGE: hero.jpg
