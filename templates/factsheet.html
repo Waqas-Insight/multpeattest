@@ -1277,7 +1277,7 @@
         <div class="stats-section">
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-icon">🇪🇺</div>
+                    <div class="stat-icon" id="stat-eu-flag">🇪🇺</div>
                     <div class="stat-value" id="totalArea">24.1M</div>
                     <div class="stat-label">Total EU PeatLand (HA)</div>
                 </div>
@@ -1441,9 +1441,9 @@
             }
 
             /* EU totals row → styled EU badge */
-            if (iso === 'eu') {
-                return '<span class="flag-badge eu-badge" style="width:' + size + 'px;height:' + bH + 'px;font-size:' + Math.round(size * 0.28) + 'px;">EU</span>';
-            }
+            //if (iso === 'eu') {
+            //    return '<span class="flag-badge eu-badge" style="width:' + size + 'px;height:' + bH + 'px;font-size:' + Math.round(size * 0.28) + 'px;">EU</span>';
+            //}
 
             /*
              *  CDN Tier 1 — flagcdn.com  PNG  (primary, global CDN, no auth)
@@ -1484,6 +1484,8 @@
                 '</span>' +
                 '</span>';
         }
+        var stat_eu_flg = document.getElementById("stat-eu-flag");
+        stat_eu_flg.innerHTML = getFlagHtml("Totals", 50);
 
         /* ================================================================= */
 
