@@ -7,20 +7,20 @@ HERO_IMAGE: hero.jpg
 
 SECTION: Executive Summary
 ICON: 🌿
-Add your executive summary content here.
+Out of all the countries in the EU, Malta is the only one with no peatlands known to exist.
 
 SECTION: Key Statistics
 ICON: 📊
-Add your statistics section here.
+So far no reports of peatland statistics.
 
 HIGHLIGHT: Important Note
-Add highlighted information here.
+
 
 LIST: Key Points
-- Point 1
-- Point 2
-- Point 3
+- 
+- 
+- 
 
 SECTION: Conclusion
 ICON: 📚
-Add your conclusion here.
+

@@ -1028,6 +1028,28 @@
             margin-bottom: 20px;
         }
 
+        .inline-link-button {
+           display: inline-flex;
+           justify-content: center;
+           align-items: center;
+           width: 20px;
+           height: 20px;
+           margin-left: 8px;
+           background: white;
+           border-radius: 50%;
+           text-decoration: none;
+           font-size: 12px;
+           color: #4caf50;
+           box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+           vertical-align: middle;
+           transition: all 0.2s ease;
+        }
+
+        .inline-link-button:hover {
+           transform: scale(1.15);
+           box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+        }
+
         .blog-cta {
             display: inline-block;
             padding: 14px 32px;
@@ -1266,7 +1288,7 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon">🏭</div>
-                    <div class="stat-value" id="totalextraction">843K</div>
+                    <div class="stat-value" id="totalExtraction">843K</div>
                     <div class="stat-label">extraction (ha)</div>
                 </div>
                 <div class="stat-card">
@@ -1552,7 +1574,7 @@
         'extraction': 10000.0,
         'extractionSource': 'https://unfccc.int/sites/default/files/resource/NID%20SE%20submission%202025.pdf',
         'extractionDate': 2023.0,
-        'afforested': '~700000',
+        'afforested': 700000,
         'afforestedSource': 'https://www.researchgate.net/publication/227054481_Afforestation_of_low-productivity_peatlands_in_Sweden_-_The_potential_of_natural_seeding#:~:text=In%20Sweden%2C%20peatlands%20have%20been,(Picea%20abies%20(L.)',
         'afforestedDate': 2023.0,
         'agricultural': 290312.0,
@@ -2271,15 +2293,38 @@
                 if (currentView === 'cards') cardsView.style.display = 'block';
             }
         }
+        
+        function setStat(id, value, suffix, divisor, decimals) {
+            const element = document.getElementById(id);
+            if (!element) return;
+
+            element.textContent = (value / divisor).toFixed(decimals) + suffix;
+        }
+
 
         function updateStats() {
-            const totalArea       = filteredData.reduce((sum, c) => sum + (c.area       || 0), 0);
-            const totalNatural    = filteredData.reduce((sum, c) => sum + (c.natural    || 0), 0);
-            const totalextraction = filteredData.reduce((sum, c) => sum + (c.extraction || 0), 0);
-
-            document.getElementById('totalArea').textContent       = (totalArea       / 1000000).toFixed(1) + 'M';
-            document.getElementById('totalNatural').textContent    = (totalNatural    / 1000000).toFixed(1) + 'M';
-            document.getElementById('totalextraction').textContent = (totalextraction / 1000).toFixed(0)    + 'K';
+            const countries = filteredData.filter(c => c.code !== "Totals");
+            const totals = countries.reduce((acc, c) => {
+                acc.area += Number(c.area || 0);
+                acc.natural += Number(c.natural || 0);
+                acc.extraction += Number(c.extraction || 0);
+                acc.afforested += Number(c.afforested || 0);
+                acc.agricultural += Number(c.agricultural || 0);
+                return acc;
+            }, {
+            area: 0,
+            natural: 0,
+            extraction: 0,
+            afforested: 0,
+            agricultural: 0
+            });
+        
+            setStat("totalArea", totals.area, "M", 1000000, 1);
+            setStat("totalNatural", totals.natural, "M", 1000000, 1);
+            setStat("totalExtraction", totals.extraction, "K", 1000, 0);
+            setStat("totalAfforested", totals.afforested, "M", 1000000, 1);
+            setStat("totalAgricultural", totals.agricultural, "M", 1000000, 1);
+    
         }
 
         function clearFilters() {
@@ -2491,7 +2536,9 @@
                         </div>
                         ${sectionsHTML}
                         <div class="blog-footer">
-                            <p class="blog-footer-text">This blog post is part of our ongoing effort to provide in-depth analysis and insights on peatland coverage across Europe.</p>
+                            <p class="blog-footer-text">The authors would like to acknowledge 'Wetlands International' for making their peatland resources available.
+                            <a href="https://view.genially.com/685d19cc83ebec480b29e93b/interactive-content-peatland-factsheets" target="_blank" class="inline-link-button">🔗</a>
+                            </p>
                             <a href="#" class="blog-cta" onclick="closeBlog(); return false;">Return to Dashboard</a>
                         </div>
                     </div>`;
