@@ -27,7 +27,7 @@
             background: linear-gradient(135deg, #1b5e20 0%, #4caf50 100%);
             color: white;
             padding: 20px 40px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -151,25 +151,27 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
-        .controls-row {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 16px;
+        .controls-row { 
+            display: flex; 
+            gap: 20px; 
+            margin-bottom: 16px; 
             flex-wrap: wrap;
         }
 
         .search-box {
-            flex: 1;
+            display: flex;
+            flex-direction: column;
+            flex: 2;
             min-width: 300px;
             position: relative;
         }
 
         .search-input {
             width: 100%;
-            padding: 14px 16px 14px 48px;
+            padding: 14px 16px 14px 24px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
-            font-size: 15px;
+            font-size: 13px;
             font-family: 'Inter', sans-serif;
             transition: border-color 0.3s;
         }
@@ -191,22 +193,22 @@
         .filter-group {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            flex: 1;
         }
 
         .filter-label {
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 9px;
+            font-weight: 900;
             color: #666;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
 
         .filter-select {
             padding: 14px 16px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
-            font-size: 15px;
+            font-size: 13px;
             font-family: 'Inter', sans-serif;
             background: white;
             cursor: pointer;
@@ -216,6 +218,11 @@
         .filter-select:focus {
             outline: none;
             border-color: #4caf50;
+        }
+
+        .range-group {
+            display: flex;
+            gap: 10px;   
         }
 
         .range-inputs {
@@ -229,7 +236,7 @@
             padding: 14px 12px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
-            font-size: 15px;
+            font-size: 13px;
             font-family: 'Inter', sans-serif;
         }
 
@@ -1021,6 +1028,28 @@
             margin-bottom: 20px;
         }
 
+        .inline-link-button {
+           display: inline-flex;
+           justify-content: center;
+           align-items: center;
+           width: 20px;
+           height: 20px;
+           margin-left: 8px;
+           background: white;
+           border-radius: 50%;
+           text-decoration: none;
+           font-size: 12px;
+           color: #4caf50;
+           box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+           vertical-align: middle;
+           transition: all 0.2s ease;
+        }
+
+        .inline-link-button:hover {
+           transform: scale(1.15);
+           box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+        }
+
         .blog-cta {
             display: inline-block;
             padding: 14px 32px;
@@ -1248,7 +1277,7 @@
         <div class="stats-section">
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-icon">📊</div>
+                    <div class="stat-icon" id="stat-eu-flag">🇪🇺</div>
                     <div class="stat-value" id="totalArea">24.1M</div>
                     <div class="stat-label">Total EU PeatLand (HA)</div>
                 </div>
@@ -1259,7 +1288,7 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon">🏭</div>
-                    <div class="stat-value" id="totalextraction">843K</div>
+                    <div class="stat-value" id="totalExtraction">843K</div>
                     <div class="stat-label">extraction (ha)</div>
                 </div>
                 <div class="stat-card">
@@ -1269,7 +1298,7 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon">🚜</div>
-                    <div class="stat-value" id="totalAgricultural">3.46M</div>
+                    <div class="stat-value" id="totalAgricultural">3.4M</div>
                     <div class="stat-label">Agricultural Peatlands (ha)</div>
                 </div>
             </div>
@@ -1293,14 +1322,16 @@
                     </select>
                 </div>
 
-                <div class="filter-group">
-                    <label class="filter-label">Min Coverage %</label>
-                    <input type="number" class="range-input" id="minRange" placeholder="0" min="0" max="100" onchange="filterData()">
-                </div>
+                <div class="range-group">
+                    <div class="filter-group">
+                        <label class="filter-label">Min Coverage %</label>
+                        <input type="number" class="range-input" id="minRange" placeholder="0" min="0" max="100" onchange="filterData()">
+                    </div>
 
-                <div class="filter-group">
-                    <label class="filter-label">Max Coverage %</label>
-                    <input type="number" class="range-input" id="maxRange" placeholder="100" min="0" max="100" onchange="filterData()">
+                    <div class="filter-group">
+                        <label class="filter-label">Max Coverage %</label>
+                        <input type="number" class="range-input" id="maxRange" placeholder="100" min="0" max="100" onchange="filterData()">
+                    </div>
                 </div>
             </div>
 
@@ -1410,9 +1441,9 @@
             }
 
             /* EU totals row → styled EU badge */
-            if (iso === 'eu') {
-                return '<span class="flag-badge eu-badge" style="width:' + size + 'px;height:' + bH + 'px;font-size:' + Math.round(size * 0.28) + 'px;">EU</span>';
-            }
+            //if (iso === 'eu') {
+            //    return '<span class="flag-badge eu-badge" style="width:' + size + 'px;height:' + bH + 'px;font-size:' + Math.round(size * 0.28) + 'px;">EU</span>';
+            //}
 
             /*
              *  CDN Tier 1 — flagcdn.com  PNG  (primary, global CDN, no auth)
@@ -1453,6 +1484,8 @@
                 '</span>' +
                 '</span>';
         }
+        var stat_eu_flg = document.getElementById("stat-eu-flag");
+        stat_eu_flg.innerHTML = getFlagHtml("Totals", 50);
 
         /* ================================================================= */
 
@@ -1542,8 +1575,8 @@
         'naturalDate': 2017.0,
         'extraction': 10000.0,
         'extractionSource': 'https://unfccc.int/sites/default/files/resource/NID%20SE%20submission%202025.pdf',
-        'extractionDate': null,
-        'afforested': '~700000',
+        'extractionDate': 2023.0,
+        'afforested': 700000,
         'afforestedSource': 'https://www.researchgate.net/publication/227054481_Afforestation_of_low-productivity_peatlands_in_Sweden_-_The_potential_of_natural_seeding#:~:text=In%20Sweden%2C%20peatlands%20have%20been,(Picea%20abies%20(L.)',
         'afforestedDate': 2023.0,
         'agricultural': 290312.0,
@@ -1565,7 +1598,7 @@
         'naturalDate': 2017.0,
         'extraction': 30580.0,
         'extractionSource': 'https://unfccc.int/sites/default/files/resource/LV_NID_15042025.pdf',
-        'extractionDate': null,
+        'extractionDate': 2023.0,
         'afforested': 5220,
         'afforestedSource': 'https://unfccc.int/sites/default/files/resource/LV_NID_15042025.pdf',
         'afforestedDate': 2023.0,
@@ -2090,8 +2123,8 @@
         'areaSource': null,
         'areaDate': null,
         'natural': 10434270.0,
-        'naturalSource': null,
-        'naturalDate': null,
+        'naturalSource': 'https://www.mires-and-peat.net/article/128692-the-peatland-map-of-europe',
+        'naturalDate': 2017.0,
         'extraction': 843284.0,
         'extractionSource': null,
         'extractionDate': null,
@@ -2099,8 +2132,8 @@
         'afforestedSource': null,
         'afforestedDate': null,
         'agricultural': 3464348.0,
-        'agriculturalSource': null,
-        'agriculturalDate': null}];
+        'agriculturalSource': 'https://www.fao.org/faostat/en/#data/GV?specialgroups=5707%3E&elements=5110&items=6727&years=2024&sources=3050&output_type=table&file_type=csv&submit=true',
+        'agriculturalDate': 2024.0}];
 
         let filteredData = [...countriesData];
         let currentView = 'cards';
@@ -2262,15 +2295,38 @@
                 if (currentView === 'cards') cardsView.style.display = 'block';
             }
         }
+        
+        function setStat(id, value, suffix, divisor, decimals) {
+            const element = document.getElementById(id);
+            if (!element) return;
+
+            element.textContent = (value / divisor).toFixed(decimals) + suffix;
+        }
+
 
         function updateStats() {
-            const totalArea       = filteredData.reduce((sum, c) => sum + (c.area       || 0), 0);
-            const totalNatural    = filteredData.reduce((sum, c) => sum + (c.natural    || 0), 0);
-            const totalextraction = filteredData.reduce((sum, c) => sum + (c.extraction || 0), 0);
-
-            document.getElementById('totalArea').textContent       = (totalArea       / 1000000).toFixed(1) + 'M';
-            document.getElementById('totalNatural').textContent    = (totalNatural    / 1000000).toFixed(1) + 'M';
-            document.getElementById('totalextraction').textContent = (totalextraction / 1000).toFixed(0)    + 'K';
+            const countries = filteredData.filter(c => c.code !== "Totals");
+            const totals = countries.reduce((acc, c) => {
+                acc.area += Number(c.area || 0);
+                acc.natural += Number(c.natural || 0);
+                acc.extraction += Number(c.extraction || 0);
+                acc.afforested += Number(c.afforested || 0);
+                acc.agricultural += Number(c.agricultural || 0);
+                return acc;
+            }, {
+            area: 0,
+            natural: 0,
+            extraction: 0,
+            afforested: 0,
+            agricultural: 0
+            });
+        
+            setStat("totalArea", totals.area, "M", 1000000, 1);
+            setStat("totalNatural", totals.natural, "M", 1000000, 1);
+            setStat("totalExtraction", totals.extraction, "K", 1000, 0);
+            setStat("totalAfforested", totals.afforested, "M", 1000000, 1);
+            setStat("totalAgricultural", totals.agricultural, "M", 1000000, 1);
+    
         }
 
         function clearFilters() {
@@ -2432,7 +2488,34 @@
             document.getElementById('countryModal').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
-
+        const blogLinks = {
+            ie: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Ireland.pdf",
+            hu: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Hungary.pdf",
+            de: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Germany.pdf",
+            fi: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Finland.pdf",
+            ee: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Estonia.pdf",
+            lv: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Latvia.pdf",
+            lt: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Lithuania.pdf",
+            nl: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Netherlands.pdf",
+            pl: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Poland.pdf",
+            dk: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Denmark.pdf",
+            ro: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Romania.pdf",
+            at: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Austria-1.pdf",
+            be: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Belgium.pdf",
+            fr: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/France.pdf",
+            si: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Slovenia.pdf",
+            cz: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Czech-Republic.pdf",
+            pt: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Portugal.pdf",
+            it: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Italy.pdf",
+            bg: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Bulgaria.pdf",
+            lu: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Other-EU-Countries.pdf",
+            sk: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Slovakia.pdf",
+            cy: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Other-EU-Countries.pdf",
+            es: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Spain.pdf",
+            hr: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Croatia.pdf",
+            mt: "https://europe.wetlands.org/wp-content/uploads/sites/6/2025/07/Other-EU-Countries.pdf",
+            eu: "https://view.genially.com/685d19cc83ebec480b29e93b"       
+        };
         async function showBlogPost(code) {
             const country = countriesData.find(c => c.code === code);
             if (!country) return;
@@ -2464,7 +2547,7 @@
                 const heroStyle = heroImage
                     ? 'background: linear-gradient(rgba(27,94,32,0.8), rgba(27,94,32,0.8)), url(\'' + heroImage + '\') center/cover;'
                     : 'background: linear-gradient(135deg, #1b5e20 0%, #4caf50 100%);';
-
+                const blogLink = blogLinks[code] || "https://view.genially.com/685d19cc83ebec480b29e93b/interactive-content-peatland-factsheets";
                 blogContent.innerHTML = `
                     <div class="blog-hero" style="${heroStyle}">
                         <div class="blog-hero-content">
@@ -2482,7 +2565,9 @@
                         </div>
                         ${sectionsHTML}
                         <div class="blog-footer">
-                            <p class="blog-footer-text">This blog post is part of our ongoing effort to provide in-depth analysis and insights on peatland coverage across Europe.</p>
+                            <p class="blog-footer-text">The authors would like to acknowledge 'Wetlands International' for making their peatland resources available.
+                            <a href="${blogLinks}" target="_blank" class="inline-link-button">🔗</a>
+                            </p>
                             <a href="#" class="blog-cta" onclick="closeBlog(); return false;">Return to Dashboard</a>
                         </div>
                     </div>`;
