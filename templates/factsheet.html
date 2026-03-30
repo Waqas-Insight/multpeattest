@@ -103,23 +103,23 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: 24px;
         }
 
         .stat-card {
             background: white;
-            padding: 32px 24px;
+            padding: 28px 21px;
             border-radius: 12px;
             text-align: center;
             border: 2px solid #e0e0e0;
-            transition: all 0.3s;
+            transition: all 0.25s;
         }
 
         .stat-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(27, 94, 32, 0.15);
-            border-color: #4caf50;
+            box-shadow: 0 8px 24px rgba(76, 175, 80, 0.7);
+            border-color: #e0e0e0;
         }
 
         .stat-icon {
@@ -128,14 +128,14 @@
         }
 
         .stat-value {
-            font-size: 36px;
+            font-size: 32px;
             font-weight: 800;
             color: #1b5e20;
             margin-bottom: 8px;
         }
 
         .stat-label {
-            font-size: 13px;
+            font-size: 12px;
             color: #666;
             font-weight: 600;
             text-transform: uppercase;
@@ -308,7 +308,9 @@
         }
 
         .btn-secondary:hover {
-            background: #f1f8f4;
+            background: #1b5e20;
+            color: white;
+            border: 2px solid #e0e0e0;
         }
 
         .btn-danger {
@@ -358,9 +360,9 @@
         }
 
         .country-card:hover {
-            border-color: #4caf50;
+            border-color: #e0e0e0;
             transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(27, 94, 32, 0.15);
+            box-shadow: 0 8px 24px rgba(76, 175, 80, 0.7);
         }
 
         .card-header {
@@ -1297,7 +1299,7 @@
         <div class="stats-section">
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-icon">🇪🇺</div>
+                    <div class="stat-icon" id="stat-eu-flag">🇪🇺</div>
                     <div class="stat-value" id="totalArea">24.1M</div>
                     <div class="stat-label">Total EU PeatLand (HA)</div>
                 </div>
@@ -1320,6 +1322,11 @@
                     <div class="stat-icon">🚜</div>
                     <div class="stat-value" id="totalAgricultural">3.4M</div>
                     <div class="stat-label">Agricultural Peatlands (ha)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⛳</div>
+                    <div class="stat-value" id="totalMiscellaneous">0</div>
+                    <div class="stat-label">Other Peatlands (ha)</div>
                 </div>
             </div>
         </div>
@@ -1461,9 +1468,9 @@
             }
 
             /* EU totals row → styled EU badge */
-            if (iso === 'eu') {
-                return '<span class="flag-badge eu-badge" style="width:' + size + 'px;height:' + bH + 'px;font-size:' + Math.round(size * 0.28) + 'px;">EU</span>';
-            }
+            //if (iso === 'eu') {
+            //    return '<span class="flag-badge eu-badge" style="width:' + size + 'px;height:' + bH + 'px;font-size:' + Math.round(size * 0.28) + 'px;">EU</span>';
+            //}
 
             /*
              *  CDN Tier 1 — flagcdn.com  PNG  (primary, global CDN, no auth)
@@ -1504,6 +1511,8 @@
                 '</span>' +
                 '</span>';
         }
+        var stat_eu_flg = document.getElementById("stat-eu-flag");
+        stat_eu_flg.innerHTML = getFlagHtml("Totals", 50);
 
         /* ================================================================= */
 
@@ -2341,12 +2350,19 @@
             afforested: 0,
             agricultural: 0
             });
-        
+            
+            const categorizedTotal =
+                totals.natural +
+                totals.extraction +
+                totals.afforested +
+                totals.agricultural;
+            const miscellaneous = Math.max(0, totals.area - categorizedTotal);
             setStat("totalArea", totals.area, "M", 1000000, 1);
             setStat("totalNatural", totals.natural, "M", 1000000, 1);
             setStat("totalExtraction", totals.extraction, "K", 1000, 0);
             setStat("totalAfforested", totals.afforested, "M", 1000000, 1);
             setStat("totalAgricultural", totals.agricultural, "M", 1000000, 1);
+            setStat("totalMiscellaneous", miscellaneous, "M", 1000000, 1);
     
         }
 
@@ -2441,11 +2457,11 @@
                     <div class="modal-stat expandable" onclick="toggleSubcategories(this)">
                         <div class="modal-stat-header">
                             <div class="modal-stat-main">
-                                <div class="modal-stat-label">extraction Peatlands <span class="expand-indicator">▼</span></div>
+                                <div class="modal-stat-label">Extraction Peatlands <span class="expand-indicator">▼</span></div>
                                 <div class="modal-stat-value">${formatNumber(country.extraction)} ha</div>
                             </div>
                         </div>
-                        ${createSourceInfo('extraction Peatlands', country.extractionSource, country.extractionDate)}
+                        ${createSourceInfo('Extraction Peatlands', country.extractionSource, country.extractionDate)}
                         <div class="modal-stat-subcategories">
                             <div class="subcategories-list">
                                 <div class="subcategory-item"><span class="subcategory-label"><span class="subcategory-icon">🏭</span>Industrial Peat Extraction</span><span class="subcategory-value">${formatNumber(Math.round(country.extraction * 0.75))} ha</span></div>
