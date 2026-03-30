@@ -408,6 +408,17 @@
             font-size: 14px;
         }
 
+        .card-stat-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: #f8f9fa;
+            border: 3px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
         .card-stat-label {
             color: #666;
             font-weight: 500;
@@ -684,7 +695,7 @@
 
         .fact-summary {
             background: #e8f5e9;
-            border-left: 4px solid #4caf50;
+            border: 4px solid #61b763;
             padding: 16px 20px;
             border-radius: 8px;
             margin-bottom: 24px;
@@ -708,6 +719,15 @@
             background: #f8f9fa;
             border-radius: 8px;
             border-left: 4px solid #4caf50;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-stat-total{
+            background: #f8f9fa;
+            border: 3px solid #e0e0e0;
+            border-radius: 8px;
+            border-left: 6px solid #4caf50;
             overflow: hidden;
             transition: all 0.3s;
         }
@@ -1539,7 +1559,7 @@
         {'code': 'EE',
         'country': 'Estonia',
         'flag': '🇪🇪',
-        'region': 'nordic',
+        'region': 'eastern',
         'land': 4533600.0,
         'landSource': 'https://ec.europa.eu/eurostat/databrowser/view/reg_area3__custom_12528528/bookmark/table?lang=en&bookmarkId=93b20335-b0da-4c31-841a-2eea735895fc&c=1723108197298',
         'landDate': 2026.0,
@@ -1585,7 +1605,7 @@
         {'code': 'LV',
         'country': 'Latvia',
         'flag': '🇱🇻',
-        'region': 'nordic',
+        'region': 'eastern',
         'land': 6459400.0,
         'landSource': 'https://ec.europa.eu/eurostat/databrowser/view/reg_area3__custom_12528528/bookmark/table?lang=en&bookmarkId=93b20335-b0da-4c31-841a-2eea735895fc&c=1723108197298',
         'landDate': 2026.0,
@@ -1608,7 +1628,7 @@
         {'code': 'LT',
         'country': 'Lithuania',
         'flag': '🇱🇹',
-        'region': 'nordic',
+        'region': 'eastern',
         'land': 6528400.0,
         'landSource': 'https://ec.europa.eu/eurostat/databrowser/view/reg_area3__custom_12528528/bookmark/table?lang=en&bookmarkId=93b20335-b0da-4c31-841a-2eea735895fc&c=1723108197298',
         'landDate': 2026.0,
@@ -2173,16 +2193,16 @@
                             <span class="card-stat-value">${country.percentage.toFixed(2)}%</span>
                         </div>
                         <div class="card-stat">
-                            <span class="card-stat-label">Total Peatland Area</span>
-                            <span class="card-stat-value">${formatNumber(country.area)} ha</span>
-                        </div>
-                        <div class="card-stat">
                             <span class="card-stat-label">Natural Peatlands</span>
                             <span class="card-stat-value">${formatNumber(country.natural)} ha</span>
                         </div>
                         <div class="card-stat">
                             <span class="card-stat-label">Non-Natural Peatlands</span>
                             <span class="card-stat-value">${formatNumber(country.area - ((country.natural || 0) ))} ha</span>
+                        </div>
+                        <div class="card-stat-total">
+                            <span class="card-stat-label">Total Peatland Area</span>
+                            <span class="card-stat-value">${formatNumber(country.area)} ha</span>
                         </div>
                     </div>
                 </div>
@@ -2282,7 +2302,10 @@
         function updateDisplay() {
             renderCards();
             updateStats();
-            document.getElementById('resultCount').textContent = filteredData.length;
+            
+            const visibleCount = filteredData.filter(c => c.code !== "Totals").length;
+            document.getElementById('resultCount').textContent = visibleCount;
+            
 
             const emptyState = document.getElementById('emptyState');
             const cardsView  = document.getElementById('cardsView');
@@ -2370,7 +2393,7 @@
                 </div>
 
                 <div class="modal-stats-grid">
-                    <div class="modal-stat">
+                    <div class="modal-stat-total">
                         <div class="modal-stat-header">
                             <div class="modal-stat-main">
                                 <div class="modal-stat-label">Total Land Area</div>
@@ -2390,13 +2413,7 @@
                     </div>
 
                     <div class="modal-stat expandable" onclick="toggleSubcategories(this)">
-                        <div class="modal-stat-header">
-                            <div class="modal-stat-main">
-                                <div class="modal-stat-label">Total Peatlands <span class="expand-indicator">▼</span></div>
-                                <div class="modal-stat-value">${formatNumber(country.area)} ha</div>
-                            </div>
-                        </div>
-                        ${createSourceInfo('Total Peatlands', country.areaSource, country.areaDate)}
+                        
                         <div class="modal-stat-subcategories">
                             <div class="subcategories-list">
                                 <div class="subcategory-item"><span class="subcategory-label"><span class="subcategory-icon">🌾</span>Raised Bogs</span><span class="subcategory-value">${formatNumber(Math.round(country.area * 0.4))} ha</span></div>
@@ -2466,7 +2483,15 @@
                         </div>
                         ${createSourceInfo('Agricultural Peatlands', country.agriculturalSource, country.agriculturalDate)}
                     </div>
-                </div>
+                    <div class="modal-stat-total">
+                        <div class="modal-stat-header">
+                            <div class="modal-stat-main">
+                                <div class="modal-stat-label">Total Peatlands <span class="expand-indicator">▼</span></div>
+                                <div class="modal-stat-value">${formatNumber(country.area)} ha</div>
+                            </div>
+                        </div>
+                        ${createSourceInfo('Total Peatlands', country.areaSource, country.areaDate)}
+                    </div>
 
                 <div class="fact-summary">
                     <div class="fact-summary-title">${country.country} Peatland Profile</div>
