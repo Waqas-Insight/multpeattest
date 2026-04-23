@@ -891,24 +891,14 @@ p.lyr-reg-txt{
     width: 30px;
 }
 
-input[type="checkbox"]:checked + #locauth-fltr-svg {
-    fill:#72CAC3;
+#lvl-filter-div svg {
+    fill: #949494 !important;
+    transition: fill 0.2s ease;
+    cursor: pointer;
 }
 
-input[type="checkbox"]:checked + #reg-fltr-svg {
-    fill:#72CAC3;
-}
-
-input[type="checkbox"]:checked + #ntl-fltr-svg {
-    fill:#72CAC3;
-}
-
-input[type="checkbox"]:checked + #eu-fltr-svg {
-    fill:#72CAC3;
-}
-
-input[type="checkbox"]:checked + #glb-fltr-svg {
-    fill:#72CAC3;
+#lvl-filter-div input[type="checkbox"]:checked ~ svg {
+    fill: #3e8f88 !important; 
 }
 
 /*Policy class check box*/
