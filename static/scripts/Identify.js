@@ -319,14 +319,10 @@ map.on('singleclick', function (evt) {
             success:function(result){
                 const det=result.features[0];
                 if(det){
-                    const subst=det.properties.genesis;
-                    const thick=det.properties.thickness;
-
-                    detInfo.html(`<p>Substrate: ${subst}</p>
-                        <p>Thickness: ${thick}</p>`);
+                    const soil=det.properties.eng_type;
+                    detInfo.html(`<p>Soil Type: ${soil}</p>`);
                     noFeatures.html('');
                     }
-
             }
         })
     }
