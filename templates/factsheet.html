@@ -107,7 +107,52 @@
             gap: 24px;
         }
 
-        .stat-card {
+        .stat-card-1 {
+            background: white;
+            padding: 28px 21px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            transition: all 0.25s;
+        }
+
+        .stat-card-2 {
+            background: white;
+            padding: 28px 21px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            transition: all 0.25s;
+        }
+
+        .stat-card-3 {
+            background: white;
+            padding: 28px 21px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            transition: all 0.25s;
+        }
+
+        .stat-card-4 {
+            background: white;
+            padding: 28px 21px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            transition: all 0.25s;
+        }
+
+        .stat-card-5 {
+            background: white;
+            padding: 28px 21px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            transition: all 0.25s;
+        }
+
+        .stat-card-6 {
             background: white;
             padding: 28px 21px;
             border-radius: 12px;
@@ -1298,32 +1343,32 @@
         <!-- Stats Section -->
         <div class="stats-section">
             <div class="stats-grid">
-                <div class="stat-card">
+                <div class="stat-card-1">
                     <div class="stat-icon" id="stat-eu-flag">🇪🇺</div>
                     <div class="stat-value" id="totalArea">24.1M</div>
                     <div class="stat-label">Total EU PeatLand (HA)</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card-2">
                     <div class="stat-icon">🌱</div>
                     <div class="stat-value" id="totalNatural">10.4M</div>
                     <div class="stat-label">Natural (ha)</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card-3">
                     <div class="stat-icon">🏭</div>
                     <div class="stat-value" id="totalExtraction">843K</div>
                     <div class="stat-label">extraction (ha)</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card-4">
                     <div class="stat-icon">🌲</div>
                     <div class="stat-value" id="totalAfforested">958k</div>
                     <div class="stat-label">Afforested Peatlands (ha)</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card-5">
                     <div class="stat-icon">🚜</div>
                     <div class="stat-value" id="totalAgricultural">3.4M</div>
                     <div class="stat-label">Agricultural Peatlands (ha)</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card-6">
                     <div class="stat-icon">🍄</div>
                     <div class="stat-value" id="totalMiscellaneous">0</div>
                     <div class="stat-label">Other Peatlands (ha)</div>
@@ -1403,6 +1448,7 @@
                             <th onclick="sortTable('natural')">Natural (ha) ↕</th>
                             <th onclick="sortTable('extraction')">extraction (ha) ↕</th>
                             <th onclick="sortTable('afforested')">Afforested (ha) ↕</th>
+                            <th onclick="sortTable('agricultural')">Agricultural (ha) ↕</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
@@ -2384,6 +2430,7 @@
                 totals.extraction +
                 totals.afforested +
                 totals.agricultural;
+
             const miscellaneous = Math.max(0, totals.area - categorizedTotal);
             setStat("totalArea", totals.area, "M", 1000000, 1);
             setStat("totalNatural", totals.natural, "M", 1000000, 1);
@@ -2445,22 +2492,21 @@
                         ${createSourceInfo('Land Area', country.landSource, country.landDate)}
                     </div>
 
+                    <div class="modal-stat-total">
+                        <div class="modal-stat-header">
+                            <div class="modal-stat-main">
+                                <div class="modal-stat-label">Total Peatlands</div>
+                                <div class="modal-stat-value">${formatNumber(country.area)} ha</div>
+                            </div>
+                        </div>
+                        ${createSourceInfo('Total Peatlands', country.areaSource, country.areaDate)}
+                    </div>
+
                     <div class="modal-stat featured">
                         <div class="modal-stat-header">
                             <div class="modal-stat-main">
                                 <div class="modal-stat-label">Total Peatland Coverage</div>
                                 <div class="modal-stat-value">${country.percentage.toFixed(2)}%</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="modal-stat expandable" onclick="toggleSubcategories(this)">
-                        
-                        <div class="modal-stat-subcategories">
-                            <div class="subcategories-list">
-                                <div class="subcategory-item"><span class="subcategory-label"><span class="subcategory-icon">🌾</span>Raised Bogs</span><span class="subcategory-value">${formatNumber(Math.round(country.area * 0.4))} ha</span></div>
-                                <div class="subcategory-item"><span class="subcategory-label"><span class="subcategory-icon">💧</span>Blanket Bogs</span><span class="subcategory-value">${formatNumber(Math.round(country.area * 0.45))} ha</span></div>
-                                <div class="subcategory-item"><span class="subcategory-label"><span class="subcategory-icon">🌿</span>Fen Peatlands</span><span class="subcategory-value">${formatNumber(Math.round(country.area * 0.15))} ha</span></div>
                             </div>
                         </div>
                     </div>
@@ -2515,6 +2561,23 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="modal-stat expandable" onclick="toggleSubcategories(this)">
+                        <div class="modal-stat-header">
+                            <div class="modal-stat-main">
+                                <div class="modal-stat-label">Agricultural Peatlands <span class="expand-indicator">▼</span></div>
+                                <div class="modal-stat-value">${formatNumber(country.agricultural)} ha</div>
+                            </div>
+                        </div>
+                        ${createSourceInfo('Agricultural Peatlands', country.agriculturalSource, country.agriculturalDate)}
+                        <div class="modal-stat-subcategories">
+                            <div class="subcategories-list">
+                                <div class="subcategory-item"><span class="subcategory-label"><span class="subcategory-icon">🌾</span>Raised Bogs</span><span class="subcategory-value">${formatNumber(Math.round(country.area * 0.4))} ha</span></div>
+                                <div class="subcategory-item"><span class="subcategory-label"><span class="subcategory-icon">💧</span>Blanket Bogs</span><span class="subcategory-value">${formatNumber(Math.round(country.area * 0.45))} ha</span></div>
+                                <div class="subcategory-item"><span class="subcategory-label"><span class="subcategory-icon">🌿</span>Fen Peatlands</span><span class="subcategory-value">${formatNumber(Math.round(country.area * 0.15))} ha</span></div>
+                            </div>
+                        </div>
+                    </div>
                     
                     <div class="modal-stat">
                         <div class="modal-stat-header">
@@ -2525,19 +2588,7 @@
                         </div>
                         ${createSourceInfo('Other Peatlands', country.miscellaneousSource)}
                     </div>
-
-                    <div class="modal-stat-total">
-                        <div class="modal-stat-header">
-                            <div class="modal-stat-main">
-                                <div class="modal-stat-label">Total Peatlands <span class="expand-indicator">▼</span></div>
-                                <div class="modal-stat-value">${formatNumber(country.area)} ha</div>
-                            </div>
-                        </div>
-                        ${createSourceInfo('Total Peatlands', country.areaSource, country.areaDate)}
-                    </div>
                     
-                    
-
                 <div class="fact-summary">
                     <div class="fact-summary-title">${country.country} Peatland Profile</div>
                     <div class="fact-summary-text">
@@ -2658,7 +2709,7 @@
         });
 
         function sortTable(column) {
-            const map = { country: 'name', percentage: 'percentage', area: 'area', natural: 'natural', extraction: 'extraction', afforested: 'afforested' };
+            const map = { country: 'name', percentage: 'percentage', area: 'area', natural: 'natural', extraction: 'extraction', afforested: 'afforested', agricultural: 'agricultural' };
             document.getElementById('sortSelect').value = map[column];
             filterData();
         }
