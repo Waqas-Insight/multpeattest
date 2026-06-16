@@ -107,52 +107,7 @@
             gap: 24px;
         }
 
-        .stat-card-1 {
-            background: white;
-            padding: 28px 21px;
-            border-radius: 12px;
-            text-align: center;
-            border: 2px solid #e0e0e0;
-            transition: all 0.25s;
-        }
-
-        .stat-card-2 {
-            background: white;
-            padding: 28px 21px;
-            border-radius: 12px;
-            text-align: center;
-            border: 2px solid #e0e0e0;
-            transition: all 0.25s;
-        }
-
-        .stat-card-3 {
-            background: white;
-            padding: 28px 21px;
-            border-radius: 12px;
-            text-align: center;
-            border: 2px solid #e0e0e0;
-            transition: all 0.25s;
-        }
-
-        .stat-card-4 {
-            background: white;
-            padding: 28px 21px;
-            border-radius: 12px;
-            text-align: center;
-            border: 2px solid #e0e0e0;
-            transition: all 0.25s;
-        }
-
-        .stat-card-5 {
-            background: white;
-            padding: 28px 21px;
-            border-radius: 12px;
-            text-align: center;
-            border: 2px solid #e0e0e0;
-            transition: all 0.25s;
-        }
-
-        .stat-card-6 {
+        .stat-card {
             background: white;
             padding: 28px 21px;
             border-radius: 12px;
@@ -420,6 +375,8 @@
         }
 
         .card-flag {
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
             font-size: 48px;
             display: flex;
             align-items: center;
@@ -721,6 +678,9 @@
         }
 
         .modal-flag {
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(27, 94, 32, 0.12);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1343,32 +1303,32 @@
         <!-- Stats Section -->
         <div class="stats-section">
             <div class="stats-grid">
-                <div class="stat-card-1">
+                <div class="stat-card">
                     <div class="stat-icon" id="stat-eu-flag">🇪🇺</div>
                     <div class="stat-value" id="totalArea">24.1M</div>
                     <div class="stat-label">Total EU PeatLand (HA)</div>
                 </div>
-                <div class="stat-card-2">
+                <div class="stat-card">
                     <div class="stat-icon">🌱</div>
                     <div class="stat-value" id="totalNatural">10.4M</div>
                     <div class="stat-label">Natural (ha)</div>
                 </div>
-                <div class="stat-card-3">
+                <div class="stat-card">
                     <div class="stat-icon">🏭</div>
                     <div class="stat-value" id="totalExtraction">843K</div>
                     <div class="stat-label">extraction (ha)</div>
                 </div>
-                <div class="stat-card-4">
+                <div class="stat-card">
                     <div class="stat-icon">🌲</div>
                     <div class="stat-value" id="totalAfforested">958k</div>
                     <div class="stat-label">Afforested Peatlands (ha)</div>
                 </div>
-                <div class="stat-card-5">
+                <div class="stat-card">
                     <div class="stat-icon">🚜</div>
                     <div class="stat-value" id="totalAgricultural">3.4M</div>
                     <div class="stat-label">Agricultural Peatlands (ha)</div>
                 </div>
-                <div class="stat-card-6">
+                <div class="stat-card">
                     <div class="stat-icon">🍄</div>
                     <div class="stat-value" id="totalMiscellaneous">0</div>
                     <div class="stat-label">Other Peatlands (ha)</div>
