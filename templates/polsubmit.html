@@ -605,6 +605,7 @@
 
                 // If form is valid, show CAPTCHA popup
                 showCaptchaPopup();
+                showSuccessPopup();
             });
         }
 
@@ -768,7 +769,7 @@
     }
 
 
-    // Called by the "Verify & Continue" button
+    // Called by 'Verify & Continue' button
     function submitCaptcha() {
         if (!window.grecaptcha) {
             document.getElementById('captchaErrorMsg').textContent =
@@ -786,6 +787,7 @@
 
         closeCaptchaPopup();
         submitPolicyForm(token);
+        showSuccessPopup();
     }
 
 
