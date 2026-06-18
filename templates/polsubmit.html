@@ -827,19 +827,13 @@
                 if (window.grecaptcha) {
                     grecaptcha.reset();
                 }
-            } else {
+                else {
                 showErrorPopup([
                     data.error || 'Form submission failed. Please try again.'
                 ]);
+                }
             }
         })
-        .catch(error => {
-            submitBtn.innerHTML = originalText;
-            submitBtn.classList.remove('btn-loading');
-
-            console.error('Form submission error:', error);
-            showErrorPopup(['Form submission failed. Please try again.']);
-        });
     }
 
 
@@ -876,7 +870,6 @@
     }
 </script>
 
-The flow is now correct:
 <!--popover script-->
 <script>
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
