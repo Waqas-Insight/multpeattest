@@ -92,6 +92,10 @@
                         <div style="background-color: #9fbbcf; height: 40px; width: 100%;" class="position-absolute bottom-0">
                             <div style="padding-top: 0px;" class="collapse navbar-collapse">
                                 <ul class="nav navbar-nav">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ url_for('about') }}" style="padding: 7px; margin-left: 15px; font-weight: bold;">About</a>
+                                    </li>
+                                    <div style="border-right: 1px solid #747474; height: 25px; padding: 0px 10px; align-self: center;"></div>
                                     <li class="nav-item dropdown">
                                         <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" data-bs-auto-close="outside" style="padding: 7px; margin-left: 15px; font-weight: bold;">Maps</a>
                                         <ul class="dropdown-menu">
@@ -122,23 +126,23 @@
                                     <li class="nav-item dropdown">
                                         <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" data-bs-auto-close="outside" style="padding: 7px; margin-left: 15px; font-weight: bold;">Resources</a>
                                         <ul class="dropdown-menu">
-					                        <!--<li><a class="dropdown-item" href="{{ url_for('policy_factsheet') }}">Peatland Factsheets</a></li>-->
+					                        <li><a class="dropdown-item" href="{{ url_for('policy_factsheet') }}">Peatland Factsheets</a></li>
                                             <li><a class="dropdown-item" href="{{ url_for('project_collection') }}">Project Collection</a></li>
                                             <li><a class="dropdown-item" href="{{ url_for('project_map') }}">Project Map</a></li>
                                             <li><a class="dropdown-item" href="{{ url_for('best_practice') }}">Best Practice</a></li>
                                         </ul>
                                     </li>
                                     <div style="border-right: 1px solid #747474; height: 25px; padding: 0px 10px; align-self: center;"></div>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ url_for('qa_tool') }}" style="padding: 7px; margin-left: 15px; font-weight: bold;">Ask AI</a>
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" data-bs-auto-close="outside" style="padding: 7px; margin-left: 15px; font-weight: bold;">AI Tools</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="{{ url_for('qa_tool') }}">Ask AI</a></li>
+                                            <li><a class="dropdown-item" href="{{ url_for('ai_about') }}">About Our AI</a></li>
+                                        </ul>
                                     </li>
                                     <div style="border-right: 1px solid #747474; height: 25px; padding: 0px 10px; align-self: center;"></div>
                                     <li class="nav-item">
                                         <a class="nav-link" href="{{ url_for('feedback') }}" style="padding: 7px; margin-left: 15px; font-weight: bold;">Feedback</a>
-                                    </li>
-                                    <div style="border-right: 1px solid #747474; height: 25px; padding: 0px 10px; align-self: center;"></div>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ url_for('about') }}" style="padding: 7px; margin-left: 15px; font-weight: bold;">About</a>
                                     </li>
                                 </ul>
                             </div>

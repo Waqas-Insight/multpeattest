@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}About the AI{% endblock %}
+
+{% block content %}
+<div class="container my-5" style="min-height: 700px;">
+  <div class="card border-0 shadow-sm">
+    <div class="card-body">
+      <h2 class="card-title text-center fw-bold mb-4">About Our AI Tools</h2>
+      <p class="text-center text-muted mb-5">
+        The Peatland Policy Portal includes two AI tools, our Policy RAG Tool and our Key Metric Analyser.
+      </p>
+      <div class="row g-6">
+        <!-- RAG Tool -->
+        <div class="col-md-6">
+            <div class="card h-100 border-0 bg-light">
+                <div class="card-body">
+                    <h5 class="fw-semibold mb-3">Policy RAG Tool</h5>
+                    <div class="bp-res">
+                       <p class="text-center text-muted mb-5">
+                        The <a class="textab" href="{{ url_for('qa_tool') }}" target ="_blank">Policy RAG Tool</a> allows users to query our multilingual <a class="textab" href="{{ url_for('policy') }}" target ="_blank">Policy Collection</a>.
+
+                       </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KMA -->
+        <div class="col-md-6">
+          <div class="card h-100 border-0 bg-light">
+            <div class="card-body">
+                <h5 class="fw-semibold mb-3">Key Metric Analyser</h5>
+                <div class="bp-res">
+                  <p class="text-center text-muted mb-5">
+                    The Key Metric Analyser is an analytical AI tool developed to extract peatland-relevant metrics from our <a class="textab" href="{{ url_for('policy') }}" target ="_blank">Policy Collection</a>
+                  </p>
+                </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

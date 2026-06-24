@@ -12,6 +12,18 @@
     <div class="col">
       <div class="card h-100 border-0 bg-light text-center shadow-sm">
         <div class="card-body">
+          <a href="{{ url_for('about') }}">
+            <img src="{{ url_for('static', filename='multipeat_logo.png') }}"
+                 alt="About the Portal" class="img-fluid rounded mb-3 menu-img">
+          </a>
+          <h5 class="fw-semibold">About the Portal</h5>
+          <p class="text-muted small mb-0">Learn about our the EU LIFE MultiPeat project.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card h-100 border-0 bg-light text-center shadow-sm">
+        <div class="card-body">
           <a href="{{ url_for('map_page') }}">
             <img src="{{ url_for('static', filename='images/map_vis.png') }}"
                  alt="Peatland Maps" class="img-fluid rounded mb-3 menu-img">
@@ -40,7 +52,7 @@
             <img src="{{ url_for('static', filename='images/calculators_vis.png') }}"
                  alt="Peatland Farming Calculators" class="img-fluid rounded mb-3 menu-img">
           </a>
-          <h5 class="fw-semibold">Peatland Farming Calculators</h5>
+          <h5 class="fw-semibold">Peatland Calculators</h5>
           <p class="text-muted small mb-0">Use tools from EU projects to estimate site emissions and peatland restoration project feasibility.</p>
         </div>
       </div>
@@ -66,18 +78,6 @@
           </a>
           <h5 class="fw-semibold">Feedback & Contact</h5>
           <p class="text-muted small mb-0">Ask questions or share suggestions.</p>
-        </div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="card h-100 border-0 bg-light text-center shadow-sm">
-        <div class="card-body">
-          <a href="{{ url_for('about') }}">
-            <img src="{{ url_for('static', filename='multipeat_logo.png') }}"
-                 alt="About the Portal" class="img-fluid rounded mb-3 menu-img">
-          </a>
-          <h5 class="fw-semibold">About the Portal</h5>
-          <p class="text-muted small mb-0">Learn about our the EU LIFE MultiPeat project.</p>
         </div>
       </div>
     </div>

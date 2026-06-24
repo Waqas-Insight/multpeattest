@@ -528,11 +528,13 @@ def parse_blog_content(country_code):
             })
     
     return blog_data
+
 @app.route('/policy', methods=['GET', 'POST'])
 def policy():
     if 'username' not in session:
          return render_template('policymain.html')
     return render_template('policymain.html', username=session['username'])
+
 @app.route('/api/blog/<country_code>')
 def get_blog(country_code):
     """API endpoint to get blog content for a country"""
@@ -625,7 +627,12 @@ def project_map():
          return render_template('project_map.html')
     return render_template('project_map.html', username=session['username'])
 
-    
+@app.route('/about_our_ai', methods=['GET', 'POST'])
+def ai_about():
+    if 'username' not in session:
+         return render_template('ai_about.html')
+    return render_template('ai_about.html', username=session['username'])
+
 @app.route('/policy-suggestion', methods=['GET', 'POST'])
 def sub_policy():
     #
