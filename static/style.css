@@ -1513,6 +1513,9 @@ ul {
 }
 
 .menu-img {
+  width: 100%;
   max-width: 240px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: auto;
+  object-fit: contain;
 }
