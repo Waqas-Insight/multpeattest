@@ -4,21 +4,28 @@
 
 {% block content %}
 <div class="container my-5">
-  <div class="row justify-content-center text-center mb-5">
+  <div class="row justify-content-center mb-5">
     <div class="col-lg-10">
-      <div class="card border-0 bg-light p-4 p-md-5 text-center shadow-sm" style="transform: none;">
+      <div class="card border-0 bg-light p-4 p-md-5 shadow-sm" style="transform: none;">
         <div class="card-body">
-          <h2 class="fw-bold mb-4">About Us</h2>
-          <p class="lead text-secondary mb-4 mx-auto" style="max-width: 800px;">
-            This is the home of the Peatland Policy Portal, a collaborative effort of the 
-            <a class="text-success fw-semibold text-decoration-none" href="https://multipeat.org/en?domain=https://multipeat.insight-centre.org/about" target="_blank">EU Life MultiPeat</a> project.
+          <h3 class="fw-bold mb-4 text-center">About Us</h3>
+          <p class="lead text-secondary mb-4 mx-auto text-center" style="max-width: 800px;">
+            This is the home of the European Peatland Policy Portal, a collaborative effort of the 
+            <a class="textab fw-semibold text-decoration-none" href="https://multipeat.org/en?domain=https://multipeat.insight-centre.org/about" target="_blank">EU LIFE MultiPeat</a> project.
           </p>
-          <p class="text-muted mx-auto mb-0" style="max-width: 800px;">
-            The purpose of this public toolkit is to showcase and analyse peatlands, projects, and policies in order to aid the conservation of peatlands and the management of agriculture on peat soils.
+          <p class="text-muted mx-auto mb-2" style="max-width: 800px;">
+            The <a class="textab fw-semibold text-decoration-none" href="https://aspect-erp.insight-centre.org/" target="_blank">ASPECT Unit</a> of the University of Galway's Data Science Institute has developed this portal as a public toolkit to showcase and analyse peatlands, projects, and policies in order to aid the conservation of peatlands and the management of agriculture on peat soils.
           </p>
-          <div class="fw-medium text-success mt-4 fs-5">
+          <p class="text-muted mx-auto mb-2" style="max-width: 800px;">
+            This development process consisted of the construction of various datasets (policies, spatial information, factual statistics), the development of web tools (the policy and project collection pages, map interfaces, calculators adapted from spreadsheets), and the creation of novel Machine Learning and Artificial Intelligence tools (Policy RAG Tool and Key Metric Analyser).
+            The final product we have created is not final-- we hope that the portal will continue to expand in future projects and that its framework will be applied to other policy landscapes, not just peatlands.
+          </p>
+          <p class="text-muted mx-auto mb-2" style="max-width: 800px;">
+            If you are interested in learning more about the development of the portal, its underlying framework, and its various datasets and tools, please see our <a class="textab fw-semibold text-decoration-none" href="https://doi.org/10.12688/openreseurope.23501.1" target="_blank">Article in Open Research Europe</a> (currently under peer review).
+          </p>
+          <p class="text-muted fw-medium mt-4 fs-5 text-center">
             Let's save the peatlands together!
-          </div>
+          </p>
         </div>
       </div>
   </div>
@@ -27,7 +34,9 @@
       <div class="col-lg-10">
         <div class="card border-0 bg-light p-4 p-md-5 shadow-sm" style="transform: none;">
           <div class="card-body">
-            
+            <div class="d-flex justify-content-center mb-4">
+              <img src="{{url_for('static', filename='multipeat_logo.png')}}" alt="LIFE Multi Peat" class="img-fluid" style="max-height: 100px; width: auto; object-fit: contain;">
+            </div>
             <div class="text-center mb-4">
               <h3 class="fw-semibold text-dark">Our Partners</h3>
             </div>
