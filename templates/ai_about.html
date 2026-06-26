@@ -3,20 +3,20 @@
 {% block title %}About the AI{% endblock %}
 
 {% block content %}
-<div class="container my-5" style="min-height: 700px;">
-  <div class="card border-0 shadow-sm">
+<div class="container my-3" style="min-height: 700px;">
+  <div class="card border-0 shadow-sm p-3 p-md-4">
     <div class="card-body">
-      <h3 class="card-title text-center fw-bold mb-4">About Our AI Tools</h3>
-      <p class="text-center text-muted mb-5">
+      <h3 class="card-title text-center fw-bold mb-3">About Our AI Tools</h3>
+      <p class="text-center text-muted mb-4">
         The Peatland Policy Portal includes two AI tools, our Policy RAG Tool and our Key Metric Analyser.
       </p>
       <div class="row g-6">
         <!-- RAG Tool -->
-        <div class="col-lg-6">
+        <div class="col-lg-6 mb-3">
             <div class="card h-100 border-0 bg-light">
                 <div class="card-body">
                     <h5 class="fw-semibold mb-3 text-center">Policy RAG Tool</h5>
-                    <div class="bp-res">
+                    <div class="bp-res p-2">
                        <p class="text-muted mb-3">
                         The <a class="textab" href="{{ url_for('qa_tool') }}" target ="_blank">Policy RAG Tool</a> is a generative question-answering tool which prompts users to ask a question about peatland policy then generates an answer grounded in evidence from our multilingual <a class="textab" href="{{ url_for('policy') }}" target ="_blank">Policy Collection</a>. 
                         'RAG' stands for 'Retrieval-Augmented Generation,' which in our case can be understood as improving text generation by first 'retrieving' evidence (text chunks from our policy dataset), then generating the final answer based on that evidence text. 
@@ -45,7 +45,7 @@
           <div class="card h-100 border-0 bg-light">
             <div class="card-body">
                 <h5 class="fw-semibold mb-3 text-center">Key Metric Analyser</h5>
-                <div class="bp-res">
+                <div class="bp-res p-2">
                   <p class="text-muted mb-3">
                     The Key Metric Analyser is an analytical AI tool developed to extract peatland-relevant metrics from our <a class="textab" href="{{ url_for('policy') }}" target ="_blank">Policy Collection</a>. 
                     While the Policy RAG Tool's AI has a public interface and runs when prompted by users, the Key Metric Analyser's AI only needs to be run once per policy, then provides a public interface for users to explore the results.
