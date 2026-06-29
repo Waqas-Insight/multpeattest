@@ -1,9 +1,8 @@
 import os
 import json
 from sys import exit
-from flask import Flask
-from flask import url_for, render_template, send_file, request, redirect, session, send_from_directory, flash, jsonify, abort
-from flask import Flask, render_template, jsonify, send_from_directory
+from flask import Flask, Response
+from flask import request, session, url_for, render_template, send_file, redirect, send_from_directory, flash, jsonify, abort, stream_with_context
 from werkzeug.utils import secure_filename
 from flask_wtf import FlaskForm
 from flask_wtf.csrf import CSRFProtect
@@ -25,6 +24,7 @@ import re
 #
 from modules import assum_json_to_dict, usrinp_json_to_dict
 import requests
+from config import ODOO_BASE, ODOO_DB, DEFAULT_POLICY_ID, REQUEST_TIMEOUT
 #added remarks for run.py
 # powershell: $env:FLASK_APP = "run"
 # bash: export FLASK_APP=run
@@ -43,6 +43,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
+log = logging.getLogger(__name__)
 '''
 APP CONFIGURATION
 '''
@@ -1325,6 +1326,107 @@ def fetch_field_data(file_name):
         traceback_str = traceback.format_exc()
         print(f"Error reading file {file_path}: {str(e)}\n{traceback_str}")
         return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
+
+#######################################################################
+########################### KMA #######################################
+########################################################################
+@app.route("/kmaviewer")
+def kma_empty():
+    """Default viewer — picks up policy_id from query string."""
+    policy_id = request.args.get("policy_id", DEFAULT_POLICY_ID, type=int)
+    return render_template(
+        "kma_viewer.html",
+        policy_id=policy_id,
+        odoo_db=ODOO_DB,
+    )
+
+@app.route("/kmaviewer/<int:policy_id>")
+def kma_viewer(policy_id):
+    """Clean URL variant: /kmaviewer/42"""
+    return render_template(
+        "kma_viewer.html",
+        policy_id=policy_id,
+        odoo_db=ODOO_DB,
+    )
+
+#ODOO PROXY (JSON-RPC)
+def _odoo_call(path, params=None):
+    """Forward a JSON-RPC style call to Odoo and return its `result` dict."""
+    payload = {
+        "jsonrpc": "2.0",
+        "method": "call",
+        "id": 1,
+        "params": {"db": ODOO_DB, **(params or {})},
+    }
+    try:
+        r = requests.post(
+            f"{ODOO_BASE}{path}",
+            json=payload,
+            timeout=REQUEST_TIMEOUT,
+        )
+        r.raise_for_status()
+        data = r.json()
+        if "error" in data:
+            log.warning("Odoo error on %s: %s", path, data["error"])
+            return {"error": data["error"].get("message", "Odoo error")}, 502
+        return data.get("result", {}), 200
+    except requests.exceptions.ConnectionError:
+        return {"error": f"Cannot reach Odoo at {ODOO_BASE}"}, 502
+    except requests.exceptions.Timeout:
+        return {"error": "Odoo timed out"}, 504
+    except Exception as e:
+        log.exception("Odoo call failed: %s", path)
+        return {"error": str(e)}, 500
+
+@app.route("/api/policy/<int:policy_id>")
+def api_policy(policy_id):
+    result, status = _odoo_call(f"/kma/policy/{policy_id}")
+    return jsonify(result), status
+
+@app.route("/api/policy/<int:policy_id>/chunks")
+def api_chunks(policy_id):
+    limit = request.args.get("limit", 2000, type=int)
+    result, status = _odoo_call(
+        f"/kma/policy/{policy_id}/chunks",
+        params={"limit": limit},
+    )
+    return jsonify(result), status
+
+# PDF STREAM PROXY 
+@app.route("/api/pdf/<int:attachment_id>")
+def api_pdf(attachment_id):
+    """
+    Stream a PDF from Odoo through Flask so the browser sees a same-origin
+    URL. PDF.js will fetch this URL via XHR — no CORS, no auth headaches.
+    """
+    odoo_url = f"{ODOO_BASE}/web/content/{attachment_id}"
+    try:
+        r = requests.get(odoo_url, stream=True, timeout=REQUEST_TIMEOUT)
+        if r.status_code != 200:
+            log.warning("Odoo PDF fetch %s -> %s", attachment_id, r.status_code)
+            abort(r.status_code)
+        return Response(
+            stream_with_context(r.iter_content(chunk_size=8192)),
+            content_type=r.headers.get("Content-Type", "application/pdf"),
+            headers={
+                "Content-Disposition": "inline",
+                "Cache-Control": "private, max-age=3600",
+            },
+        )
+    except requests.exceptions.ConnectionError:
+        abort(502)
+    except Exception:
+        log.exception("PDF proxy failed for attachment %s", attachment_id)
+        abort(500)
+
+# HEALTH 
+@app.route("/kmahealth")
+def health():
+    return {
+        "status": "ok",
+        "odoo_base": ODOO_BASE,
+        "odoo_db": ODOO_DB,
+    }
 
 '''
 Error Handling
