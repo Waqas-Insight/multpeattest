@@ -1330,13 +1330,13 @@ def fetch_field_data(file_name):
 #######################################################################
 ########################### KMA #######################################
 ########################################################################
-@app.route("/kmaviewer")
+@app.route("/kmaviewer/")
 def kma_empty():
     """Default viewer — picks up policy_id from query string."""
-    policy_id = request.args.get("policy_id", DEFAULT_POLICY_ID, type=int)
+    #policy_id = request.args.get("policy_id", DEFAULT_POLICY_ID, type=int)
     return render_template(
         "kma_viewer.html",
-        policy_id=policy_id,
+        policy_id=1,
         odoo_db=ODOO_DB,
     )
 

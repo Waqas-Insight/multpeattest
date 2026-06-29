@@ -1,5 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -219,6 +222,7 @@
       }
   </style>
 </head>
+
 <body>
 
 <div class="layout">
@@ -226,8 +230,9 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="brand">
-      <div class="brand-name">KMA <span>Viewer</span></div>
-      <div class="brand-sub">Policy Intelligence</div>
+      <div class="brand-name">KMA <span style="color:#396d85">Viewer</span></div>
+      <div class="brand-sub">Key Metric Analyser</div>
+      <p class="text-secondary small mt-2"><a class="textab fw-semibold text-decoration-none" href="{{ url_for('ai_about')}}">Click Here</a> to learn about the AI</p>
     </div>
 
     <div class="search-wrap">
@@ -290,4 +295,5 @@
 </script>
 <script src="{{ url_for('static', filename='scripts/kmaViewer.js') }}"></script>
 </body>
-</html>
+
+{% endblock %}

@@ -422,14 +422,14 @@
         for (let i = 0; i < polLst.length; i++) {
             var policy = polLst[i];
             // categories html, gets all categories in their pill form
-            var categ_coll = [`<p class="badge rounded-pill ${ pillDct[policy["primary_category"]] }">${ pillNames[policy["primary_category"]] }</p>`];
+            var categ_coll = [`<p class="badge rounded-pill ${ pillDct[policy["primary_category"]] } mt-1 mx-1">${ pillNames[policy["primary_category"]] }</p>`];
             var categ_lst = policy["category"].sort();
             if(categ_lst.length > 1){
                 categ_coll.push(`|`);
             }
             for (let c=0; c < categ_lst.length; c++){
                 if(categ_lst[c] != policy["primary_category"]){
-                    categ_coll.push(`<p class="badge rounded-pill ${ pillDct[categ_lst[c]] }">${ pillNames[categ_lst[c]] }</p>`);
+                    categ_coll.push(`<p class="badge rounded-pill ${ pillDct[categ_lst[c]] } mt-1 mx-1">${ pillNames[categ_lst[c]] }</p>`);
                 }
             }
             var categs_html = categ_coll.join(" ");
@@ -527,7 +527,7 @@
                                         ${ abst_html_section }
                                         ${ toc_html_section }
                                         ${ links_html }
-                                        <div class="mt-2">
+                                        <div class="d-flex flex-wrap mt-2">
                                             ${ categs_html }
                                         </div>
                                     </div>
