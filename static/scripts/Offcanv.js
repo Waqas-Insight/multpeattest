@@ -56,12 +56,12 @@ function togglePols(polLst){
     //console.log(polLst.length, polLst);
     polLst.forEach(pol => {
         var element = `
-            <div class="mb-3 p-3 bg-light rounded border-start border-3 border-success text-start shadow-sm">
-                <a class="pol-lst-name fw-bold d-block text-success text-decoration-none mb-2" 
+            <div class="mb-3 p-3 bg-light rounded border-start border-3 text-start shadow-sm" style="border-color:color:#396d85;">
+                <a class="pol-lst-name fw-bold d-block text-decoration-none mb-2" 
                 href="${pol["data_link"]}" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                style="font-size: 0.9rem; line-height: 1.3;">
+                style="font-size: 0.9rem; line-height: 1.3; color:#396d85">
                     ${pol["name"]} ↗
                 </a>
                 <div class="d-flex flex-wrap gap-2 align-items-center mt-2" style="font-size: 0.75rem;">
@@ -204,7 +204,10 @@ function displayChange(evt){
     //lsv.style.left = `200px`;
     var pb = document.getElementById("map-pol-box");
     //var psv = document.getElementById("map-pol-svg");
-    pb.style.display = 'block';
+    if(pb.classList.contains('d-none')){
+        pb.classList.remove('d-none');
+        pb.classList.add('d-flex');
+    }
     //psv.style.right = `400px`;
 };
 

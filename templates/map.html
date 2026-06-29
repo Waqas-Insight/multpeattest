@@ -19,9 +19,9 @@
         </button>
 
         <!--layer box-->
-        <div id="map-lyr-box" class="card border-0 bg-white shadow mt-3" style="width: 260px; border-radius: 0.5rem; display: none;">
+        <div id="map-lyr-box" class="card border-0 bg-white shadow mt-1" style="width: 260px; border-radius: 0.5rem; display: none;">
             <div class="card-header bg-white border-0 pt-3 pb-1 px-3">
-                <small class="fw-bold text-success tracking-wider text-uppercase d-block" style="font-size: 0.75rem;">Peatland Sources</small>
+                <small class="fw-bold tracking-wider text-uppercase d-block" style="font-size: 0.75rem; color:#396d85;">Peatland Sources</small>
             </div>
             <div class="card-body px-3 pb-3 pt-1">
                 <div id="layers-div" class="overflow-auto pe-1" style="max-height: 400px; font-size: 0.9rem;">
@@ -364,12 +364,12 @@
             </svg>
         </button>
         <!--policy box-->
-        <div id="map-pol-box" class="card border-0 bg-white shadow" style="position: absolute; top: 20px; right: 20px; width: 380px; max-height: calc(100vh - 120px); border-radius: 0.5rem; display: none;">
+        <div id="map-pol-box" class="card border-0 bg-white shadow overflow-hidden flex-column d-none" style="position: absolute; top: 50px; right: 10px; width: 380px; max-height: calc(100vh - 120px); border-radius: 0.5rem;">
             <div id="map-pol-default" class="card-header bg-white border-0 pt-4 pb-2 px-4">
-                <h5 class="fw-bold text-success mb-1">Relevant Policies</h5>
-                <p class="text-secondary small mb-0">Click on an interactive map region to explore data.</p>
+                <h5 class="fw-bold mb-1" style="color:#396d85">Relevant Policies</h5>
+                <p class="text-secondary small mb-0">Click on the map to explore the policy landscape.</p>
             </div>
-            <div class="card-body px-4 pb-4 pt-1 d-flex flex-column" style="overflow: hidden;">
+            <div class="card-body px-4 pb-1 pt-1 d-flex flex-column">
                 <!--policy box level selection buttons-->
                 <div id="lvl-filter-div" class="d-flex align-items-center bg-light p-2 rounded mb-3" style="font-size: 0.85rem;">
                     <span class="fw-bold text-secondary me-3 ps-1">Levels:</span>
@@ -409,13 +409,13 @@
                 </div>
             </div>
             <!--Where policies populate-->
-            <div id="map-pols-div" class="overflow-auto pe-1 flex-grow-1" style="max-height: 450px;">
+            <div id="map-pols-div" class="overflow-auto px-4 pb-4 flex-grow-1" style="min-height:0;">
                 <div id="coun-pol"></div>
                 <div id="reg-pol"></div>
                 <div id="nat-pol"></div>
                 <div id="eu-pol"></div>
                 <div id="glob-pol"></div>
-                <div id="offc-no-features" class="text-center text-muted small my-3"></div>
+                <div id="offc-no-features" class="text-center text-muted small"></div>
             </div>
             <!-- hidden input to store click policy for querying after map click-->
             <input id="policy-request-store" type="hidden" value="{{ [] }}">
