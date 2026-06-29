@@ -180,13 +180,14 @@ async function parsePols(evt){
             success:function(result){
                 for (let i=0; i < result.features.length; i++){
                     const ipol=result.features[i];
+                    //console.log(ipol);
                     if(ipol){
                         polLst.push( 
                         {"name": ipol.properties.name, 
                         "policy_level": ipol.properties.policy_level, 
                         "primary_category": ipol.properties.primary_category, 
-                        "data_link": ipol.properties.data_link}
-                        );
+                        "data_link": `http://peatlandpolicyportal.eu/policy/${ipol.properties.odoo_policy_id}`
+                        });
                     }
                 };
             }

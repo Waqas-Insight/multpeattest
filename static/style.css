@@ -449,6 +449,7 @@ border-width: 11px;
 left: 48px;
 margin-left: -11px;
 }
+/*
 .ol-popup-closer {
 text-decoration: none;
 position: absolute;
@@ -458,6 +459,7 @@ right: 8px;
 .ol-popup-closer:after {
 content: "✖";
 }
+*/
 #popup a:link{
 text-decoration: none;
 }

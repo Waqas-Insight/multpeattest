@@ -367,7 +367,7 @@
         <div id="map-pol-box" class="card border-0 bg-white shadow overflow-hidden flex-column d-none" style="position: absolute; top: 50px; right: 10px; width: 380px; max-height: calc(100vh - 120px); border-radius: 0.5rem;">
             <div id="map-pol-default" class="card-header bg-white border-0 pt-4 pb-2 px-4">
                 <h5 class="fw-bold mb-1" style="color:#396d85">Relevant Policies</h5>
-                <p class="text-secondary small mb-0">Click on the map to explore the policy landscape.</p>
+                <p class="text-secondary small mb-0">Click on the map to explore the policy landscape, and click on any result to visit its policy profile page.</p>
             </div>
             <div class="card-body px-4 pb-1 pt-1 d-flex flex-column">
                 <!--policy box level selection buttons-->
@@ -427,7 +427,7 @@
 
 
 <!--Popup div-->
-<div id="popup" class="ol-popup card border-0 shadow p-3 rounded" style="background-color: rgba(255,255,255,0.95); min-width: 200px; display: none;">
+<div id="popup" class="ol-popup card border-0 shadow p-3 rounded" style="background-color: rgba(255,255,255,0.95); min-width: 200px; z-index: 2000; position: absolute !important;">
     <a href="#" id="popup-closer" class="ol-popup-closer btn-close position-absolute end-0 top-0 m-2" style="font-size: 0.75rem;" aria-label="Close"></a>
     <div id="popup-content" class="small mt-1 text-start">
         <div id="bog-info"></div>
