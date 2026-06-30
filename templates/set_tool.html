@@ -29,7 +29,7 @@
                         <div class="col-7">
                             {% if session.get('username') %}
                             <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" id="load_data_btn" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="btn btn-success btn-sm dropdown-toggle pt-1 pb-1 px-1" type="button" id="load_data_btn" data-bs-toggle="dropdown" aria-expanded="false" style="margin-left: 20px;">
                                     <i class="fas fa-database me-2"></i>Select Site
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="load_data_btn">
@@ -1351,7 +1351,7 @@
             // Create dropdown structure
             const dropdownHtml = `
                 <div class="dropdown">
-                    <button class="btn btn-primary dropdown-toggle" type="button" id="site_dropdown_btn" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn btn-success btn-sm dropdown-toggle pt-1 pb-1 px-1" type="button" id="site_dropdown_btn" data-bs-toggle="dropdown" aria-expanded="false" style="margin-left: 20px;">
                         <i class="fas fa-database me-2"></i>Select Site
                     </button>
                     <ul class="dropdown-menu" id="site_dropdown" aria-labelledby="site_dropdown_btn">
