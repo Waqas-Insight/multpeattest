@@ -43,7 +43,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
-log = logging.getLogger(__name__)
+#log = logging.getLogger(__name__)
 '''
 APP CONFIGURATION
 '''
@@ -1367,7 +1367,8 @@ def _odoo_call(path, params=None):
         r.raise_for_status()
         data = r.json()
         if "error" in data:
-            log.warning("Odoo error on %s: %s", path, data["error"])
+            #log.warning("Odoo error on %s: %s", path, data["error"])
+            print("Odoo error on %s: %s", path, data["error"])
             return {"error": data["error"].get("message", "Odoo error")}, 502
         return data.get("result", {}), 200
     except requests.exceptions.ConnectionError:
@@ -1375,7 +1376,8 @@ def _odoo_call(path, params=None):
     except requests.exceptions.Timeout:
         return {"error": "Odoo timed out"}, 504
     except Exception as e:
-        log.exception("Odoo call failed: %s", path)
+        #log.exception("Odoo call failed: %s", path)
+        print("Odoo call failed: %s", path)
         return {"error": str(e)}, 500
 
 @app.route("/api/policy/<int:policy_id>")
@@ -1403,7 +1405,8 @@ def api_pdf(attachment_id):
     try:
         r = requests.get(odoo_url, stream=True, timeout=REQUEST_TIMEOUT)
         if r.status_code != 200:
-            log.warning("Odoo PDF fetch %s -> %s", attachment_id, r.status_code)
+            #log.warning("Odoo PDF fetch %s -> %s", attachment_id, r.status_code)
+            print("Odoo PDF fetch %s -> %s", attachment_id, r.status_code)
             abort(r.status_code)
         return Response(
             stream_with_context(r.iter_content(chunk_size=8192)),
@@ -1416,7 +1419,8 @@ def api_pdf(attachment_id):
     except requests.exceptions.ConnectionError:
         abort(502)
     except Exception:
-        log.exception("PDF proxy failed for attachment %s", attachment_id)
+        #log.exception("PDF proxy failed for attachment %s", attachment_id)
+        print("PDF proxy failed for attachment %s", attachment_id)
         abort(500)
 
 # HEALTH 

@@ -31361,3 +31361,180 @@ Press Ctrl+C to stop the Flask app and exit...
 2026-02-17 14:14:11,734 - INFO - 127.0.0.1 - - [17/Feb/2026 14:14:11] "GET /blog/images/IE/ireland-peatland.jpg HTTP/1.0" 200 -
 2026-02-17 14:14:11,737 - INFO - 127.0.0.1 - - [17/Feb/2026 14:14:11] "GET /blog/images/IE/blanketutilisationchart.jpg HTTP/1.0" 200 -
 2026-02-17 14:14:11,739 - INFO - 127.0.0.1 - - [17/Feb/2026 14:14:11] "GET /blog/images/IE/ireland-peatland2.png HTTP/1.0" 200 -
+ * Serving Flask app 'run'
+ * Debug mode: on
+2026-06-29 20:36:00,463 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-06-29 20:36:00,463 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-29 20:36:00,464 - INFO -  * Restarting with stat
+2026-06-29 20:36:01,296 - WARNING -  * Debugger is active!
+2026-06-29 20:36:01,296 - INFO -  * Debugger PIN: 110-703-344
+2026-06-29 20:36:25,669 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:25] "[32mGET / HTTP/1.1[0m" 302 -
+2026-06-29 20:36:25,752 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:25] "GET /home HTTP/1.1" 200 -
+2026-06-29 20:36:25,818 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:25] "GET /static/style.css HTTP/1.1" 200 -
+2026-06-29 20:36:25,820 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:25] "GET /static/images/map_vis.png HTTP/1.1" 200 -
+2026-06-29 20:36:25,841 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:25] "[36mGET /static/multipeat_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 20:36:25,842 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:25] "[36mGET /static/scripts/logout_template.js HTTP/1.1[0m" 304 -
+2026-06-29 20:36:25,896 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:25] "GET /static/images/policies_vis.png HTTP/1.1" 200 -
+2026-06-29 20:36:25,941 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:25] "GET /static/images/calculators_vis.png HTTP/1.1" 200 -
+2026-06-29 20:36:26,136 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:26] "GET /static/images/projects_vis.png HTTP/1.1" 200 -
+2026-06-29 20:36:26,138 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:26] "GET /static/images/feedback_vis.png HTTP/1.1" 200 -
+2026-06-29 20:36:26,141 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:26] "[36mGET /static/scripts/toggle_display.js HTTP/1.1[0m" 304 -
+2026-06-29 20:36:26,147 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:26] "[36mGET /static/ASPECT_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 20:36:29,836 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:29] "GET /about_our_ai HTTP/1.1" 200 -
+2026-06-29 20:36:29,891 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:29] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2026-06-29 20:36:29,897 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:29] "[36mGET /static/scripts/logout_template.js HTTP/1.1[0m" 304 -
+2026-06-29 20:36:29,926 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:29] "[36mGET /static/scripts/toggle_display.js HTTP/1.1[0m" 304 -
+2026-06-29 20:36:30,038 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:30] "[36mGET /static/multipeat_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 20:36:30,042 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:30] "[36mGET /static/ASPECT_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 20:36:32,133 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:32] "GET /kmaviewer/246 HTTP/1.1" 200 -
+2026-06-29 20:36:32,171 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:32] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2026-06-29 20:36:32,178 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:32] "[33mGET /static/css/viewer.css HTTP/1.1[0m" 404 -
+2026-06-29 20:36:32,193 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:32] "[36mGET /static/scripts/logout_template.js HTTP/1.1[0m" 304 -
+2026-06-29 20:36:32,202 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:32] "GET /static/scripts/kmaViewer.js HTTP/1.1" 200 -
+2026-06-29 20:36:32,362 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:32] "[36mGET /static/scripts/toggle_display.js HTTP/1.1[0m" 304 -
+2026-06-29 20:36:32,366 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:32] "[36mGET /static/ASPECT_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 20:36:32,367 - INFO - 127.0.0.1 - - [29/Jun/2026 20:36:32] "[36mGET /static/multipeat_logo.png HTTP/1.1[0m" 304 -
+ * Serving Flask app 'run'
+ * Debug mode: on
+2026-06-29 20:42:15,401 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-06-29 20:42:15,401 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-29 20:42:15,402 - INFO -  * Restarting with stat
+2026-06-29 20:42:16,306 - WARNING -  * Debugger is active!
+2026-06-29 20:42:16,308 - INFO -  * Debugger PIN: 470-002-136
+2026-06-29 20:43:00,513 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:00] "GET /kmaviewer/246 HTTP/1.1" 200 -
+2026-06-29 20:43:00,583 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:00] "[36mGET /static/scripts/logout_template.js HTTP/1.1[0m" 304 -
+2026-06-29 20:43:00,584 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:00] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2026-06-29 20:43:00,589 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:00] "[33mGET /static/css/viewer.css HTTP/1.1[0m" 404 -
+2026-06-29 20:43:00,615 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:00] "[36mGET /static/scripts/kmaViewer.js HTTP/1.1[0m" 304 -
+2026-06-29 20:43:00,749 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:00] "[36mGET /static/scripts/toggle_display.js HTTP/1.1[0m" 304 -
+2026-06-29 20:43:00,756 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:00] "[36mGET /static/multipeat_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 20:43:00,758 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:00] "[36mGET /static/ASPECT_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 20:43:01,252 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:01] "GET /static/favicon.ico HTTP/1.1" 200 -
+2026-06-29 20:43:03,604 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:03] "GET /kmaviewer/246 HTTP/1.1" 200 -
+2026-06-29 20:43:03,656 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:03] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2026-06-29 20:43:03,661 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:03] "[33mGET /static/css/viewer.css HTTP/1.1[0m" 404 -
+2026-06-29 20:43:03,663 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:03] "[36mGET /static/scripts/logout_template.js HTTP/1.1[0m" 304 -
+2026-06-29 20:43:03,699 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:03] "[36mGET /static/scripts/kmaViewer.js HTTP/1.1[0m" 304 -
+2026-06-29 20:43:03,825 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:03] "[36mGET /static/ASPECT_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 20:43:03,830 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:03] "[36mGET /static/multipeat_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 20:43:03,831 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:03] "[36mGET /static/scripts/toggle_display.js HTTP/1.1[0m" 304 -
+2026-06-29 20:43:03,919 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:03] "[36mGET /static/favicon.ico HTTP/1.1[0m" 304 -
+2026-06-29 20:43:11,031 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:11] "GET /about_our_ai HTTP/1.1" 200 -
+2026-06-29 20:43:11,072 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:11] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2026-06-29 20:43:11,076 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:11] "[36mGET /static/scripts/logout_template.js HTTP/1.1[0m" 304 -
+2026-06-29 20:43:11,245 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:11] "[36mGET /static/scripts/toggle_display.js HTTP/1.1[0m" 304 -
+2026-06-29 20:43:11,247 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:11] "[36mGET /static/multipeat_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 20:43:11,249 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:11] "[36mGET /static/ASPECT_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 20:43:11,466 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:11] "[36mGET /static/favicon.ico HTTP/1.1[0m" 304 -
+2026-06-29 20:43:18,861 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:18] "GET /policy-suggestion HTTP/1.1" 200 -
+2026-06-29 20:43:18,913 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:18] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2026-06-29 20:43:18,916 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:18] "[36mGET /static/scripts/logout_template.js HTTP/1.1[0m" 304 -
+2026-06-29 20:43:19,068 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:19] "[36mGET /static/scripts/toggle_display.js HTTP/1.1[0m" 304 -
+2026-06-29 20:43:19,069 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:19] "[36mGET /static/multipeat_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 20:43:19,073 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:19] "[36mGET /static/ASPECT_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 20:43:19,089 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:19] "GET /static/INFO-icon-darker.png HTTP/1.1" 200 -
+2026-06-29 20:43:19,262 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:19] "GET /countrydata HTTP/1.1" 200 -
+2026-06-29 20:43:19,268 - INFO - 127.0.0.1 - - [29/Jun/2026 20:43:19] "GET /languagedata HTTP/1.1" 200 -
+2026-06-29 20:49:00,499 - INFO - 127.0.0.1 - - [29/Jun/2026 20:49:00] "[33mGET /nacos/ HTTP/1.1[0m" 404 -
+ * Serving Flask app 'run'
+ * Debug mode: on
+2026-06-29 20:52:00,699 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-06-29 20:52:00,699 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-29 20:52:00,700 - INFO -  * Restarting with stat
+2026-06-29 20:52:01,546 - WARNING -  * Debugger is active!
+2026-06-29 20:52:01,547 - INFO -  * Debugger PIN: 107-354-845
+2026-06-29 20:52:37,382 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:37] "[32mGET / HTTP/1.1[0m" 302 -
+2026-06-29 20:52:37,462 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:37] "GET /home HTTP/1.1" 200 -
+2026-06-29 20:52:37,620 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:37] "GET /static/style.css HTTP/1.1" 200 -
+2026-06-29 20:52:37,622 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:37] "GET /static/scripts/logout_template.js HTTP/1.1" 200 -
+2026-06-29 20:52:37,671 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:37] "GET /static/images/map_vis.png HTTP/1.1" 200 -
+2026-06-29 20:52:37,674 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:37] "GET /static/multipeat_logo.png HTTP/1.1" 200 -
+2026-06-29 20:52:38,598 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:38] "GET /static/images/policies_vis.png HTTP/1.1" 200 -
+2026-06-29 20:52:38,807 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:38] "GET /static/images/calculators_vis.png HTTP/1.1" 200 -
+2026-06-29 20:52:38,815 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:38] "GET /static/images/projects_vis.png HTTP/1.1" 200 -
+2026-06-29 20:52:39,829 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:39] "GET /static/scripts/toggle_display.js HTTP/1.1" 200 -
+2026-06-29 20:52:41,061 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:41] "GET /static/ASPECT_logo.png HTTP/1.1" 200 -
+2026-06-29 20:52:41,062 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:41] "GET /static/images/feedback_vis.png HTTP/1.1" 200 -
+2026-06-29 20:52:44,532 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:44] "GET /about_our_ai HTTP/1.1" 200 -
+2026-06-29 20:52:44,595 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:44] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2026-06-29 20:52:44,615 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:44] "[36mGET /static/scripts/logout_template.js HTTP/1.1[0m" 304 -
+2026-06-29 20:52:44,621 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:44] "[36mGET /static/ASPECT_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 20:52:44,624 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:44] "[36mGET /static/multipeat_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 20:52:45,104 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:45] "[36mGET /static/scripts/toggle_display.js HTTP/1.1[0m" 304 -
+2026-06-29 20:52:52,211 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:52] "GET /kmaviewer/246 HTTP/1.1" 200 -
+2026-06-29 20:52:52,373 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:52] "[33mGET /static/css/viewer.css HTTP/1.1[0m" 404 -
+2026-06-29 20:52:52,376 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:52] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2026-06-29 20:52:52,387 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:52] "[36mGET /static/scripts/logout_template.js HTTP/1.1[0m" 304 -
+2026-06-29 20:52:52,444 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:52] "GET /static/scripts/kmaViewer.js HTTP/1.1" 200 -
+2026-06-29 20:52:52,612 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:52] "[36mGET /static/scripts/toggle_display.js HTTP/1.1[0m" 304 -
+2026-06-29 20:52:52,965 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:52] "[36mGET /static/multipeat_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 20:52:52,972 - INFO - 127.0.0.1 - - [29/Jun/2026 20:52:52] "[36mGET /static/ASPECT_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 20:54:22,316 - INFO - 127.0.0.1 - - [29/Jun/2026 20:54:22] "GET /kmaviewer/246 HTTP/1.1" 200 -
+2026-06-29 20:54:22,368 - INFO - 127.0.0.1 - - [29/Jun/2026 20:54:22] "[33mGET /static/css/viewer.css HTTP/1.1[0m" 404 -
+2026-06-29 20:54:22,372 - INFO - 127.0.0.1 - - [29/Jun/2026 20:54:22] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2026-06-29 20:54:22,391 - INFO - 127.0.0.1 - - [29/Jun/2026 20:54:22] "[36mGET /static/scripts/logout_template.js HTTP/1.1[0m" 304 -
+2026-06-29 20:54:22,395 - INFO - 127.0.0.1 - - [29/Jun/2026 20:54:22] "[36mGET /static/scripts/kmaViewer.js HTTP/1.1[0m" 304 -
+2026-06-29 20:54:22,910 - INFO - 127.0.0.1 - - [29/Jun/2026 20:54:22] "[36mGET /static/scripts/toggle_display.js HTTP/1.1[0m" 304 -
+2026-06-29 20:54:22,911 - INFO - 127.0.0.1 - - [29/Jun/2026 20:54:22] "[36mGET /static/multipeat_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 20:54:22,913 - INFO - 127.0.0.1 - - [29/Jun/2026 20:54:22] "[36mGET /static/ASPECT_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 20:55:17,327 - INFO - 127.0.0.1 - - [29/Jun/2026 20:55:17] "GET /kmaviewer/?policy_id=246 HTTP/1.1" 200 -
+2026-06-29 20:55:17,385 - INFO - 127.0.0.1 - - [29/Jun/2026 20:55:17] "[33mGET /static/css/viewer.css HTTP/1.1[0m" 404 -
+2026-06-29 20:55:17,390 - INFO - 127.0.0.1 - - [29/Jun/2026 20:55:17] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2026-06-29 20:55:17,393 - INFO - 127.0.0.1 - - [29/Jun/2026 20:55:17] "[36mGET /static/scripts/logout_template.js HTTP/1.1[0m" 304 -
+2026-06-29 20:55:17,413 - INFO - 127.0.0.1 - - [29/Jun/2026 20:55:17] "[36mGET /static/scripts/kmaViewer.js HTTP/1.1[0m" 304 -
+2026-06-29 20:55:17,921 - INFO - 127.0.0.1 - - [29/Jun/2026 20:55:17] "[36mGET /static/multipeat_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 20:55:17,925 - INFO - 127.0.0.1 - - [29/Jun/2026 20:55:17] "[36mGET /static/ASPECT_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 20:55:17,926 - INFO - 127.0.0.1 - - [29/Jun/2026 20:55:17] "[36mGET /static/scripts/toggle_display.js HTTP/1.1[0m" 304 -
+2026-06-29 20:55:35,772 - INFO - 127.0.0.1 - - [29/Jun/2026 20:55:35] "GET /kmahealth HTTP/1.1" 200 -
+2026-06-29 20:55:35,854 - INFO - 127.0.0.1 - - [29/Jun/2026 20:55:35] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-06-29 20:59:00,362 - INFO - 127.0.0.1 - - [29/Jun/2026 20:59:00] "GET /kmahealth HTTP/1.1" 200 -
+2026-06-29 20:59:00,556 - INFO - 127.0.0.1 - - [29/Jun/2026 20:59:00] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-06-29 21:02:42,554 - INFO - 127.0.0.1 - - [29/Jun/2026 21:02:42] "[33mGET /util/aes.js HTTP/1.1[0m" 404 -
+2026-06-29 21:02:42,961 - INFO - 127.0.0.1 - - [29/Jun/2026 21:02:42] "[33mGET /admin-api/system/auth/get-permission-info HTTP/1.1[0m" 404 -
+2026-06-29 21:13:12,809 - INFO -  * Detected change in '/home/ales/multipeattools/run.py', reloading
+2026-06-29 21:13:13,145 - INFO -  * Restarting with stat
+  File "/home/ales/multipeattools/run.py", line 1372
+    return {"error": data["error"].get("message", "Odoo error")}, 502
+TabError: inconsistent use of tabs and spaces in indentation
+  File "/home/ales/multipeattools/run.py", line 1372
+    return {"error": data["error"].get("message", "Odoo error")}, 502
+TabError: inconsistent use of tabs and spaces in indentation
+ * Serving Flask app 'run'
+ * Debug mode: on
+2026-06-29 21:20:07,770 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-06-29 21:20:07,770 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-29 21:20:07,771 - INFO -  * Restarting with stat
+2026-06-29 21:20:08,621 - WARNING -  * Debugger is active!
+2026-06-29 21:20:08,624 - INFO -  * Debugger PIN: 972-552-242
+2026-06-29 21:20:15,313 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:15] "GET /kmahealth HTTP/1.1" 200 -
+2026-06-29 21:20:21,163 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:21] "[33mGET /public/static/js/common.js HTTP/1.1[0m" 404 -
+2026-06-29 21:20:25,734 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:25] "GET /kmaviewer/?policy_id=246 HTTP/1.1" 200 -
+2026-06-29 21:20:25,865 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:25] "[33mGET /static/css/viewer.css HTTP/1.1[0m" 404 -
+2026-06-29 21:20:25,939 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:25] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2026-06-29 21:20:25,981 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:25] "[36mGET /static/scripts/logout_template.js HTTP/1.1[0m" 304 -
+2026-06-29 21:20:26,051 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:26] "[36mGET /static/scripts/kmaViewer.js HTTP/1.1[0m" 304 -
+2026-06-29 21:20:26,815 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:26] "[36mGET /static/scripts/toggle_display.js HTTP/1.1[0m" 304 -
+2026-06-29 21:20:26,819 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:26] "[36mGET /static/multipeat_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 21:20:26,834 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:26] "[36mGET /static/ASPECT_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 21:20:36,678 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:36] "GET /kmaviewer/?policy_id=1 HTTP/1.1" 200 -
+2026-06-29 21:20:36,810 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:36] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2026-06-29 21:20:36,812 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:36] "[33mGET /static/css/viewer.css HTTP/1.1[0m" 404 -
+2026-06-29 21:20:36,817 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:36] "[36mGET /static/scripts/logout_template.js HTTP/1.1[0m" 304 -
+2026-06-29 21:20:36,890 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:36] "[36mGET /static/scripts/kmaViewer.js HTTP/1.1[0m" 304 -
+2026-06-29 21:20:37,629 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:37] "[36mGET /static/scripts/toggle_display.js HTTP/1.1[0m" 304 -
+2026-06-29 21:20:37,635 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:37] "[36mGET /static/multipeat_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 21:20:37,637 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:37] "[36mGET /static/ASPECT_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 21:20:57,671 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:57] "GET /kmaviewer/246 HTTP/1.1" 200 -
+2026-06-29 21:20:57,730 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:57] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2026-06-29 21:20:57,738 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:57] "[33mGET /static/css/viewer.css HTTP/1.1[0m" 404 -
+2026-06-29 21:20:57,741 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:57] "[36mGET /static/scripts/logout_template.js HTTP/1.1[0m" 304 -
+2026-06-29 21:20:57,760 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:57] "[36mGET /static/scripts/kmaViewer.js HTTP/1.1[0m" 304 -
+2026-06-29 21:20:58,271 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:58] "[36mGET /static/scripts/toggle_display.js HTTP/1.1[0m" 304 -
+2026-06-29 21:20:58,274 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:58] "[36mGET /static/ASPECT_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 21:20:58,276 - INFO - 127.0.0.1 - - [29/Jun/2026 21:20:58] "[36mGET /static/multipeat_logo.png HTTP/1.1[0m" 304 -
+2026-06-29 21:21:15,517 - INFO - 127.0.0.1 - - [29/Jun/2026 21:21:15] "[32mGET / HTTP/1.1[0m" 302 -
+2026-06-29 21:21:16,061 - INFO - 127.0.0.1 - - [29/Jun/2026 21:21:16] "GET /home HTTP/1.1" 200 -
