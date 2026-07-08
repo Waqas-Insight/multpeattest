@@ -46,42 +46,42 @@
         padding: 0 !important; 
         margin: 0 !important;
       }
-      /*
-      html, body, #page-container, #content-wrap, #content {
-        height: 100vh !important;
-        max-height: 100vh !important;
-        min-height: 100vh !important;
-        overflow: hidden !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        display: flex;
-        flex-direction: column;
-      }
-      */
+
       @media (min-width: 801px) {
-        /* Instruct the browser window root to ignore default document content stretch flags */
-        html, body, #page-container, #content-wrap, #content {
+        html, body {
           height: 100vh !important;
           max-height: 100vh !important;
           overflow: hidden !important;
+          padding: 0 !important;
+          margin: 0 !important;
         }
 
-        /* Lock the root viewer app node directly inside the remaining view scope */
+        #page-container, #content-wrap, #content {
+          height: 100vh !important;
+          max-height: 100vh !important;
+          overflow: hidden !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          display: flex !important;
+          flex-direction: column !important;
+        }
+
         .layout {
           display: grid !important;
           grid-template-columns: var(--sidebar) 1fr var(--pdf-panel);
           background: var(--bg);
-          height: calc(100vh - 60px) !important; /* Subtracting standard top navigation wrapper dimensions */
-          max-height: calc(100vh - 60px) !important;
+          flex: 1 !important;
+          height: auto !important;
+          max-height: none !important;
           min-height: 0 !important;
           overflow: hidden !important;
-          transition: height 0.25s ease-in-out, max-height 0.25s ease-in-out;
         }
 
-        /* Dynamically adjust calculations when the top menu rolls upward */
-        .layout.navbar-is-hidden {
-          height: 100vh !important;
-          max-height: 100vh !important;
+        #footer, footer {
+          display: none !important;
+          height: 0 !important;
+          padding: 0 !important;
+          margin: 0 !important;
         }
       }
 
@@ -100,17 +100,6 @@
         overflow: hidden !important;
         opacity: 0;
       }
-      /*
-      .layout {
-        display: grid;
-        grid-template-columns: var(--sidebar) 1fr var(--pdf-panel);
-        flex: 1;
-        min-height: 0; 
-        background: var(--bg);
-        overflow: hidden;
-        height: 100%;
-      }
-      */
 
       /* ── SIDEBAR ─────────────────────────────────────────────────────────────── */
       .sidebar { background: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
@@ -275,10 +264,7 @@
         .layout { grid-template-columns: var(--sidebar) 1fr; }
         .pdf-panel { display: none; }
       }
-      /*@media (max-width: 800px) {
-        .layout { grid-template-columns: 1fr; }
-        .sidebar { display: none; }
-      }*/
+
       @media (max-width: 800px) {
         .layout { 
           grid-template-columns: 1fr; 
@@ -299,6 +285,21 @@
         }
         .chunks-wrap {
           overflow-y: visible !important;
+        }
+ 
+        #pdfCanvasWrap, .pdf-panel {
+            height: 100% !important;
+            min-height: 0 !important;
+            flex: 1 !important;
+            overflow: auto !important; 
+            position: relative;
+        }
+
+        #pdfCanvas {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%; 
+            height: auto !important; 
         }
       }
   </style>
@@ -376,42 +377,61 @@
 </script>
 <script src="{{ url_for('static', filename='scripts/kmaViewer.js') }}"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const navbar = document.querySelector('.navdiv'); 
-      const layout = document.getElementById('mainLayout');
-      const chunksScroll = document.getElementById('chunksWrap');
-      
-      if (!navbar || !layout) return;
+ document.addEventListener("DOMContentLoaded", () => {
+  const navbar = document.querySelector('.navdiv'); 
+  const layout = document.getElementById('mainLayout');
+  const chunksScroll = document.getElementById('chunksWrap');
+  
+  if (!navbar || !layout) return;
 
-      let lastScrollTop = 0;
-
-      const handleNavbarToggle = (scrollTop) => {
-        const mobileMenu = document.getElementById('mainNavbarMenu');
-        if (mobileMenu && mobileMenu.classList.contains('show')) return;
-
-        if (scrollTop > lastScrollTop && scrollTop > 60) {
-          navbar.classList.add('navbar-hidden');
-          layout.classList.add('navbar-is-hidden');
-        } else if (scrollTop < lastScrollTop) {
-          navbar.classList.remove('navbar-hidden');
-          layout.classList.remove('navbar-is-hidden');
-        }
-        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-      };
-
-      if (chunksScroll && window.innerWidth > 800) {
-        chunksScroll.addEventListener('scroll', () => {
-          handleNavbarToggle(chunksScroll.scrollTop);
-        });
+  const updateLayoutHeight = () => {
+    if (window.innerWidth > 800) {
+      if (navbar.classList.contains('navbar-hidden')) {
+        layout.style.setProperty('height', '100vh', 'important');
+      } else {
+        // Includes the height plus any bounding margins/paddings from base.html
+        const navHeight = navbar.offsetHeight;
+        layout.style.setProperty('height', `calc(100vh - ${navHeight}px - 8px)`, 'important');
       }
+    } else {
+      layout.style.removeProperty('height');
+    }
+  };
 
-      window.addEventListener('scroll', () => {
-        if (window.innerWidth <= 800) {
-          let globalScroll = window.pageYOffset || document.documentElement.scrollTop;
-          handleNavbarToggle(globalScroll);
-        }
-      });
+  updateLayoutHeight();
+  window.addEventListener('resize', updateLayoutHeight);
+
+  let lastScrollTop = 0;
+
+  const handleNavbarToggle = (scrollTop) => {
+    const mobileMenu = document.getElementById('mainNavbarMenu');
+    if (mobileMenu && mobileMenu.classList.contains('show')) return;
+
+    if (scrollTop > lastScrollTop && scrollTop > 60) {
+      navbar.classList.add('navbar-hidden');
+      layout.classList.add('navbar-is-hidden');
+    } else if (scrollTop < lastScrollTop) {
+      navbar.classList.remove('navbar-hidden');
+      layout.classList.remove('navbar-is-hidden');
+    }
+    
+    updateLayoutHeight();
+    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+  };
+
+  if (chunksScroll && window.innerWidth > 800) {
+    chunksScroll.addEventListener('scroll', () => {
+      handleNavbarToggle(chunksScroll.scrollTop);
     });
+  }
+
+  window.addEventListener('scroll', () => {
+    if (window.innerWidth <= 800) {
+      let globalScroll = window.pageYOffset || document.documentElement.scrollTop;
+      handleNavbarToggle(globalScroll);
+    }
+  });
+});
 </script>
 </body>
 

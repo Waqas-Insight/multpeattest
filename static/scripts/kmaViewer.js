@@ -319,6 +319,19 @@ async function renderPage(pageNum) {
     const page = await state.pdfDoc.getPage(clamped);
     const canvas = $('pdfCanvas');
     const ctx = canvas.getContext('2d');
+    const wrap = $('pdfCanvasWrap');
+
+    // --- FIX: Force-constrain the wrapper layout on desktop view ---
+    if (window.innerWidth > 800 && wrap) {
+      // Find out how much vertical space the main layout block has
+      const mainLayout = $('mainLayout');
+      if (mainLayout) {
+        const availableHeight = mainLayout.getBoundingClientRect().height;
+        // Keep the wrapper slightly shorter than the layout to account for headers/controls
+        wrap.style.maxHeight = `${availableHeight - 60}px`;
+        wrap.style.overflow = 'auto'; 
+      }
+    }
 
     // DPI-aware rendering for crisp text
     const dpr = window.devicePixelRatio || 1;
