@@ -915,7 +915,7 @@
     };
 
     // how to display policies
-    function policyShow(policy, currentLang = 'English'){
+    function policyShow(policy, currentLang = 'English', kma_status=null){
         console.log(policy);
         const polPop = $('#policy_div');
         polPop.html('');
@@ -1069,14 +1069,21 @@
                     </div>
 
                     <div class="d-flex flex-wrap gap-3 my-3">
-                        <a href="${policy['data_link']}" class="btn btn-success btn-sm px-3 shadow-sm" target="_blank">
-                            <i class="bi bi-download me-1"></i> ${name_link_doc_to_display} 📥
-                        </a>
-                        <a href="${policy['documentation_link']}" class="btn btn-outline-success btn-sm px-3" target="_blank">
-                            ${name_link_info_to_display} ↗
-                        </a>
+                            <a href="${policy['data_link']}" class="btn btn-success btn-sm px-3 shadow-sm" target="_blank">
+                                <i class="bi bi-download me-1"></i> ${name_link_doc_to_display} 📥
+                            </a>
+                            <a href="${policy['documentation_link']}" class="btn btn-outline-success btn-sm px-3" target="_blank">
+                                ${name_link_info_to_display} ↗
+                            </a>
+                            ${kma_status === 'done' ? `
+                                <a href="/kmaviewer/${policy['id']}" target="_blank">
+                                    <button class="btn btn-success btn-sm">
+                                        View in Key Metric Analyser ↗
+                                    </button>
+                                </a>
+                                ` : ''}
                     </div>
-
+                    
                     ${excerpt_html_to_display}
                     <hr class="my-4 text-black-50 opacity-25">
 
@@ -1149,7 +1156,7 @@
             
             polPop.find('#lang-btns button').on('click', function() {
                 const lang = $(this).data('lang');
-                policyShow(policy, lang); 
+                policyShow(policy, lang, kma_status); 
             });  
         }
     }
@@ -1168,7 +1175,23 @@
         } catch (error) {
             console.error(error.message);
         }
-        policyShow(pol_obj, 'English')
+        // add check for KMA
+        const url_s = `/api/policy/status/${pol_id}`;
+        var kma_status = '';
+        try {
+            const response = await fetch(url_s);
+            if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+            }
+            const json_s = await response.json();
+            //console.log(json_s);
+            kma_status= json_s["kma_status"];
+            //console.log(kma_status);
+        } catch (error) {
+            console.error(error.message);
+        }
+        //
+        policyShow(pol_obj, 'English', kma_status)
         //
         //$('#policyliststore').val(JSON.stringify(polLst));
         //

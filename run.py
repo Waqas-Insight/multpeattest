@@ -1394,6 +1394,14 @@ def api_chunks(policy_id):
     )
     return jsonify(result), status
 
+@app.route("/api/policy/status/<int:policy_id>")
+def api_status(policy_id):
+    result, status = _odoo_call(
+        f"/kma/policy/status",
+        params={"policy_id": policy_id},
+    )
+    return jsonify(result), status
+
 # PDF STREAM PROXY 
 @app.route("/api/pdf/<int:attachment_id>")
 def api_pdf(attachment_id):
