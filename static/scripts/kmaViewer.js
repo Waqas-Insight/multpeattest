@@ -110,7 +110,8 @@ function renderTopbar(p) {
     p.policy_level && `<div class="meta-tag">🏛 <b>${escHtml(p.policy_level)}</b></div>`,
     p.chunk_count  && `<div class="meta-tag">📄 <b>${p.chunk_count}</b> chunks</div>`,
   ].filter(Boolean).join('');
-  $('policyMeta').innerHTML = metas;
+  const pppage = `<a href="/policy/${POLICY_ID}" target="_blank" style="text-decoration: none; color: white;"><button class="meta-tag btn btn-success">↖ Policy Profile</a></button>`;
+  $('policyMeta').innerHTML = [pppage, metas].join('');
 }
 
 // ── SIDEBAR ──────────────────────────────────────────────────────────────────
@@ -294,6 +295,7 @@ async function loadPdf(pdfFile) {
     $('pdfEmpty').innerHTML = `
       <div class="empty-icon">⚠️</div>
       <div class="empty-title">Could not load PDF</div>
+      <div class="empty-title">This issue will be resolved in the next update. In the meantime, please explore the identified excerpts themselves.</div>
       <div class="empty-sub">${escHtml(e.message || String(e))}</div>`;
   }
 }
