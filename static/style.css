@@ -134,11 +134,11 @@ nav.navbar.bg-body-tertiary{
     background-color: white;
 }
 
-.navbar{
+nav.navbar{
     padding: 0px;
 }
 
-.navbar > .container-fluid > a{
+nav.navbar > .container-fluid > a{
     padding-left: 5px;
 }
 

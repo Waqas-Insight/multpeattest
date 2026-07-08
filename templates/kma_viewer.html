@@ -39,19 +39,78 @@
         --sidebar: 320px;
         --pdf-panel: 42%;
       }
+      
+      footer, .footer, #footer-id, [class*="footer"] { 
+        display: none !important; 
+        height: 0 !important; 
+        padding: 0 !important; 
+        margin: 0 !important;
+      }
+      /*
+      html, body, #page-container, #content-wrap, #content {
+        height: 100vh !important;
+        max-height: 100vh !important;
+        min-height: 100vh !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: flex;
+        flex-direction: column;
+      }
+      */
+      @media (min-width: 801px) {
+        /* Instruct the browser window root to ignore default document content stretch flags */
+        html, body, #page-container, #content-wrap, #content {
+          height: 100vh !important;
+          max-height: 100vh !important;
+          overflow: hidden !important;
+        }
 
-      body {
-        font-family: 'Inter', sans-serif;
-        background: var(--bg);
-        color: var(--text);
-        overflow: hidden;
+        /* Lock the root viewer app node directly inside the remaining view scope */
+        .layout {
+          display: grid !important;
+          grid-template-columns: var(--sidebar) 1fr var(--pdf-panel);
+          background: var(--bg);
+          height: calc(100vh - 60px) !important; /* Subtracting standard top navigation wrapper dimensions */
+          max-height: calc(100vh - 60px) !important;
+          min-height: 0 !important;
+          overflow: hidden !important;
+          transition: height 0.25s ease-in-out, max-height 0.25s ease-in-out;
+        }
+
+        /* Dynamically adjust calculations when the top menu rolls upward */
+        .layout.navbar-is-hidden {
+          height: 100vh !important;
+          max-height: 100vh !important;
+        }
       }
 
+      .navdiv {
+        position: relative !important; 
+        width: 100%;
+        z-index: 1000;
+        flex-shrink: 0;
+        max-height: 200px;
+        transition: max-height 0.25s ease-in-out, opacity 0.2s ease-in-out;
+        opacity: 1;
+      }
+
+      .navdiv.navbar-hidden {
+        max-height: 0 !important;
+        overflow: hidden !important;
+        opacity: 0;
+      }
+      /*
       .layout {
         display: grid;
         grid-template-columns: var(--sidebar) 1fr var(--pdf-panel);
-        height: 100vh;
+        flex: 1;
+        min-height: 0; 
+        background: var(--bg);
+        overflow: hidden;
+        height: 100%;
       }
+      */
 
       /* ── SIDEBAR ─────────────────────────────────────────────────────────────── */
       .sidebar { background: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
@@ -61,7 +120,7 @@
       .brand-name span { color: var(--accent); }
       .brand-sub { font-size: 12px; color: var(--muted); margin-top: 4px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; }
 
-      .search-wrap { padding: 16px 20px; }
+      .search-wrap { padding: 16px 20px; flex-shrink: 0;}
       .search { width: 100%; border: 1.5px solid var(--border); background: #f9fafb; padding: 12px 16px; border-radius: 12px; outline: none; font-size: 13px; font-family: inherit; transition: 0.2s; }
       .search:focus { border-color: var(--accent); background: var(--white); }
 
@@ -102,7 +161,7 @@
       .meta-tag { font-size: 12px; color: var(--muted); background: #f3f4f6; padding: 4px 12px; border-radius: 8px; font-weight: 500; }
       .meta-tag b { color: var(--text); }
 
-      .chunks-wrap { flex: 1; overflow-y: auto; padding: 20px 24px; }
+      .chunks-wrap { flex: 1; overflow-y: auto !important; padding: 20px 24px; min-height: 0; }
 
       /* chunk card */
       .card { background: var(--white); border: 1.5px solid var(--border); border-radius: 20px; padding: 22px; margin-bottom: 16px; cursor: pointer; transition: 0.2s; }
@@ -216,16 +275,38 @@
         .layout { grid-template-columns: var(--sidebar) 1fr; }
         .pdf-panel { display: none; }
       }
-      @media (max-width: 800px) {
+      /*@media (max-width: 800px) {
         .layout { grid-template-columns: 1fr; }
         .sidebar { display: none; }
+      }*/
+      @media (max-width: 800px) {
+        .layout { 
+          grid-template-columns: 1fr; 
+          grid-template-rows: auto 1fr;
+          overflow-y: auto !important;
+          /**/
+          height: auto !important;
+          max-height: none !important;
+        }
+        .sidebar { 
+          max-height: 350px; 
+          border-right: none; 
+          border-bottom: 1px solid var(--border); 
+        }
+        .center {
+          height: auto;
+          overflow: visible;
+        }
+        .chunks-wrap {
+          overflow-y: visible !important;
+        }
       }
   </style>
 </head>
 
 <body>
 
-<div class="layout">
+<div class="layout" id="mainLayout">
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
@@ -294,6 +375,44 @@
   };
 </script>
 <script src="{{ url_for('static', filename='scripts/kmaViewer.js') }}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const navbar = document.querySelector('.navdiv'); 
+      const layout = document.getElementById('mainLayout');
+      const chunksScroll = document.getElementById('chunksWrap');
+      
+      if (!navbar || !layout) return;
+
+      let lastScrollTop = 0;
+
+      const handleNavbarToggle = (scrollTop) => {
+        const mobileMenu = document.getElementById('mainNavbarMenu');
+        if (mobileMenu && mobileMenu.classList.contains('show')) return;
+
+        if (scrollTop > lastScrollTop && scrollTop > 60) {
+          navbar.classList.add('navbar-hidden');
+          layout.classList.add('navbar-is-hidden');
+        } else if (scrollTop < lastScrollTop) {
+          navbar.classList.remove('navbar-hidden');
+          layout.classList.remove('navbar-is-hidden');
+        }
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+      };
+
+      if (chunksScroll && window.innerWidth > 800) {
+        chunksScroll.addEventListener('scroll', () => {
+          handleNavbarToggle(chunksScroll.scrollTop);
+        });
+      }
+
+      window.addEventListener('scroll', () => {
+        if (window.innerWidth <= 800) {
+          let globalScroll = window.pageYOffset || document.documentElement.scrollTop;
+          handleNavbarToggle(globalScroll);
+        }
+      });
+    });
+</script>
 </body>
 
 {% endblock %}
