@@ -108,7 +108,7 @@ function renderTopbar(p) {
     p.country      && `<div class="meta-tag">🌍 <b>${escHtml(p.country)}</b></div>`,
     p.year_from    && `<div class="meta-tag">📅 <b>${escHtml(p.year_from)}${p.year_to ? '–' + escHtml(p.year_to) : ''}</b></div>`,
     p.policy_level && `<div class="meta-tag">🏛 <b>${escHtml(p.policy_level)}</b></div>`,
-    p.chunk_count  && `<div class="meta-tag">📄 <b>${p.chunk_count}</b> chunks</div>`,
+    p.chunk_count  && `<div class="meta-tag">📄 <b>${p.chunk_count}</b> sentences</div>`,
   ].filter(Boolean).join('');
   const pppage = `<a href="/policy/${POLICY_ID}" target="_blank" style="text-decoration: none; color: white;"><button class="meta-tag btn btn-success">↖ Policy Profile</a></button>`;
   $('policyMeta').innerHTML = [pppage, metas].join('');
@@ -127,7 +127,7 @@ function renderSidebar() {
     <div class="filter-section">
       <span class="filter-label">Levels</span>
       <div class="f-btn active" data-filter-type="all" data-filter-value="">
-        <div class="f-left"><div class="f-dot dot-all"></div>All Chunks</div>
+        <div class="f-left"><div class="f-dot dot-all"></div>All Sentences</div>
         <div class="f-count">${state.allChunks.length}</div>
       </div>`;
 
@@ -183,7 +183,7 @@ function renderChunks(chunks) {
     wrap.innerHTML = `
       <div class="empty">
         <div class="empty-icon">🔍</div>
-        <div class="empty-title">No chunks found</div>
+        <div class="empty-title">No sentences found</div>
         <div class="empty-sub">Try a different filter or search term.</div>
       </div>`;
     return;
