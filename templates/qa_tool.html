@@ -85,7 +85,7 @@
   </div>
 
   {% if reasoning %}
-  <div class="card shadow-sm mb-5 border-0">
+  <div id="ragtool-results" class="card shadow-sm mb-5 border-0">
     <div class="card-header bg-primary text-white fw-bold">🧠 Answer with Reasoning</div>
     <div class="card-body">
       {% if asked_question %}
@@ -155,6 +155,14 @@
 
   document.getElementById('questionForm').addEventListener('submit', function () {
     document.getElementById('loadingOverlay').style.display = 'flex';
+  });
+
+  // auto scroll to results 
+  window.addEventListener('DOMContentLoaded', function () {
+    const resultsElement = document.getElementById('ragtool-results');
+    if (resultsElement) {
+      resultsElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   });
 </script>
 {% endblock %}

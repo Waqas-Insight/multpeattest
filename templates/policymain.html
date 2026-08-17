@@ -50,6 +50,13 @@
                                         <i class="fas fa-layer-group me-2"></i> Governance Level
                                     </button>
                                     <ul class="dropdown-menu p-3 w-100 shadow-sm">
+                                        <!-- toggle all levels -->
+                                        <li class="mb-2">
+                                            <input class="form-check-input stk-chk" type="checkbox" id="pol-chk-lvl-all" onchange="toggle_levels()" checked>
+                                            <label class="form-check-label ms-1 fw-bold" for="pol-chk-lvl-all">Toggle all</label>
+                                        </li>
+                                        <li><hr class="dropdown-divider my-2"></li>
+                                        
                                         <li class="mb-2">
                                             <input class="form-check-input stk-chk" type="checkbox" value="Global" id="pol-chk-lvl-gb" onchange="filterPolicies()" checked>
                                             <label class="form-check-label ms-1" for="pol-chk-lvl-gb">Global</label>
@@ -80,6 +87,13 @@
                                         <i class="fas fa-tags me-1"></i> Policy Category
                                     </button>
                                     <ul class="dropdown-menu p-2 w-100 shadow-sm" style="min-width: 220px;">
+                                        <li class="p-1">
+                                            <div class="px-2 py-1 rounded">
+                                                <input type="checkbox" id="pol-chk-cat-all" class="form-check-input stk-chk" onchange="toggle_categories()" checked>
+                                                <label class="form-check-label ms-1 fw-bold" for="pol-chk-cat-all">Toggle all</label>
+                                            </div>
+                                        </li>
+                                        <li><hr class="dropdown-divider my-1"></li>
                                         <li class="p-1">
                                             <div class="bio-cls-clr px-2 py-1 rounded">
                                                 <input type="checkbox" id="pol-chk-cat-bio" class="form-check-input stk-chk" value="Biodiversity" onchange="filterPolicies()" checked>
@@ -605,6 +619,24 @@
         id_lst.forEach(id =>{
                 $(`#${id}`).prop('checked', val);
             });
+        filterPolicies();
+    }
+
+    function toggle_levels() {
+        const isChecked = document.getElementById('pol-chk-lvl-all').checked;
+        const levelCheckboxes = document.querySelectorAll("input[id^='pol-chk-lvl-']:not(#pol-chk-lvl-all)");
+        levelCheckboxes.forEach(chk => {
+            chk.checked = isChecked;
+        });
+        filterPolicies();
+    }
+
+    function toggle_categories() {
+        const isChecked = document.getElementById('pol-chk-cat-all').checked;
+        const categoryCheckboxes = document.querySelectorAll("input[id^='pol-chk-cat-']:not(#pol-chk-cat-all)");
+        categoryCheckboxes.forEach(chk => {
+            chk.checked = isChecked;
+        });
         filterPolicies();
     }
     
