@@ -847,467 +847,291 @@
     </div>
 
     <!--Results-->
-    <div class="container my-3">
-        <div class="card shadow-sm border-0 bg-light p-3 p-md-4 mb-3" style="transform: none; max-width: 700px; justify-self: center;">
+    <div class="container my-3 px-2 px-sm-3">
+        <div class="card shadow-sm border-0 bg-light p-2 p-md-4 mb-3 mx-auto" style="transform: none; max-width: 700px;">
             <div class="card-body">
                 <h3 class="card-title text-center mb-2 fw-bold">Results</h3>
-                <br>
-                <p style="font-weight: bold;">For FFP Tool</p>
-                <hr>
-                <div style="margin-left: 12px;">
-                    <div class="row align-items-center">
-                        <div class="col-6">
-                            <p style="font-weight: bold;">
+                <div class="bg-light p-2 rounded mb-3">
+                    <h6 class="fw-bold mb-0">For FFP Tool</h6>
+                </div>
+                <div class="ps-2 ps-sm-3 mb-4">
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6">
+                            <span class="fw-semibold d-inline-flex align-items-center">
                                 <svg height="20" width="16" style="margin-right: 4px;">
                                     <a data-bs-toggle="popover" tabindex="0" data-bs-trigger="focus" data-bs-placement="right" data-bs-html="true" data-bs-content="Average carbon credits per hectare per year, as used in the <a href={{ url_for('ffp_tool') }}>FFP tool</a>.">
                                         <image xlink:href="{{ url_for('static', filename='INFO-icon.png') }}" style="height:20px; width:16px"></image>                            
                                     </a>
                                 </svg>
-                                Avg. credits/ha/annum</p>
+                                Avg. credits/ha/annum</span>
                         </div>
-                        <div class="col-2">
-                            <p id="ghg_sav_tot_p_yr_p_ha" style="font-weight: bold;">{{results['carbon_savings']['ghg_savings_total_per_year_per_ha']}}</p>
-                        </div>
-                        <div class="col-4 d-flex justify-content-end">
-                            <p style="font-weight: bold;">tCO2-eq/ year/ ha</p>
-                        </div>
-                    </div>
-                    <br>
-                </div>
-                <p style="font-weight: bold;">Baseline Outcomes</p>
-                <hr>
-                <div style="margin-left: 12px;">
-                    <p>C Emissions from Soil</p>
-                    <hr>
-                    <div style="margin-left: 12px;">
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>CH4</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="base_CH4">{{results['base_outcomes']['CH4']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq</p>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>CO2</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="base_CO2">{{results['base_outcomes']['CO2']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq</p>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>GWP Subtotal</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="base_c_emission_gwp_subtotal">{{results['base_outcomes']['c_emission_gwp_subtotal']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq</p>
-                            </div>
-                        </div>
-                        <hr>
-                    </div>
-                    <p>N2O Emissions from Soil</p>
-                    <hr>
-                    <div style="margin-left: 12px;">
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>N2O Direct</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="base_n2o_direct">{{results['base_outcomes']['n2o_direct']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq</p>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>N2O Indirect</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="base_n2o_indirect">{{results['base_outcomes']['n2o_indirect']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq</p>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>GWP Subtotal</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="base_n2o_emission_gwp_subtotal">{{results['base_outcomes']['n2o_emission_gwp_subtotal']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq</p>
-                            </div>
-                        </div>
-                        <hr>
-                    </div>
-                    <p>Activity</p>
-                    <hr>
-                    <div style="margin-left: 12px;">
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>GWP Subtotal</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="base_activity_gwp_subtotal">{{results['base_outcomes']['activity_gwp_subtotal']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq</p>
-                            </div>
-                        </div>
-                        <hr>
-                    </div>
-                    <p>TOTAL</p>
-                    <hr>
-                    <div style="margin-left: 12px;">
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>GWP Total</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="base_gwp_total">{{results['base_outcomes']['gwp_total']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq</p>
-                            </div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="ghg_sav_tot_p_yr_p_ha" style="font-weight: bold;">{{results['carbon_savings']['ghg_savings_total_per_year_per_ha']}}</span>
+                            <small style="font-weight: bold;">tCO2-eq/ year/ ha</small>
                         </div>
                     </div>
                 </div>
-                <div class="empty-spacing" style="padding-top: 25px;"></div>
-                <p style="font-weight: bold;">Rewetting Outcomes</p>
-                <hr>
-                <div style="margin-left: 12px;">
-                    <p>C Emissions from Soil</p>
-                    <hr>
-                    <div style="margin-left: 12px;">
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>CH4</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="rewet_CH4">{{results['rewet_outcomes']['CH4']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq</p>
-                            </div>
+                <!--Baseline-->
+                <div class="bg-light p-2 rounded mb-3">
+                    <h6 class="fw-bold mb-0">Baseline Outcomes</h6>
+                </div>
+
+                <div class="ps-2 ps-sm-3 mb-4">
+                    <p class="fw-bold text-dark mb-1 small text-uppercase">C Emissions from Soil</p>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6"><span>CH4</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="base_CH4" class="fw-semibold me-1">{{results['base_outcomes']['CH4']}}</span>
+                            <small class="text-muted">tCO2-eq</small>
                         </div>
-                        <hr>
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>CO2</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="rewet_CO2">{{results['rewet_outcomes']['CO2']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq</p>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>GWP Subtotal</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="rewet_c_emission_gwp_subtotal">{{results['rewet_outcomes']['c_emission_gwp_subtotal']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq</p>
-                            </div>
-                        </div>
-                        <hr>
                     </div>
-                    <p>N2O Emissions from Soil</p>
-                    <hr>
-                    <div style="margin-left: 12px;">
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>N2O Direct</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="rewet_n2o_direct">{{results['rewet_outcomes']['n2o_direct']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq</p>
-                            </div>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6"><span>CO2</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="base_CO2" class="fw-semibold me-1">{{results['base_outcomes']['CO2']}}</span>
+                            <small class="text-muted">tCO2-eq</small>
                         </div>
-                        <hr>
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>N2O Indirect</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="rewet_n2o_indirect">{{results['rewet_outcomes']['n2o_indirect']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq</p>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>GWP Subtotal</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="rewet_n2o_emission_gwp_subtotal">{{results['rewet_outcomes']['n2o_emission_gwp_subtotal']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq</p>
-                            </div>
-                        </div>
-                        <hr>
                     </div>
-                    <p>Activity</p>
-                    <hr>
-                    <div style="margin-left: 12px;">
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>GWP Subtotal</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="rewet_activity_gwp_subtotal">{{results['rewet_outcomes']['activity_gwp_subtotal']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq</p>
-                            </div>
+                    <div class="row align-items-center py-2 border-bottom bg-light bg-opacity-50">
+                        <div class="col-7 col-sm-6"><span class="fw-semibold">GWP Subtotal</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="base_c_emission_gwp_subtotal" class="fw-bold me-1">{{results['base_outcomes']['c_emission_gwp_subtotal']}}</span>
+                            <small class="text-muted">tCO2-eq</small>
                         </div>
-                        <hr>
                     </div>
-                    <p>Product</p>
-                    <hr>
-                    <div style="margin-left: 12px;">
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>GWP Subtotal</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="rewet_product_gwp_subtotal">{{results['rewet_outcomes']['product_gwp_subtotal']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq</p>
-                            </div>
+
+                    <p class="fw-bold text-dark mt-3 mb-1 small text-uppercase">N2O Emissions from Soil</p>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6"><span>N2O Direct</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="base_n2o_direct" class="fw-semibold me-1">{{results['base_outcomes']['n2o_direct']}}</span>
+                            <small class="text-muted">tCO2-eq</small>
                         </div>
-                        <hr>
                     </div>
-                    <p>TOTAL</p>
-                    <hr>
-                    <div style="margin-left: 12px;">
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>GWP Total</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="rewet_gwp_total">{{results['rewet_outcomes']['gwp_total']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq</p>
-                            </div>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6"><span>N2O Indirect</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="base_n2o_indirect" class="fw-semibold me-1">{{results['base_outcomes']['n2o_indirect']}}</span>
+                            <small class="text-muted">tCO2-eq</small>
+                        </div>
+                    </div>
+                    <div class="row align-items-center py-2 border-bottom bg-light bg-opacity-50">
+                        <div class="col-7 col-sm-6"><span class="fw-semibold">GWP Subtotal</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="base_n2o_emission_gwp_subtotal" class="fw-bold me-1">{{results['base_outcomes']['n2o_emission_gwp_subtotal']}}</span>
+                            <small class="text-muted">tCO2-eq</small>
+                        </div>
+                    </div>
+
+                    <p class="fw-bold text-dark mt-3 mb-1 small text-uppercase">Activity</p>
+                    <div class="row align-items-center py-2 border-bottom bg-light bg-opacity-50">
+                        <div class="col-7 col-sm-6"><span class="fw-semibold">GWP Subtotal</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="base_activity_gwp_subtotal" class="fw-bold me-1">{{results['base_outcomes']['activity_gwp_subtotal']}}</span>
+                            <small class="text-muted">tCO2-eq</small>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center py-2 mt-2 border-top border-bottom border-2">
+                        <div class="col-7 col-sm-6"><span class="fw-bold text-dark">TOTAL GWP</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="base_gwp_total" class="fw-bold me-1">{{results['base_outcomes']['gwp_total']}}</span>
+                            <small class="text-muted">tCO2-eq</small>
                         </div>
                     </div>
                 </div>
-                <div class="empty-spacing" style="padding-top: 25px;"></div>
-                <p style="font-weight: bold;">Carbon Savings</p>
-                <hr>
-                <div style="margin-left: 12px;">
-                    <p>Greenhouse Gas Savings</p>
-                    <hr>
-                    <div style="margin-left: 12px;">
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>Total per year per site</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="ghg_sav_tot_p_yr_p_site">{{results['carbon_savings']['ghg_savings_total_per_year_per_site']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq/ year/ site</p>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p style="margin-left: -24px;">
-                                    <svg height="20" width="16" style="margin-right: 4px;">
-                                        <a data-bs-toggle="popover" tabindex="0" data-bs-trigger="focus" data-bs-placement="right" data-bs-html="true" data-bs-content="The tonnes of CO2-equivalent savings per year is equivalent to the average carbon credits per hectare per year, as used in the <a href={{ url_for('ffp_tool') }}>FFP tool</a>.">
-                                            <image xlink:href="{{ url_for('static', filename='INFO-icon.png') }}" style="height:20px; width:16px"></image>                            
-                                        </a>
-                                    </svg>
-                                    Total per hectare per year</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="ghg_sav_tot_p_yr_p_ha2">{{results['carbon_savings']['ghg_savings_total_per_year_per_ha']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq/ year/ ha</p>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>Stock per year per site</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="ghg_sav_stock_p_yr_p_site">{{results['carbon_savings']['ghg_savings_stock_per_year_per_site']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq/ year/ site</p>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>Stock per year per hectare</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="ghg_sav_stock_p_yr_p_ha">{{results['carbon_savings']['ghg_savings_stock_per_year_per_ha']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq/ year/ ha</p>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>Flow per year per site</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="ghg_sav_flow_p_yr_p_site">{{results['carbon_savings']['ghg_savings_flow_per_year_per_site']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq/ year/ site</p>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>Flow per year per hectare</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="ghg_sav_flow_p_yr_p_ha">{{results['carbon_savings']['ghg_savings_flow_per_year_per_ha']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq/ year/ ha</p>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>Product use per year per site</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="ghg_sav_pu_p_yr_p_site">{{results['carbon_savings']['ghg_savings_product_use_per_year_per_site']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq/ year/ site</p>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>Product use per year per hectare</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="ghg_sav_pu_p_yr_p_ha">{{results['carbon_savings']['ghg_savings_product_use_per_year_per_ha']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq/ year/ ha</p>
-                            </div>
+                <!--Rewetting-->
+                <div class="bg-light p-2 rounded mb-3">
+                    <h6 class="fw-bold mb-0">Rewetting Outcomes</h6>
+                </div>
+
+                <div class="ps-2 ps-sm-3 mb-4">
+                    <p class="fw-bold text-dark mb-1 small text-uppercase">C Emissions from Soil</p>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6"><span>CH4</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="rewet_CH4" class="fw-semibold me-1">{{results['rewet_outcomes']['CH4']}}</span>
+                            <small class="text-muted">tCO2-eq</small>
                         </div>
                     </div>
-                    <div class="empty-spacing" style="padding-top: 25px;"></div>
-                    <p>Carbon Stock Peat Soil Start Year</p>
-                    <hr>
-                    <div style="margin-left: 12px;">
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>TCO2 per site</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="cs_tco2_p_site">{{results['carbon_savings']['carbon_stock_peat_soil_start_year_tco2_per_site']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq/ site</p>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>Tons carbon per site</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="cs_ton_c_p_site">{{results['carbon_savings']['carbon_stock_peat_soil_start_year_ton_c_per_site']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>ton C/ site</p>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>TCO2 per hectare</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="cs_tco2_p_ha">{{results['carbon_savings']['carbon_stock_peat_soil_start_year_tco2_per_ha']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>tCO2-eq/ ha</p>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>Tons carbon per hectare</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="cs_ton_c_p_ha">{{results['carbon_savings']['carbon_stock_peat_soil_start_year_ton_c_per_ha']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>ton C/ ha</p>
-                            </div>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6"><span>CO2</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="rewet_CO2" class="fw-semibold me-1">{{results['rewet_outcomes']['CO2']}}</span>
+                            <small class="text-muted">tCO2-eq</small>
                         </div>
                     </div>
-                    <div class="empty-spacing" style="padding-top: 25px;"></div>
-                    <p>Time Until Peat Is Lost</p>
-                    <hr>
-                    <div style="margin-left: 12px;">
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>Baseline</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="base_til_peat_loss">{{results['carbon_savings']['time_til_peat_is_lost_base_scenario']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>years</p>
-                            </div>
+                    <div class="row align-items-center py-2 border-bottom bg-light bg-opacity-50">
+                        <div class="col-7 col-sm-6"><span class="fw-semibold">GWP Subtotal</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="rewet_c_emission_gwp_subtotal" class="fw-bold me-1">{{results['rewet_outcomes']['c_emission_gwp_subtotal']}}</span>
+                            <small class="text-muted">tCO2-eq</small>
                         </div>
-                        <hr>
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <p>With Rewetting</p>
-                            </div>
-                            <div class="col-2">
-                                <p id="rewet_til_peat_loss">{{results['carbon_savings']['time_til_peat_is_lost_rewet_scenario']}}</p>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <p>years</p>
-                            </div>
+                    </div>
+
+                    <p class="fw-bold text-dark mt-3 mb-1 small text-uppercase">N2O Emissions from Soil</p>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6"><span>N2O Direct</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="rewet_n2o_direct" class="fw-semibold me-1">{{results['rewet_outcomes']['n2o_direct']}}</span>
+                            <small class="text-muted">tCO2-eq</small>
+                        </div>
+                    </div>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6"><span>N2O Indirect</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="rewet_n2o_indirect" class="fw-semibold me-1">{{results['rewet_outcomes']['n2o_indirect']}}</span>
+                            <small class="text-muted">tCO2-eq</small>
+                        </div>
+                    </div>
+                    <div class="row align-items-center py-2 border-bottom bg-light bg-opacity-50">
+                        <div class="col-7 col-sm-6"><span class="fw-semibold">GWP Subtotal</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="rewet_n2o_emission_gwp_subtotal" class="fw-bold me-1">{{results['rewet_outcomes']['n2o_emission_gwp_subtotal']}}</span>
+                            <small class="text-muted">tCO2-eq</small>
+                        </div>
+                    </div>
+
+                    <p class="fw-bold text-dark mt-3 mb-1 small text-uppercase">Activity</p>
+                    <div class="row align-items-center py-2 border-bottom bg-light bg-opacity-50">
+                        <div class="col-7 col-sm-6"><span class="fw-semibold">GWP Subtotal</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="rewet_activity_gwp_subtotal" class="fw-bold me-1">{{results['rewet_outcomes']['activity_gwp_subtotal']}}</span>
+                            <small class="text-muted">tCO2-eq</small>
+                        </div>
+                    </div>
+
+                    <p class="fw-bold text-dark mt-3 mb-1 small text-uppercase">Product</p>
+                    <div class="row align-items-center py-2 border-bottom bg-light bg-opacity-50">
+                        <div class="col-7 col-sm-6"><span class="fw-semibold">GWP Subtotal</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="rewet_product_gwp_subtotal" class="fw-bold me-1">{{results['rewet_outcomes']['product_gwp_subtotal']}}</span>
+                            <small class="text-muted">tCO2-eq</small>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center py-2 mt-2 border-top border-bottom border-2">
+                        <div class="col-7 col-sm-6"><span class="fw-bold text-dark">TOTAL GWP</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="rewet_gwp_total" class="fw-bold me-1">{{results['rewet_outcomes']['gwp_total']}}</span>
+                            <small class="text-muted">tCO2-eq</small>
+                        </div>
+                    </div>
+                </div>
+                <!--Carbon Savings-->
+                <div class="bg-light p-2 rounded mb-3">
+                    <h6 class="fw-bold mb-0">Carbon Savings</h6>
+                </div>
+
+                <div class="ps-2 ps-sm-3 mb-3">
+                    <p class="fw-bold text-dark mb-1 small text-uppercase">Greenhouse Gas Savings</p>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6"><span>Total per year per site</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="ghg_sav_tot_p_yr_p_site" class="fw-semibold me-1">{{results['carbon_savings']['ghg_savings_total_per_year_per_site']}}</span>
+                            <small class="text-muted">tCO2-eq/yr/site</small>
+                        </div>
+                    </div>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6">
+                            <span class="d-inline-flex align-items-center">
+                                <a data-bs-toggle="popover" tabindex="0" data-bs-trigger="focus" data-bs-placement="right" data-bs-html="true" data-bs-content="The tonnes of CO2-equivalent savings per year is equivalent to the average carbon credits per hectare per year, as used in the <a href={{ url_for('ffp_tool') }}>FFP tool</a>." class="me-1">
+                                    <img src="{{ url_for('static', filename='INFO-icon.png') }}" style="height:18px; width:14px;" alt="Info">
+                                </a>
+                                Total per hectare per year
+                            </span>
+                        </div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="ghg_sav_tot_p_yr_p_ha2" class="fw-semibold me-1">{{results['carbon_savings']['ghg_savings_total_per_year_per_ha']}}</span>
+                            <small class="text-muted">tCO2-eq/yr/ha</small>
+                        </div>
+                    </div>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6"><span>Stock per year per site</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="ghg_sav_stock_p_yr_p_site" class="fw-semibold me-1">{{results['carbon_savings']['ghg_savings_stock_per_year_per_site']}}</span>
+                            <small class="text-muted">tCO2-eq/yr/site</small>
+                        </div>
+                    </div>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6"><span>Stock per year per hectare</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="ghg_sav_stock_p_yr_p_ha" class="fw-semibold me-1">{{results['carbon_savings']['ghg_savings_stock_per_year_per_ha']}}</span>
+                            <small class="text-muted">tCO2-eq/yr/ha</small>
+                        </div>
+                    </div>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6"><span>Flow per year per site</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="ghg_sav_flow_p_yr_p_site" class="fw-semibold me-1">{{results['carbon_savings']['ghg_savings_flow_per_year_per_site']}}</span>
+                            <small class="text-muted">tCO2-eq/yr/site</small>
+                        </div>
+                    </div>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6"><span>Flow per year per hectare</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="ghg_sav_flow_p_yr_p_ha" class="fw-semibold me-1">{{results['carbon_savings']['ghg_savings_flow_per_year_per_ha']}}</span>
+                            <small class="text-muted">tCO2-eq/yr/ha</small>
+                        </div>
+                    </div>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6"><span>Product use per year per site</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="ghg_sav_pu_p_yr_p_site" class="fw-semibold me-1">{{results['carbon_savings']['ghg_savings_product_use_per_year_per_site']}}</span>
+                            <small class="text-muted">tCO2-eq/yr/site</small>
+                        </div>
+                    </div>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6"><span>Product use per year per hectare</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="ghg_sav_pu_p_yr_p_ha" class="fw-semibold me-1">{{results['carbon_savings']['ghg_savings_product_use_per_year_per_ha']}}</span>
+                            <small class="text-muted">tCO2-eq/yr/ha</small>
+                        </div>
+                    </div>
+
+                    <p class="fw-bold text-dark mt-3 mb-1 small text-uppercase">Carbon Stock Peat Soil Start Year</p>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6"><span>TCO2 per site</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="cs_tco2_p_site" class="fw-semibold me-1">{{results['carbon_savings']['carbon_stock_peat_soil_start_year_tco2_per_site']}}</span>
+                            <small class="text-muted">tCO2-eq/site</small>
+                        </div>
+                    </div>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6"><span>Tons carbon per site</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="cs_ton_c_p_site" class="fw-semibold me-1">{{results['carbon_savings']['carbon_stock_peat_soil_start_year_ton_c_per_site']}}</span>
+                            <small class="text-muted">ton C/site</small>
+                        </div>
+                    </div>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6"><span>TCO2 per hectare</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="cs_tco2_p_ha" class="fw-semibold me-1">{{results['carbon_savings']['carbon_stock_peat_soil_start_year_tco2_per_ha']}}</span>
+                            <small class="text-muted">tCO2-eq/ha</small>
+                        </div>
+                    </div>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6"><span>Tons carbon per hectare</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="cs_ton_c_p_ha" class="fw-semibold me-1">{{results['carbon_savings']['carbon_stock_peat_soil_start_year_ton_c_per_ha']}}</span>
+                            <small class="text-muted">ton C/ha</small>
+                        </div>
+                    </div>
+
+                    <p class="fw-bold text-dark mt-3 mb-1 small text-uppercase">Time Until Peat Is Lost</p>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6"><span>Baseline</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="base_til_peat_loss" class="fw-semibold me-1">{{results['carbon_savings']['time_til_peat_is_lost_base_scenario']}}</span>
+                            <small class="text-muted">years</small>
+                        </div>
+                    </div>
+                    <div class="row align-items-center py-2 border-bottom">
+                        <div class="col-7 col-sm-6"><span>With Rewetting</span></div>
+                        <div class="col-5 col-sm-6 text-end">
+                            <span id="rewet_til_peat_loss" class="fw-semibold me-1">{{results['carbon_savings']['time_til_peat_is_lost_rewet_scenario']}}</span>
+                            <small class="text-muted">years</small>
                         </div>
                     </div>
                 </div>
