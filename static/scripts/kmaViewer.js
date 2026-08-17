@@ -21,7 +21,13 @@ const POLICY_ID  = CFG.policyId || 1;
 const state = {
   allChunks: [],
   pdfFiles: [],
-  activeFilter: { type: 'all', value: null },
+  //activeFilter: { type: 'all', value: null },
+  filters: {
+    level: null,    // null = 'All Levels'
+    class: null,    // null = 'All Classes'
+    kpiOnly: false, // boolean flag for KPI filter
+  },
+  sortBy: 'default', // 'default', 'lv_desc', 'cl_desc', 'avg_desc'
   searchTerm: '',
   policy: {},
 
@@ -110,7 +116,7 @@ function renderTopbar(p) {
     p.policy_level && `<div class="meta-tag">🏛 <b>${escHtml(p.policy_level)}</b></div>`,
     p.chunk_count  && `<div class="meta-tag">📄 <b>${p.chunk_count}</b> sentences</div>`,
   ].filter(Boolean).join('');
-  const pppage = `<a href="/policy/${POLICY_ID}" target="_blank" style="text-decoration: none; color: white;"><button class="meta-tag btn btn-success">↖ Policy Profile</a></button>`;
+  const pppage = `<a href="/policy/${POLICY_ID}" class="btn btn-success meta-tag" target="_blank" style="color: black;">↖ Policy Profile</a>`;
   $('policyMeta').innerHTML = [pppage, metas].join('');
 }
 
@@ -118,22 +124,47 @@ function renderTopbar(p) {
 function renderSidebar() {
   const levelCounts = {};
   const classCounts = {};
+  let kpiCount = 0;
+
   state.allChunks.forEach((c) => {
     levelCounts[c.level] = (levelCounts[c.level] || 0) + 1;
     classCounts[c.class] = (classCounts[c.class] || 0) + 1;
+    if (c.has_metric) kpiCount++;
   });
 
   let html = `
+    <!-- Sort Options -->
+    <div class="filter-section">
+      <span class="filter-label">Sort By</span>
+      <select id="sortSelect" class="search" style="margin-top:4px; padding:6px;">
+        <option value="default" ${state.sortBy === 'default' ? 'selected' : ''}>Default (Page Order)</option>
+        <option value="lv_desc" ${state.sortBy === 'lv_desc' ? 'selected' : ''}>Level Conf. (High → Low)</option>
+        <option value="cl_desc" ${state.sortBy === 'cl_desc' ? 'selected' : ''}>Class Conf. (High → Low)</option>
+        <option value="avg_desc" ${state.sortBy === 'avg_desc' ? 'selected' : ''}>Avg Conf. (High → Low)</option>
+      </select>
+    </div>
+
+    <!-- KPI Toggle -->
+    <div class="filter-section">
+      <span class="filter-label">Metrics</span>
+      <div class="f-btn ${state.filters.kpiOnly ? 'active' : ''}" id="kpiBtn">
+        <div class="f-left"><div class="f-dot dot-all" style="background:#ffc107;"></div>KPIs Only</div>
+        <div class="f-count">${kpiCount}</div>
+      </div>
+    </div>
+
+    <!-- Level Filters -->
     <div class="filter-section">
       <span class="filter-label">Levels</span>
-      <div class="f-btn active" data-filter-type="all" data-filter-value="">
-        <div class="f-left"><div class="f-dot dot-all"></div>All Sentences</div>
+      <div class="f-btn ${state.filters.level === null ? 'active' : ''}" data-filter-type="level" data-filter-value="">
+        <div class="f-left"><div class="f-dot dot-all"></div>All Levels</div>
         <div class="f-count">${state.allChunks.length}</div>
       </div>`;
 
   Object.entries(levelCounts).sort().forEach(([lvl, cnt]) => {
+    const isActive = state.filters.level === lvl ? 'active' : '';
     html += `
-      <div class="f-btn" data-filter-type="level" data-filter-value="${escAttr(lvl)}">
+      <div class="f-btn ${isActive}" data-filter-type="level" data-filter-value="${escAttr(lvl)}">
         <div class="f-left">
           <div class="f-dot ${LEVEL_DOTS[lvl] || 'dot-all'}"></div>${escHtml(lvl)}
         </div>
@@ -141,11 +172,16 @@ function renderSidebar() {
       </div>`;
   });
 
-  html += `</div><div class="filter-section"><span class="filter-label">Classes</span>`;
+  html += `</div><div class="filter-section"><span class="filter-label">Classes</span>
+      <div class="f-btn ${state.filters.class === null ? 'active' : ''}" data-filter-type="class" data-filter-value="">
+        <div class="f-left"><div class="f-dot dot-all"></div>All Classes</div>
+        <div class="f-count">${state.allChunks.length}</div>
+      </div>`;
 
   Object.entries(classCounts).sort().forEach(([cls, cnt]) => {
+    const isActive = state.filters.class === cls ? 'active' : '';
     html += `
-      <div class="f-btn" data-filter-type="class" data-filter-value="${escAttr(cls)}">
+      <div class="f-btn ${isActive}" data-filter-type="class" data-filter-value="${escAttr(cls)}">
         <div class="f-left">
           <div class="f-dot ${CLASS_DOT[cls] || 'dot-all'}"></div>${escHtml(cls)}
         </div>
@@ -154,20 +190,34 @@ function renderSidebar() {
   });
 
   html += `</div>`;
-  $('filterArea').innerHTML = html;
+  const filterArea = $('filterArea');
+  filterArea.innerHTML = html;
 
-  // Wire filter buttons (event delegation)
-  $('filterArea').addEventListener('click', (e) => {
-    const btn = e.target.closest('.f-btn');
-    if (!btn) return;
-    document.querySelectorAll('.f-btn').forEach((b) => b.classList.remove('active'));
-    btn.classList.add('active');
-    state.activeFilter = {
-      type:  btn.dataset.filterType,
-      value: btn.dataset.filterValue || null,
-    };
+  // Event Listener: Sort Change
+  $('sortSelect').onchange = (e) => {
+    state.sortBy = e.target.value;
     applyFilters();
-  });
+  };
+
+  // Event Listener: KPI Toggle
+  $('kpiBtn').onclick = () => {
+    state.filters.kpiOnly = !state.filters.kpiOnly;
+    renderSidebar();
+    applyFilters();
+  };
+
+  // Event Listener: Level and Class Filters
+  filterArea.onclick = (e) => {
+    const btn = e.target.closest('.f-btn');
+    if (!btn || btn.id === 'kpiBtn') return;
+
+    const type = btn.dataset.filterType;
+    if (!type) return;
+
+    state.filters[type] = btn.dataset.filterValue || null;
+    renderSidebar();
+    applyFilters();
+  };
 }
 
 // ── CHUNK LIST ───────────────────────────────────────────────────────────────
@@ -240,19 +290,39 @@ function renderChunks(chunks) {
 // ── FILTERS / SEARCH ─────────────────────────────────────────────────────────
 function applyFilters() {
   let filtered = state.allChunks;
-  if (state.activeFilter.type === 'level') {
-    filtered = filtered.filter((c) => c.level === state.activeFilter.value);
+  // 1. Filter by Level
+  if (state.filters.level) {
+    filtered = filtered.filter((c) => c.level === state.filters.level);
   }
-  if (state.activeFilter.type === 'class') {
-    filtered = filtered.filter((c) => c.class === state.activeFilter.value);
+  // 2. Filter by Class
+  if (state.filters.class) {
+    filtered = filtered.filter((c) => c.class === state.filters.class);
   }
+  // 3. Filter by KPI
+  if (state.filters.kpiOnly) {
+    filtered = filtered.filter((c) => c.has_metric);
+  }
+  // 4. Filter by Search Query
   if (state.searchTerm) {
-    const q = state.searchTerm;
+    const q = state.searchTerm.toLowerCase();
     filtered = filtered.filter((c) =>
       (c.text || '').toLowerCase().includes(q) ||
       (c.level || '').toLowerCase().includes(q) ||
       (c.class || '').toLowerCase().includes(q)
     );
+  }
+  // 5. Apply Confidence Sorting
+  filtered = [...filtered]; // Clone array before sorting
+  if (state.sortBy === 'lv_desc') {
+    filtered.sort((a, b) => b.lv_confidence - a.lv_confidence);
+  } else if (state.sortBy === 'cl_desc') {
+    filtered.sort((a, b) => b.cl_confidence - a.cl_confidence);
+  } else if (state.sortBy === 'avg_desc') {
+    filtered.sort((a, b) => {
+      const avgA = (a.lv_confidence + a.cl_confidence) / 2;
+      const avgB = (b.lv_confidence + b.cl_confidence) / 2;
+      return avgB - avgA;
+    });
   }
   renderChunks(filtered);
 }
