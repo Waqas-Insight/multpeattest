@@ -1308,17 +1308,12 @@
                 <div class="stat-card">
                     <div class="stat-icon" id="stat-eu-flag">🇪🇺</div>
                     <div class="stat-value" id="totalArea">24.1M</div>
-                    <div class="stat-label">Total EU PeatLand (HA)</div>
+                    <div class="stat-label">Total EU Peatlands (ha)</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon">🌱</div>
                     <div class="stat-value" id="totalNatural">10.4M</div>
-                    <div class="stat-label">Natural (ha)</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">🏭</div>
-                    <div class="stat-value" id="totalExtraction">843K</div>
-                    <div class="stat-label">extraction (ha)</div>
+                    <div class="stat-label">Natural Peatlands (ha)</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon">🌲</div>
@@ -1331,9 +1326,9 @@
                     <div class="stat-label">Agricultural Peatlands (ha)</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">🍄</div>
-                    <div class="stat-value" id="totalMiscellaneous">0</div>
-                    <div class="stat-label">Other Peatlands (ha)</div>
+                    <div class="stat-icon">🏭</div>
+                    <div class="stat-value" id="totalNonnatural">843K</div>
+                    <div class="stat-label">Non-Natural Peatlands (ha)</div>
                 </div>
             </div>
         </div>
@@ -1408,7 +1403,7 @@
                             <th onclick="sortTable('percentage')">Peatland % ↕</th>
                             <th onclick="sortTable('area')">Total Area (ha) ↕</th>
                             <th onclick="sortTable('natural')">Natural (ha) ↕</th>
-                            <th onclick="sortTable('extraction')">extraction (ha) ↕</th>
+                            <th onclick="sortTable('extraction')">Extraction (ha) ↕</th>
                             <th onclick="sortTable('afforested')">Afforested (ha) ↕</th>
                             <th onclick="sortTable('agricultural')">Agricultural (ha) ↕</th>
                         </tr>
@@ -2196,7 +2191,8 @@
         'agricultural': 2936723.0,
         'agriculturalSource': null,
         'agriculturalDate': null,
-        'miscellaneous': 7947002.0} ];
+        'miscellaneous': 7947002.0,
+        'nonnatural': 13687030.0} ];
 
         let filteredData = [...countriesData];
         let currentView = 'cards';
@@ -2288,7 +2284,7 @@
                             </div>
                             <div>
                                 <div class="list-stat-label">Non-Natural Peatlands</div>
-                                <div class="list-stat-value">${formatNumber((country.extraction || 0) + (country.afforested || 0) + (country.agricultural || 0))} ha</div>
+                                <div class="list-stat-value">${formatNumber(country.area - ((country.natural || 0) ))} ha</div>
                             </div>
                         </div>
                     </div>
@@ -2401,6 +2397,7 @@
             setStat("totalAfforested", totals.afforested, "M", 1000000, 1);
             setStat("totalAgricultural", totals.agricultural, "M", 1000000, 1);
             setStat("totalMiscellaneous", miscellaneous, "M", 1000000, 1);
+            setStat("totalNonnatural", totals.area-totals.natural, "M", 1000000, 1);
     
         }
 
@@ -2487,16 +2484,6 @@
                     <div class="modal-stat">
                         <div class="modal-stat-header">
                             <div class="modal-stat-main">
-                                <div class="modal-stat-label">Extraction Peatlands</div>
-                                <div class="modal-stat-value">${formatNumber(country.extraction)} </div>
-                            </div>
-                        </div>
-                        ${createSourceInfo('Extraction Peatlands', country.extractionSource, country.extractionDate)}
-                    </div>
-
-                    <div class="modal-stat">
-                        <div class="modal-stat-header">
-                            <div class="modal-stat-main">
                                 <div class="modal-stat-label">Afforested Peatlands</div>
                                 <div class="modal-stat-value">${formatNumber(country.afforested)} </div>
                             </div>
@@ -2513,29 +2500,26 @@
                         </div>
                         ${createSourceInfo('Agricultural Peatlands', country.agriculturalSource, country.agriculturalDate)}
                     </div>
-                    
+
                     <div class="modal-stat">
                         <div class="modal-stat-header">
                             <div class="modal-stat-main">
-                                <div class="modal-stat-label">Other Peatlands</div>
-                                <div class="modal-stat-value">${formatNumber(country.miscellaneous)} </div>
+                                <div class="modal-stat-label">Non-Natural Peatlands</div>
+                                <div class="modal-stat-value">${formatNumber(country.area - (country.natural || 0))} </div>
                             </div>
                         </div>
-                        ${createSourceInfo('Other Peatlands', country.miscellaneousSource)}
                     </div>
                     
                 <div class="fact-summary">
                     <div class="fact-summary-title">${country.country} Peatland Profile</div>
                     <div class="fact-summary-text">
                         <strong>${country.country}</strong> is a member state of the European Union.
-                        The total land area is <strong>${formatNumber(country.land)} hectares</strong>.
+                        The total land area is <strong>${formatNumber(country.land)}</strong>.
                         Of this, <strong>${country.percentage.toFixed(2)}%</strong> is peatlands covering
-                        <strong>${formatNumber(country.area)} hectares</strong>.
-                        Agricultural peatlands account for <strong>${formatNumber(country.agricultural)} ha</strong>,
-                        afforested peatlands for <strong>${formatNumber(country.afforested)} ha</strong>,
-                        natural peatlands for <strong>${formatNumber(country.natural)} ha</strong>,
-                        extraction sites for <strong>${formatNumber(country.extraction)} ha</strong> 
-                        and the rest of peatlands for <strong>${formatNumber(country.miscellaneous)} ha</strong>.
+                        <strong>${formatNumber(country.area)}</strong>.
+                        Agricultural peatlands account for <strong>${formatNumber(country.agricultural)}</strong>,
+                        afforested peatlands for <strong>${formatNumber(country.afforested)}</strong>,
+                        natural peatlands for <strong>${formatNumber(country.natural)}</strong>.
                     </div>
                 </div>
 
