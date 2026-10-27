@@ -134,7 +134,7 @@ class LoginForm(FlaskForm):
 def inject_maintenance_status():
     return dict(
         show_maintenance_banner=True,
-        maintenance_message="Notice: Certain analytical tools and policy analysis features are temporarily unavailable due to firewall restrictions following the revelation of global PHP vulnerabilities. Last Updated: 27 October 2026"
+        maintenance_message="Notice: The Policy AI tool is temporarily unavailable due to firewall restrictions following the revelation of global PHP vulnerabilities. Last Updated: 27 October 2026"
     )
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -761,28 +761,30 @@ def qa_tool():
         category = request.form.get('category')
         country = request.form.get('country')
         governance = request.form.get('governance')
-        # Build query parameters
-        query_params = {"query": question}
-        if language: query_params['language'] = language
-        if category: query_params['category'] = category
-        if country: query_params['country'] = country
-        if governance: query_params['governance_level'] = governance
-
+        # Build query parameters / payload
+        payload = {"question": question}
+        filters = {}
+        if language: filters['language'] = language
+        if category: filters['category'] = category
+        if country: filters['country'] = country
+        if governance: filters['governance_level'] = governance
+        if filters: payload['filters'] = filters
         if question:
             try:
-                # Step 1: Call the RAG backend
-                response = requests.get(
-                    "https://test-multipeat.insight-centre.org/ask",
-                    params=query_params,
-                    headers={'Accept': 'application/json'},
-                    timeout=200
+                # Step 1: Call the working Odoo proxy endpoint on port 443
+                response = requests.post(
+                    "https://aspect-erp.insight-centre.org/aspect/ask-question",
+                    json=payload,
+                    headers={'Content-Type': 'application/json', 'Accept': 'application/json'},
+                    timeout=45
                 )
-
                 if response.status_code == 200:
-                    response_data = response.json()
-                    raw_answer = response_data.get('answer', "No answer provided.")
-                    sources = response_data.get('sources', [])
-
+                    raw_data = response.json()
+                    # Unpack response from Odoo envelope
+                    res_body = raw_data.get('result', raw_data)
+                    inner_resp = res_body.get('response', {}) if isinstance(res_body, dict) else {}
+                    raw_answer = inner_resp.get('answer', "No answer provided.") if isinstance(inner_resp, dict) else "No answer provided."
+                    sources = inner_resp.get('sources', []) if isinstance(inner_resp, dict) else []
                     # Fallback checks
                     fallback_phrases = [
                         "do not contain", "does not provide information",
@@ -791,56 +793,44 @@ def qa_tool():
                     lowered = raw_answer.lower()
                     is_fallback = any(phrase in lowered for phrase in fallback_phrases)
                     is_too_short = len(raw_answer.strip()) < 50
-
                     if not is_fallback and not is_too_short:
                         # Step 2: Process reasoning
                         fixed_raw_answer = fix_markdown_headings_properly(raw_answer)
                         reasoning_html = Markup(markdown.markdown(fixed_raw_answer))
                         reasoning = reasoning_html
-
-                        max_score = max([s['score'] for s in sources], default=1)
-
-                        # Step 3: Process each source
+                        max_score = max([s.get('score', 1) for s in sources], default=1)
+                        # Step 3: Process each source using HTTPS port 443
                         for src in sources:
                             policy_id = src.get("record_id")
                             file_links = []
-
                             if policy_id:
                                 try:
                                     logging.info(f"Fetching attachments for policy ID: {policy_id}")
                                     file_resp = requests.post(
-                                        f"http://aspect-erp.insight-centre.org:8016/aspect/policy/{policy_id}/files",
+                                        f"https://aspect-erp.insight-centre.org/aspect/policy/{policy_id}/files",
                                         headers={
                                             'Content-Type': 'application/json',
                                             'Accept': 'application/json'
                                         },
-                                        json={},  # Important: send empty JSON
-                                        timeout=30
+                                        json={},
+                                        timeout=10
                                     )
-                                    logging.info(f"Odoo response status: {file_resp.status_code}")
-                                    logging.info(f"Odoo raw body: {file_resp.text}")
-
                                     if file_resp.ok:
                                         file_data = file_resp.json()
-                                        # Correct way to get attachments (inside 'result')
-                                        file_links = file_data.get('result', {}).get('attachments', [])
-                                        logging.info(f"Fetched attachments for policy {policy_id}: {file_links}")
-                                    else:
-                                        logging.warning(f"Odoo responded with status {file_resp.status_code} for policy {policy_id}")
-
+                                        file_res = file_data.get('result', file_data)
+                                        file_links = file_res.get('attachments', []) if isinstance(file_res, dict) else []
                                 except Exception as fe:
                                     logging.warning(f"Failed to fetch attachments for policy {policy_id}: {fe}")
-
                             policies.append({
-                                "id":policy_id,
+                                "id": policy_id,
                                 "title": src.get("author", "Unknown"),
                                 "thumbnail_url": "/static/images/pdf_thumbnail.png",
                                 "country": src.get("country", "Unknown"),
                                 "language": src.get("language", "Unknown"),
                                 "author": src.get("author", "Unknown"),
-                                "evidence_location": f"Score: {src['score']}",
-                                "similarity": round((src['score'] / max_score) * 100, 1),
-                                "files": file_links  # Corrected: fetched from Odoo
+                                "evidence_location": f"Score: {src.get('score', 0)}",
+                                "similarity": round((src.get('score', 0) / max_score) * 100, 1) if max_score else 0,
+                                "files": file_links
                             })
                     else:
                         reasoning = raw_answer
