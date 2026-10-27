@@ -130,6 +130,13 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', [validators.InputRequired()])
     submit = SubmitField('Sign In')
 
+@app.context_processor
+def inject_maintenance_status():
+    return dict(
+        show_maintenance_banner=True,
+        maintenance_message="Notice: Certain analytical tools and policy analysis features are temporarily unavailable due to firewall restrictions following the revelation of global PHP vulnerabilities. Last Updated: 27 October 2026"
+    )
+
 @app.route('/register', methods=['GET', 'POST'])
 def signup():
     form = LoginForm()

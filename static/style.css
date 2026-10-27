@@ -1542,3 +1542,29 @@ ul {
   height: auto;
   object-fit: contain;
 }
+
+/*Maintenance Alert*/
+.site-maintenance-banner {
+    background-color: #fff3cd;
+    color: #856404;
+    border-bottom: 1px solid #ffeeba;
+    padding: 10px 20px;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 500;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.site-maintenance-banner .banner-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.site-maintenance-banner .banner-icon {
+    font-size: 1.1rem;
+}

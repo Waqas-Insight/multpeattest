@@ -11,9 +11,9 @@ const Projection = ol.proj.Projection;
 //                //
 ////////////////////
 
-//const serverURL="https://multipeat.insight-centre.org/geoserver/wms";
+const serverURL="https://multipeat.insight-centre.org/geoserver/wms";
 //const serverURL="http://140.203.155.66:8080/geoserver/wms";
-const serverURL="https://test-multipeat.insight-centre.org/geoserver/wms";
+//const serverURL="https://test-multipeat.insight-centre.org/geoserver/wms";
 
 const res_dct={
     "max":{

@@ -54,6 +54,14 @@
         gtag('config', 'G-CYHC82N3B2');
         </script>
     <body style="padding-bottom: 10px; height:100%;">
+        {% if show_maintenance_banner %}
+        <div class="site-maintenance-banner" role="alert">
+            <div class="banner-content">
+                <span class="banner-icon">⚠️</span>
+                <span>{{ maintenance_message }}</span>
+            </div>
+        </div>
+        {% endif %}
         <div id="page-container">
             <div id="content-wrap">
                 <div class="navdiv">
