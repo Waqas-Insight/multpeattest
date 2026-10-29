@@ -133,7 +133,7 @@ class LoginForm(FlaskForm):
 @app.context_processor
 def inject_maintenance_status():
     return dict(
-        show_maintenance_banner=False,
+        show_maintenance_banner=True,
         maintenance_message="Notice: The Policy AI tool is currently under renovations. Last Updated: 29 October 2026"
     )
 
