@@ -780,21 +780,31 @@ def qa_tool():
                 )
                 if response.status_code == 200:
                     raw_data = response.json()
-                    # Unpack response from Odoo envelope
-                    res_body = raw_data.get('result', raw_data)
-                    inner_resp = res_body.get('response', {}) if isinstance(res_body, dict) else {}
-                    raw_answer = inner_resp.get('answer', "No answer provided.") if isinstance(inner_resp, dict) else "No answer provided."
-                    sources = inner_resp.get('sources', []) if isinstance(inner_resp, dict) else []
-                    # Fallback checks
-                    fallback_phrases = [
-                        "do not contain", "does not provide information",
-                        "not found in the provided documents", "no relevant documents"
+                    # Flexible Response Unpacking (handles Odoo RPC, FastAPI direct, and nested envelopes)
+                    res_body = raw_data.get('result', raw_data) 
+                    if isinstance(res_body, dict) and 'response' in res_body and isinstance(res_body['response'], dict):
+                        inner_resp = res_body['response']
+                    elif isinstance(res_body, dict):
+                        inner_resp = res_body
+                    else:
+                        inner_resp = {}
+                    # Extract answer and sources with backward-compatible key aliases
+                    raw_answer = (
+                        inner_resp.get('answer') or 
+                        inner_resp.get('result') or 
+                        inner_resp.get('response') or 
+                        "No answer provided."
+                    )
+                    sources = inner_resp.get('sources', []) if isinstance(inner_resp, dict) else []                    # Fallback checks
+                    # Refined Fallback Check
+                    is_too_short = len(str(raw_answer).strip()) < 20
+                    is_explicit_empty = str(raw_answer).strip().lower() in [
+                        "no answer provided.", 
+                        "no relevant documents found.",
+                        "no relevant documents found for the specified criteria."
                     ]
-                    lowered = raw_answer.lower()
-                    is_fallback = any(phrase in lowered for phrase in fallback_phrases)
-                    is_too_short = len(raw_answer.strip()) < 50
-                    if not is_fallback and not is_too_short:
-                        # Step 2: Process reasoning
+                    if not is_explicit_empty and not is_too_short:
+                        # Step 2: Process both Markdown & HTML output
                         fixed_raw_answer = fix_markdown_headings_properly(raw_answer)
                         reasoning_html = Markup(markdown.markdown(fixed_raw_answer))
                         reasoning = reasoning_html
@@ -804,22 +814,18 @@ def qa_tool():
                             policy_id = src.get("record_id")
                             file_links = []
                             if policy_id:
-                                try:
-                                    logging.info(f"Fetching attachments for policy ID: {policy_id}")
-                                    file_resp = requests.post(
-                                        f"https://aspect-erp.insight-centre.org/aspect/policy/{policy_id}/files",
-                                        headers={
-                                            'Content-Type': 'application/json',
-                                            'Accept': 'application/json'
-                                        },
-                                        json={},
-                                        timeout=10
-                                    )
-                                    if file_resp.ok:
-                                        file_data = file_resp.json()
-                                        file_res = file_data.get('result', file_data)
-                                        file_links = file_res.get('attachments', []) if isinstance(file_res, dict) else []
-                                except Exception as fe:
+                                try: 
+                                    file_resp = requests.post( 
+                                        f"https://aspect-erp.insight-centre.org/aspect/policy/{policy_id}/files", 
+                                        headers={'Content-Type': 'application/json', 'Accept': 'application/json'}, 
+                                        json={}, 
+                                        timeout=10 
+                                    ) 
+                                    if file_resp.ok: 
+                                        file_data = file_resp.json() 
+                                        file_res = file_data.get('result', file_data) 
+                                        file_links = file_res.get('attachments', []) if isinstance(file_res, dict) else [] 
+                                except Exception as fe: 
                                     logging.warning(f"Failed to fetch attachments for policy {policy_id}: {fe}")
                             policies.append({
                                 "id": policy_id,
