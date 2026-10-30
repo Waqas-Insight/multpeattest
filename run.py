@@ -134,7 +134,7 @@ class LoginForm(FlaskForm):
 def inject_maintenance_status():
     return dict(
         show_maintenance_banner=True,
-        maintenance_message="Notice: The Policy AI tool is currently under renovations. Last Updated: 29 October 2026"
+        maintenance_message="Notice: The Policy AI tool is currently undergoing renovations. Last Updated: 30 October 2026"
     )
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -808,23 +808,26 @@ def qa_tool():
                         fixed_raw_answer = fix_markdown_headings_properly(raw_answer)
                         reasoning_html = Markup(markdown.markdown(fixed_raw_answer))
                         reasoning = reasoning_html
-                        max_score = max([s.get('score', 1) for s in sources], default=1)
+                    else:
+                        reasoning = raw_answer
+                    if sources and isinstance(sources, list):
                         # Step 3: Process each source using HTTPS port 443
+                        max_score = max([s.get('score', 1) for s in sources], default=1)
                         for src in sources:
                             policy_id = src.get("record_id")
                             file_links = []
                             if policy_id:
                                 try: 
-                                    file_resp = requests.post( 
-                                        f"https://aspect-erp.insight-centre.org/aspect/policy/{policy_id}/files", 
-                                        headers={'Content-Type': 'application/json', 'Accept': 'application/json'}, 
-                                        json={}, 
-                                        timeout=10 
-                                    ) 
-                                    if file_resp.ok: 
-                                        file_data = file_resp.json() 
-                                        file_res = file_data.get('result', file_data) 
-                                        file_links = file_res.get('attachments', []) if isinstance(file_res, dict) else [] 
+                                    file_resp = requests.post(
+                                        f"https://aspect-erp.insight-centre.org/aspect/policy/{policy_id}/files",
+                                        headers={'Content-Type': 'application/json', 'Accept': 'application/json'},
+                                        json={},
+                                        timeout=3  # Reduced timeout so slow files don't drop the whole sources list
+                                    )
+                                    if file_resp.ok:
+                                        file_data = file_resp.json()
+                                        file_res = file_data.get('result', file_data)
+                                        file_links = file_res.get('attachments', []) if isinstance(file_res, dict) else []
                                 except Exception as fe: 
                                     logging.warning(f"Failed to fetch attachments for policy {policy_id}: {fe}")
                             policies.append({
@@ -838,11 +841,8 @@ def qa_tool():
                                 "similarity": round((src.get('score', 0) / max_score) * 100, 1) if max_score else 0,
                                 "files": file_links
                             })
-                    else:
-                        reasoning = raw_answer
                 else:
                     reasoning = f"API Error {response.status_code}: {response.text}"
-
             except Exception as e:
                 reasoning = f"Failed to get response: {str(e)}"
                 logging.error("Exception occurred while fetching response: %s", str(e))
