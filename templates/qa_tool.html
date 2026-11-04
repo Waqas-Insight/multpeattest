@@ -138,14 +138,14 @@
   {% endif %}
 
   <!-- Loading Overlay -->
-  <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.85); z-index:9999; align-items:center; justify-content:center;">
-    <div class="text-center">
-      <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;" role="status">
-        <span class="visually-hidden">Loading...</span>
+    <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.85); z-index:9999; align-items:center; justify-content:center;">
+      <div class="text-center">
+        <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p id="loadingStatusText" class="mt-3 fw-semibold text-muted">Understanding query...</p>
       </div>
-      <p class="mt-3 fw-semibold text-muted">Fetching documents, please wait...</p>
     </div>
-  </div>
 </div>
 
 <script>
@@ -154,10 +154,36 @@
   }
 
   document.getElementById('questionForm').addEventListener('submit', function () {
-    document.getElementById('loadingOverlay').style.display = 'flex';
+    const overlay = document.getElementById('loadingOverlay');
+    const statusText = document.getElementById('loadingStatusText');
+
+    // Show overlay and initialize first stage (0s - 5s)
+    overlay.style.display = 'flex';
+    statusText.textContent = "Understanding query...";
+
+    // Stage 2: 5s - 20s
+    setTimeout(function() {
+      if (overlay.style.display !== 'none') {
+        statusText.textContent = "Retrieving relevant evidence...";
+      }
+    }, 5000);
+
+    // Stage 3: 20s - 35s
+    setTimeout(function() {
+      if (overlay.style.display !== 'none') {
+        statusText.textContent = "Synthesising final answer...";
+      }
+    }, 20000);
+
+    // Stage 4: 35s+
+    setTimeout(function() {
+      if (overlay.style.display !== 'none') {
+        statusText.textContent = "Detecting higher traffic, this may take a little longer than normal...";
+      }
+    }, 35000);
   });
 
-  // auto scroll to results 
+  // Auto scroll to results 
   window.addEventListener('DOMContentLoaded', function () {
     const resultsElement = document.getElementById('ragtool-results');
     if (resultsElement) {

@@ -286,16 +286,33 @@ def detect_response_language(query: str, default_code: str = "en", min_confidenc
 # 1. Multilingual LLM Entity Extractor
 # ---------------------------------------------------------------------------
 FAST_COUNTRY_PATTERNS = {
-    "ireland": r"\b(ireland|irish|eire|gaeilge)\b",
+    "austria": r"\b(austria|austrian|österreich)\b",
+    "belgium": r"\b(belgium|belgian|belgique|belgië)\b",
+    "bulgaria": r"\b(bulgaria|bulgarian)\b",
+    "croatia": r"\b(croatia|croatian|hrvatska)\b",
+    "cyprus": r"\b(cyprus|cypriot)\b",
+    "czech republic": r"\b(czech republic|czechia|czech)\b",
+    "denmark": r"\b(denmark|danish|danmark)\b",
+    "estonia": r"\b(estonia|estonian|eesti)\b",
+    "finland": r"\b(finland|finnish|suomi)\b",
     "france": r"\b(france|french|français|francaise)\b",
     "germany": r"\b(germany|german|deutschland|deutsch|mecklenburg)\b",
-    "finland": r"\b(finland|finnish|suomi)\b",
-    "estonia": r"\b(estonia|estonian|eesti)\b",
-    "belgium": r"\b(belgium|belgian|belgique|belgië)\b",
+    "greece": r"\b(greece|greek)\b",
+    "hungary": r"\b(hungary|hungarian|magyarország|magyar)\b",
+    "ireland": r"\b(ireland|irish|éire|eire|gaeilge)\b",
+    "italy": r"\b(italy|italian|italia)\b",
+    "latvia": r"\b(latvia|latvian|latvija)\b",
+    "lithuania": r"\b(lithuania|lithuanian|lietuva)\b",
+    "luxembourg": r"\b(luxembourg|luxembourgish|lëtzebuerg)\b",
+    "malta": r"\b(malta|maltese)\b",
     "netherlands": r"\b(netherlands|dutch|nederland)\b",
-    "sweden": r"\b(sweden|swedish|sverige)\b",
+    "poland": r"\b(poland|polish|polska)\b",
+    "portugal": r"\b(portugal|portuguese)\b",
+    "romania": r"\b(romania|romanian|românia)\b",
+    "slovakia": r"\b(slovakia|slovak|slovensko)\b",
+    "slovenia": r"\b(slovenia|slovenian|slovenija)\b",
     "spain": r"\b(spain|spanish|españa)\b",
-    "denmark": r"\b(denmark|danish|danmark)\b"
+    "sweden": r"\b(sweden|swedish|sverige)\b",
 }
 
 FAST_LEVEL_PATTERNS = {
@@ -352,11 +369,25 @@ def extract_entities_multilingual(query: str) -> dict:
         raw_text = res.json().get("message", {}).get("content", "").strip()
         clean_json = re.sub(r'```(?:json)?\s*([\s\S]*?)\s*```', r'\1', raw_text).strip()
         data = json.loads(clean_json)
-        country = data.get("country")
-        level = data.get("governance_level")
+
+        # Extract raw entity values from LLM response
+        raw_country = data.get("country")
+        raw_level = data.get("governance_level")
+
+        # Normalize and validate country against canonical keys in FAST_COUNTRY_PATTERNS
+        norm_country = normalize_filter_value(raw_country) if raw_country else None
+        valid_country = norm_country if (norm_country and norm_country in FAST_COUNTRY_PATTERNS) else None
+
+        if raw_country and not valid_country:
+            logging.info(f"⚠️ LLM extracted invalid country filter '{raw_country}' (normalized: '{norm_country}'). Ignoring filter.")
+
+        # Validate governance level against allowed values
+        clean_level = raw_level.lower() if raw_level else None
+        valid_level = clean_level if clean_level in ["european", "global", "national", "regional", "local"] else None
+
         return {
-            "country": normalize_filter_value(country) if country else None,
-            "governance_level": level if level in ["european", "global", "national", "regional", "local"] else None
+            "country": valid_country,
+            "governance_level": valid_level
         }
     except Exception as e:
         logging.warning(f"⚠️ LLM entity extraction fallback: {e}")
@@ -384,8 +415,9 @@ def retrieve_relevant_facts(query: str, country: Optional[str] = None, top_k: in
         for r in results:
             if r.score >= 0.35:
                 payload = r.payload
-                text_repr = payload.get("index_text") or f"{payload.get('entity')}: {payload.get('value_text') or payload.get('value_numeric')}"
-                facts.append(text_repr)
+                text_repr = payload.get("text") or payload.get("index_text") or f"{payload.get('entity')}: {payload.get('value_text') or payload.get('value_numeric')}"
+                if text_repr and text_repr != "None: None":
+                    facts.append(text_repr)
         return facts
     except Exception as e:
         logging.warning(f"⚠️ Fact retrieval skipped: {e}")
@@ -398,18 +430,21 @@ def format_display_metadata(value: Optional[str]) -> str:
     """Formats lowercased database strings into capitalized UI text and strips region codes like (us) or (uk)."""
     if not value or value.lower() in ["unknown", "none", "null"]:
         return "Unknown"
-    
+
     # Strip (us) or (uk) parenthetical suffixes (case-insensitive)
     cleaned = re.sub(r'\s*\((?:us|uk)\)', '', value, flags=re.IGNORECASE).strip()
-    
+
     return " ".join([word.capitalize() for word in cleaned.split()])
 
 # ---------------------------------------------------------------------------
 # 4. Prompt Engineering & LLM Execution
 # ---------------------------------------------------------------------------
+# Keywords that indicate a quantitative or statistical question
+STAT_QUERY_PATTERNS = r"\b(how much|area|hectare|ha|percentage|%|statistic|statistics|factsheet|factsheets|number|numbers|extent|total|breakdown|surface|coverage|amount)\b"
+
 def query_llm(query: str, context_docs: List[dict], facts: List[str] = None):
     if not context_docs and not facts:
-        return "No relevant documents or policy facts were found to answer this query.", []
+        return "No relevant policy documents or facts found matching your query.", []
 
     english_name, native_name = detect_response_language(query)
 
@@ -420,7 +455,6 @@ def query_llm(query: str, context_docs: List[dict], facts: List[str] = None):
         filename = d.get('filename', 'Unknown Document')
         country = format_display_metadata(d.get('country'))
 
-        # Use clean policy title (author) as primary name, falling back to filename
         doc_title = author if author and author.lower() != "unknown" else filename
         country_tag = f" ({country})" if country and country.lower() != "unknown" else ""
 
@@ -429,8 +463,8 @@ def query_llm(query: str, context_docs: List[dict], facts: List[str] = None):
             f"{d.get('text', '').strip()}"
         )
 
-    context_text = "\n\n---\n\n".join(context_chunks)
-    context_text = context_text[:7000]
+    # ⚡ Increased context slice to 5000 chars for richer policy context
+    context_text = "\n\n---\n\n".join(context_chunks)[:5000]
 
     # Format injected facts
     fact_text = ""
@@ -450,13 +484,13 @@ def query_llm(query: str, context_docs: List[dict], facts: List[str] = None):
         "- Keep official policy titles, legal act names, and geographic locations in their original legal form where appropriate.\n"
         "\n**Content Guidelines & Citations:**\n"
         "- Begin directly with a high-level Markdown summary section.\n"
-        "- Synthesize facts from both the structured fact list and provided document sections.\n"
-        "- ALWAYS refer to policies by their actual Document Title or Policy Name (e.g., **National Peatlands Strategy**, **SNBC 2**). NEVER use generic terms like 'Document Chunk 1', 'Chunk #', or 'Document Chunk'.\n"
-        "- Rely STRICTLY on the provided context. Do not speculate or introduce unverified outside claims.\n"
-        "- If context chunks are present, synthesize an answer from them. NEVER output 'information not found in literature' or 'no evidence' phrases if facts or context chunks are provided above."
+        "- Synthesize insights from both the structured fact list and provided document sections.\n"
+        "- ALWAYS refer to policies by their actual Document Title or Policy Name (e.g., **National Peatlands Strategy**, **SNBC 2**). NEVER use generic terms like 'Document Chunk 1' or 'Chunk #'.\n"
+        "- Rely STRICTLY on the provided context. Do not speculate or introduce unverified outside claims."
     )
 
     user_prompt = f"{fact_text}Document Context:\n\n{context_text}\n\nQuestion:\n{query}\n\nProvide a structured Markdown response in {english_name}."
+    
     payload = {
         "model": "mistral",
         "keep_alive": 0,
@@ -466,9 +500,9 @@ def query_llm(query: str, context_docs: List[dict], facts: List[str] = None):
         ],
         "stream": False,
         "options": {
-            "num_ctx": 8192,
+            "num_ctx": 4096,
             "temperature": 0.1,
-            "max_tokens": 1500
+            "num_predict": 750  # ⚡ Increased from 350 to 750 tokens to prevent mid-sentence cutoffs
         }
     }
 
@@ -477,6 +511,15 @@ def query_llm(query: str, context_docs: List[dict], facts: List[str] = None):
         res.raise_for_status()
         data = res.json()
         answer = data.get("message", {}).get("content") or "No output returned."
+
+        # Always clean up any unlinked factsheet text the LLM may have generated on its own
+        answer = re.sub(r'\n*For more detailed statistics.*', '', answer, flags=re.IGNORECASE).strip()
+
+        # ⚡ Only append the hyperlinked Factsheets footer if facts exist AND the query asked for statistical data
+        is_stat_query = bool(re.search(STAT_QUERY_PATTERNS, query, re.IGNORECASE))
+        if facts and is_stat_query:
+            answer += "\n\nFor more detailed statistics and information, please visit the [portal's Factsheets](https://peatlandpolicyportal.eu/factsheet)."
+
         return answer, context_docs
     finally:
         clear_memory()
@@ -606,7 +649,7 @@ from fastapi import Body
 from typing import List, Optional
 from qdrant_client.models import PointIdsList
 
-FACTS_COLLECTION_NAME = "policy_facts"
+#FACTS_COLLECTION_NAME = "policy_facts"
 FACTS_VECTOR_SIZE = VECTOR_SIZE  # 768
 
 # Ensure facts collection exists
