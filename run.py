@@ -20,6 +20,7 @@ import logging
 from markupsafe import Markup
 import markdown
 import re
+import ast
 
 #
 from modules import assum_json_to_dict, usrinp_json_to_dict
@@ -810,10 +811,12 @@ def qa_tool():
                         reasoning = reasoning_html
                     else:
                         reasoning = raw_answer
+                    #
+                    num_attach_to_retr = 3 # restricting attachment retrieval to top 3 sources
                     if sources and isinstance(sources, list):
                         # Step 3: Process each source using HTTPS port 443
                         max_score = max([s.get('score', 1) for s in sources], default=1)
-                        for src in sources:
+                        for src in sources[:num_attach_to_retr]:
                             policy_id = src.get("record_id")
                             file_links = []
                             if policy_id:
@@ -822,7 +825,7 @@ def qa_tool():
                                         f"https://aspect-erp.insight-centre.org/aspect/policy/{policy_id}/files",
                                         headers={'Content-Type': 'application/json', 'Accept': 'application/json'},
                                         json={},
-                                        timeout=3  # Reduced timeout so slow files don't drop the whole sources list
+                                        timeout=2  #restricting from 3 to 2
                                     )
                                     if file_resp.ok:
                                         file_data = file_resp.json()
@@ -840,6 +843,19 @@ def qa_tool():
                                 "evidence_location": f"Score: {src.get('score', 0)}",
                                 "similarity": round((src.get('score', 0) / max_score) * 100, 1) if max_score else 0,
                                 "files": file_links
+                            })
+                        # For remaining sources (beyond top 3), append without synchronous attachment calls
+                        for src in sources[num_attach_to_retr:]:
+                            policies.append({
+                                "id": src.get("record_id"),
+                                "title": src.get("author", "Unknown"),
+                                "thumbnail_url": "/static/images/pdf_thumbnail.png",
+                                "country": src.get("country", "Unknown"),
+                                "language": src.get("language", "Unknown"),
+                                "author": src.get("author", "Unknown"),
+                                "evidence_location": f"Score: {src.get('score', 0)}",
+                                "similarity": round((src.get('score', 0) / max_score) * 100, 1) if max_score else 0,
+                                "files": []
                             })
                 else:
                     reasoning = f"API Error {response.status_code}: {response.text}"
