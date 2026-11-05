@@ -533,20 +533,20 @@ def query_llm(query: str, context_docs: list[dict], facts: list[str] = None):
         "- NEVER use numbered lists (1., 2., 3., etc.). Use unordered bullet points (`-`) or Markdown subheadings (`###`) ONLY.\n"
         "- Structure policy overviews using `###` for each policy title, followed by bullet points (`-`) for its description and details.\n"
         "- Use `##` for main section titles.\n"
-        "- Bold (`**`) critical terms, metrics, dates, and policy names UNLESS they are preceded by a `##` heading indicator.\n"
+        "- Bold (`**`) critical terms, metrics, dates, and policy names UNLESS they are already preceded by a `##` heading indicator.\n"
         "- DO NOT output HTML tags like <h2>, <ul>, or <li>.\n"
         f"\n**Language Constraint:**\n"
         f"- Write the ENTIRE response in **{english_name}** ({native_name}).\n"
         "- Keep official policy titles, legal act names, and geographic locations in their original legal form where appropriate.\n"
-        "\n**Policy Verification & Ambiguity Handling Guidelines:**\n"
-        "- **Specific Policy Queries:** If the user asks about a specific policy name (e.g., 'Is X in policy Y?'):\n"
-        "   - Check if document chunks from Policy Y exist in the provided context.\n"
-        "   - If Policy Y is present, answer directly from its contents.\n"
-        "   - If Policy Y is NOT in the provided context, start your response by clarifying: 'Document [Policy Y] was not found in the database, but based on available context...'\n"
-        "- **Broad / Non-Existent Policy Strategies:** If the user asks about an overarching concept or strategy that does not exist as a single standalone document (e.g., 'What is the EU Peatland Strategy?'):\n"
-        "   - Clarify transparently in sentence 1 that there is no single standalone document by that exact name (e.g., 'While there is no single formal document titled EU Peatland Strategy, peatlands are regulated under several key EU frameworks...').\n"
-        "   - List the relevant policies using `### Policy Name` subheadings, with unordered bullet points (`-`) underneath.\n"
-        "- **Strict Citation:** ALWAYS refer to policies by their actual Document Title or Policy Name (e.g., **National Peatlands Strategy**, **Nature Restoration Law**). Rely STRICTLY on the provided context."
+        "\n**Policy Verification & Title Matching Guidelines:**\n"
+        "- **Title & Synonym Reconciliation:** Treat informal user phrasing (e.g., 'Irish peatland strategy', 'German mire plan') as a DIRECT match for official document titles in the context (e.g., **National Peatlands Strategy (Ireland)**, **Federal Peatland Strategy**). Do NOT claim a document is missing if a clear equivalent title is present in the context.\n"
+        "- **Specific Policy Queries:** When the user asks about a specific policy:\n"
+        "   - Focus your primary answer directly on that specific policy's document chunks.\n"
+        "   - If the requested policy is truly NOT in the context, state: 'The specific document [Requested Policy] was not found in the database, but related policies include...'\n"
+        "- **Broad / Non-Existent Policy Frameworks:** ONLY if the user asks about a general concept that has no formal document equivalent anywhere in the context (e.g., asking about a national strategy for a country that only has local regional guidelines):\n"
+        "   - Clarify in sentence 1 that no single standalone document exists by that exact title, then summarize the broader framework.\n"
+        "   - NEVER mention other countries or EU-level strategies unless the user's query explicitly asked about them.\n"
+        "- **Strict Scope & Citation:** Focus strictly on the geographic scope (e.g., country or region) requested by the user. Rely ONLY on the provided context."
     )
 
     user_prompt = f"{fact_text}Document Context:\n\n{context_text}\n\nQuestion:\n{query}\n\nProvide a structured Markdown response in {english_name}."
@@ -578,6 +578,10 @@ def query_llm(query: str, context_docs: list[dict], facts: list[str] = None):
         if facts and is_stat_query:
             answer += "\n\nFor more detailed statistics and information, please visit the [portal's Factsheets](https://peatlandpolicyportal.eu/factsheet)."
 
+        return answer, context_docs
+    except Exception as e:
+        logging.exception("Ollama request failed")
+        answer = f"Error generating response from LLM: {str(e)}"
         return answer, context_docs
     finally:
         clear_memory()
@@ -640,40 +644,87 @@ def ask_question(
     })
 
 #############
+TITLE_VECTOR_CACHE: Dict[str, np.ndarray] = {}
 
-def search(query: str, top_k: int = 10, query_filter: Optional[Filter] = None, min_score: float = 0.3):
+def get_or_create_title_vector(doc_key: str, title_text: str) -> np.ndarray:
+    """Retrieves or computes L2-normalized embedding for a document title."""
+    if doc_key not in TITLE_VECTOR_CACHE:
+        vec = model.encode(title_text, convert_to_numpy=True)
+        norm = np.linalg.norm(vec)
+        TITLE_VECTOR_CACHE[doc_key] = vec / (norm + 1e-9) if norm > 0 else vec
+    return TITLE_VECTOR_CACHE[doc_key]
+
+
+def search(query: str, top_k: int = 10, query_filter: Optional[Filter] = None, min_score: float = 0.25):
     if not all_docs:
         return []
-    query_vector = model.encode(query).tolist()
-    bm25_scores = bm25.get_scores(query.split()) if bm25 else [0] * len(all_docs)
+
+    # 1. Encode query and normalize vector for fast dot-product similarity
+    query_vec_np = model.encode(query, convert_to_numpy=True)
+    norm_q = np.linalg.norm(query_vec_np)
+    norm_query_vec = query_vec_np / (norm_q + 1e-9) if norm_q > 0 else query_vec_np
+    query_vector = query_vec_np.tolist()
+
+    # 2. Get BM25 scores and normalize them to a [0.0, 1.0] scale
+    bm25_scores = bm25.get_scores(query.split()) if bm25 else np.zeros(len(all_docs))
+    max_bm25 = float(np.max(bm25_scores)) if (len(bm25_scores) > 0 and np.max(bm25_scores) > 0) else 1.0
+
+    # 3. Perform Qdrant dense vector retrieval
     results = client.search(
         collection_name=COLLECTION_NAME,
         query_vector=query_vector,
         limit=top_k * 2,
         query_filter=query_filter
     )
+
     scored = []
     for res in results:
-        text = res.payload.get("text", "")
-        # O(1) hash map lookup instead of O(N) list index search
+        payload = res.payload or {}
+        text = payload.get("text", "")
+
+        # Scaled BM25 score (0.0 to 1.0)
         index = doc_to_index.get(text)
-        bm25_score = bm25_scores[index] if index is not None else 0
-        hybrid_score = bm25_score + res.score
+        raw_bm25 = bm25_scores[index] if index is not None else 0
+        norm_bm25 = raw_bm25 / max_bm25
+
+        # Cross-lingual Title Boost calculation
+        author = payload.get("author", "")
+        filename = payload.get("filename", "")
+        policy_name = payload.get("policy_name", "")
+        title_str = f"{policy_name} {author} {filename}".strip()
+
+        title_boost = 0.0
+        if title_str:
+            doc_key = payload.get("record_id") or filename
+            title_vec = get_or_create_title_vector(doc_key, title_str)
+
+            # Cosine similarity between query and title (works across all 24 EU languages)
+            title_sim = float(np.dot(norm_query_vec, title_vec))
+
+            # Apply a proportional boost if the query semantically matches the policy title (> 0.45 threshold)
+            if title_sim > 0.45:
+                title_boost = (title_sim - 0.45) * 0.35
+
+        # Hybrid Score = Dense Context Score + Normalized BM25 + Cross-Lingual Title Boost
+        hybrid_score = res.score + (norm_bm25 * 0.2) + title_boost
+
         if hybrid_score >= min_score:
             scored.append({
                 "text": text,
                 "score": round(hybrid_score, 4),
-                "record_id": res.payload.get("record_id"),
-                "filename": res.payload.get("filename"),
-                "author": res.payload.get("author"),
-                "language": res.payload.get("language"),
-                "country": res.payload.get("country")
+                "record_id": payload.get("record_id"),
+                "filename": filename,
+                "author": author,
+                "language": payload.get("language"),
+                "country": payload.get("country")
             })
+
     grouped = {}
     for doc in scored:
         key = (doc["record_id"], doc["filename"], doc["author"])
         if key not in grouped or doc["score"] > grouped[key]["score"]:
             grouped[key] = doc
+
     return sorted(grouped.values(), key=lambda x: x["score"], reverse=True)[:top_k]
 
 @app.get("/memory-stats")
