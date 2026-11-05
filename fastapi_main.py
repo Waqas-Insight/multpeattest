@@ -83,15 +83,18 @@ def health_check():
         "qdrant_host": QDRANT_HOST
     }
 
+doc_to_index: Dict[str, int] = {}
+
 @app.on_event("startup")
 def load_index_on_start():
-    global bm25, all_docs
+    global bm25, all_docs, doc_to_index
     filter_ = Filter(must=[FieldCondition(key="active", match=MatchValue(value=True))])
     points = client.scroll(collection_name=COLLECTION_NAME, scroll_filter=filter_, limit=10000)[0]
     all_docs = [p.payload["text"] for p in points if "text" in p.payload]
+    doc_to_index = {doc: i for i, doc in enumerate(all_docs)}
     tokenized = [doc.split() for doc in all_docs]
     bm25 = BM25Okapi(tokenized) if tokenized else None
-    logging.info(f"🔄 Loaded {len(all_docs)} documents into BM25 index")
+    logging.info(f"Loaded {len(all_docs)} documents into BM25 index")
 
 @app.post("/reload-index")
 def reload_index():
@@ -494,31 +497,31 @@ def format_display_metadata(value: Optional[str]) -> str:
 # Keywords that indicate a quantitative or statistical question
 STAT_QUERY_PATTERNS = r"\b(how much|area|hectare|ha|percentage|%|statistic|statistics|factsheet|factsheets|number|numbers|extent|total|breakdown|surface|coverage|amount)\b"
 
-def query_llm(query: str, context_docs: List[dict], facts: List[str] = None):
+def query_llm(query: str, context_docs: list[dict], facts: list[str] = None):
     if not context_docs and not facts:
         return "No relevant policy documents or facts found matching your query.", []
 
     english_name, native_name = detect_response_language(query)
 
-    # Format document chunks
+    # Format document chunks clearly showing Policy Title, Author, and Country
     context_chunks = []
-    for idx, d in enumerate(context_docs, start=1):
+    for d in context_docs:
         author = format_display_metadata(d.get('author'))
         filename = d.get('filename', 'Unknown Document')
         country = format_display_metadata(d.get('country'))
+        policy_name = format_display_metadata(d.get('policy_name') or d.get('title'))
 
-        doc_title = author if author and author.lower() != "unknown" else filename
-        country_tag = f" ({country})" if country and country.lower() != "unknown" else ""
+        # Title preference: explicit Policy Name > Author > Filename
+        doc_title = policy_name if policy_name != "Unknown" else (author if author != "Unknown" else filename)
+        country_tag = f" ({country})" if country != "Unknown" else ""
 
         context_chunks.append(
             f"### Document: {doc_title}{country_tag}\n"
             f"{d.get('text', '').strip()}"
         )
 
-    # ⚡ Increased context slice to 5000 chars for richer policy context
     context_text = "\n\n---\n\n".join(context_chunks)[:5000]
 
-    # Format injected facts
     fact_text = ""
     if facts:
         fact_text = "### Key Factsheet Data Points:\n" + "\n".join([f"- {fact}" for fact in facts]) + "\n\n"
@@ -527,25 +530,30 @@ def query_llm(query: str, context_docs: List[dict], facts: List[str] = None):
         "You are an expert policy assistant specializing in European peatland regulations, environmental governance, and sustainability."
         "\n\n**Formatting Rules (Strict Mandatory Schema):**\n"
         "- Use clear, clean **Markdown** structure ONLY.\n"
-        "- Use `##` for section titles and `###` for specific policy titles.\n"
-        "- Use unordered bullet lists (`-`) for key points and details.\n"
-        "- Bold (`**`) critical terms, metrics, dates, and policy names.\n"
+        "- NEVER use numbered lists (1., 2., 3., etc.). Use unordered bullet points (`-`) or Markdown subheadings (`###`) ONLY.\n"
+        "- Structure policy overviews using `###` for each policy title, followed by bullet points (`-`) for its description and details.\n"
+        "- Use `##` for main section titles.\n"
+        "- Bold (`**`) critical terms, metrics, dates, and policy names UNLESS they are preceded by a `##` heading indicator.\n"
         "- DO NOT output HTML tags like <h2>, <ul>, or <li>.\n"
         f"\n**Language Constraint:**\n"
         f"- Write the ENTIRE response in **{english_name}** ({native_name}).\n"
         "- Keep official policy titles, legal act names, and geographic locations in their original legal form where appropriate.\n"
-        "\n**Content Guidelines & Citations:**\n"
-        "- Begin directly with a high-level Markdown summary section.\n"
-        "- Synthesize insights from both the structured fact list and provided document sections.\n"
-        "- ALWAYS refer to policies by their actual Document Title or Policy Name (e.g., **National Peatlands Strategy**, **SNBC 2**). NEVER use generic terms like 'Document Chunk 1' or 'Chunk #'.\n"
-        "- Rely STRICTLY on the provided context. Do not speculate or introduce unverified outside claims."
+        "\n**Policy Verification & Ambiguity Handling Guidelines:**\n"
+        "- **Specific Policy Queries:** If the user asks about a specific policy name (e.g., 'Is X in policy Y?'):\n"
+        "   - Check if document chunks from Policy Y exist in the provided context.\n"
+        "   - If Policy Y is present, answer directly from its contents.\n"
+        "   - If Policy Y is NOT in the provided context, start your response by clarifying: 'Document [Policy Y] was not found in the database, but based on available context...'\n"
+        "- **Broad / Non-Existent Policy Strategies:** If the user asks about an overarching concept or strategy that does not exist as a single standalone document (e.g., 'What is the EU Peatland Strategy?'):\n"
+        "   - Clarify transparently in sentence 1 that there is no single standalone document by that exact name (e.g., 'While there is no single formal document titled EU Peatland Strategy, peatlands are regulated under several key EU frameworks...').\n"
+        "   - List the relevant policies using `### Policy Name` subheadings, with unordered bullet points (`-`) underneath.\n"
+        "- **Strict Citation:** ALWAYS refer to policies by their actual Document Title or Policy Name (e.g., **National Peatlands Strategy**, **Nature Restoration Law**). Rely STRICTLY on the provided context."
     )
 
     user_prompt = f"{fact_text}Document Context:\n\n{context_text}\n\nQuestion:\n{query}\n\nProvide a structured Markdown response in {english_name}."
     
     payload = {
         "model": "mistral",
-        "keep_alive": "10m", #0, doesnt immediately remove mistral from memory
+        "keep_alive": "10m",
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt}
@@ -554,7 +562,7 @@ def query_llm(query: str, context_docs: List[dict], facts: List[str] = None):
         "options": {
             "num_ctx": 4096,
             "temperature": 0.1,
-            "num_predict": 750  # ⚡ Increased from 350 to 750 tokens to prevent mid-sentence cutoffs
+            "num_predict": 750
         }
     }
 
@@ -564,10 +572,8 @@ def query_llm(query: str, context_docs: List[dict], facts: List[str] = None):
         data = res.json()
         answer = data.get("message", {}).get("content") or "No output returned."
 
-        # Always clean up any unlinked factsheet text the LLM may have generated on its own
         answer = re.sub(r'\n*For more detailed statistics.*', '', answer, flags=re.IGNORECASE).strip()
 
-        # ⚡ Only append the hyperlinked Factsheets footer if facts exist AND the query asked for statistical data
         is_stat_query = bool(re.search(STAT_QUERY_PATTERNS, query, re.IGNORECASE))
         if facts and is_stat_query:
             answer += "\n\nFor more detailed statistics and information, please visit the [portal's Factsheets](https://peatlandpolicyportal.eu/factsheet)."
@@ -581,19 +587,18 @@ def query_llm(query: str, context_docs: List[dict], facts: List[str] = None):
 # ---------------------------------------------------------------------------
 @app.get("/ask")
 def ask_question(
-        query: str,
-        min_score: Optional[float] = Query(0.3),
-        language: Optional[str] = Query(None),
-        country: Optional[str] = Query(None),
-        category: Optional[str] = Query(None),
-        governance_level: Optional[str] = Query(None)
-    ):
-    # 1. Auto-extract query entities
+    query: str,
+    min_score: Optional[float] = Query(0.3),
+    language: Optional[str] = Query(None),
+    country: Optional[str] = Query(None),
+    category: Optional[str] = Query(None),
+    governance_level: Optional[str] = Query(None),
+    record_id: Optional[str] = Query(None)  # Merged ask_by_policy_id capability
+):
     entities = extract_entities_multilingual(query)
     target_country = country or entities.get("country")
     target_level = governance_level or entities.get("governance_level")
 
-    # 2. Build Qdrant metadata filters
     filters = [FieldCondition(key="active", match=MatchValue(value=True))]
     if target_country:
         filters.append(FieldCondition(key="country", match=MatchValue(value=normalize_filter_value(target_country))))
@@ -603,19 +608,17 @@ def ask_question(
         filters.append(FieldCondition(key="category", match=MatchValue(value=normalize_filter_value(category))))
     if target_level:
         filters.append(FieldCondition(key="governance_level", match=MatchValue(value=normalize_filter_value(target_level))))
+    if record_id:
+        filters.append(FieldCondition(key="record_id", match=MatchValue(value=str(record_id))))
 
     query_filter = Filter(must=filters)
 
-    # 3. Search document vector collection
     docs = search(query, query_filter=query_filter, min_score=min_score)
-
-    # 4. Search structured fact collection
     injected_facts = retrieve_relevant_facts(query, country=target_country)
 
     if not docs and not injected_facts:
         return JSONResponse(content={"answer": "No relevant policy documents or facts found matching your query.", "sources": []})
 
-    # 5. Generate LLM Response with fact injection
     answer, sources = query_llm(query, docs, facts=injected_facts)
 
     return JSONResponse(content={
@@ -638,7 +641,7 @@ def ask_question(
 
 #############
 
-def search(query, top_k=10, query_filter=None, min_score=0.3):
+def search(query: str, top_k: int = 10, query_filter: Optional[Filter] = None, min_score: float = 0.3):
     if not all_docs:
         return []
     query_vector = model.encode(query).tolist()
@@ -649,15 +652,12 @@ def search(query, top_k=10, query_filter=None, min_score=0.3):
         limit=top_k * 2,
         query_filter=query_filter
     )
-
     scored = []
     for res in results:
         text = res.payload.get("text", "")
-        try:
-            index = all_docs.index(text)
-            bm25_score = bm25_scores[index]
-        except ValueError:
-            bm25_score = 0
+        # O(1) hash map lookup instead of O(N) list index search
+        index = doc_to_index.get(text)
+        bm25_score = bm25_scores[index] if index is not None else 0
         hybrid_score = bm25_score + res.score
         if hybrid_score >= min_score:
             scored.append({
@@ -669,13 +669,11 @@ def search(query, top_k=10, query_filter=None, min_score=0.3):
                 "language": res.payload.get("language"),
                 "country": res.payload.get("country")
             })
-
     grouped = {}
     for doc in scored:
         key = (doc["record_id"], doc["filename"], doc["author"])
         if key not in grouped or doc["score"] > grouped[key]["score"]:
             grouped[key] = doc
-
     return sorted(grouped.values(), key=lambda x: x["score"], reverse=True)[:top_k]
 
 @app.get("/memory-stats")
@@ -692,7 +690,6 @@ def delete_by_record_id(record_id: str):
         points_selector=Filter(must=[FieldCondition(key="record_id", match=MatchValue(value=record_id))])
     )
     return {"status": "deleted", "record_id": record_id, "result": result}
-
 
 # =========================
 # FACTS SECTION (multilingual, single point per Odoo fact id)
@@ -832,15 +829,15 @@ def facts_add(payload: Dict[str, Any] = Body(...)):
 
 @app.get("/facts/search")
 def facts_search(
-    query: str,
-    top_k: int = Query(5, ge=1, le=50),
-    min_score: float = Query(0.0),
-    language: Optional[str] = Query(None),
-    country: Optional[str] = Query(None),
-    governance_level: Optional[str] = Query(None),
-    only_current: bool = Query(False),
-    only_active: bool = Query(True),
-):
+        query: str,
+        top_k: int = Query(5, ge=1, le=50),
+        min_score: float = Query(0.0),
+        language: Optional[str] = Query(None),
+        country: Optional[str] = Query(None),
+        governance_level: Optional[str] = Query(None),
+        only_current: bool = Query(False),
+        only_active: bool = Query(True),
+    ):
     """
     Vector search over multilingual facts.
     - Cross-lingual works out of the box (centroid vector).
@@ -848,7 +845,6 @@ def facts_search(
     """
     try:
         qvec = model.encode(query).tolist()
-
         must_filters = []
         if only_active:
             must_filters.append(FieldCondition(key="active", match=MatchValue(value=True)))
@@ -860,16 +856,13 @@ def facts_search(
             must_filters.append(FieldCondition(key="country", match=MatchValue(value=normalize_filter_value(country))))
         if governance_level:
             must_filters.append(FieldCondition(key="governance_level", match=MatchValue(value=normalize_filter_value(governance_level))))
-
         qfilter = Filter(must=must_filters) if must_filters else None
-
         results = client.search(
             collection_name=FACTS_COLLECTION_NAME,
             query_vector=qvec,
             limit=top_k,
             query_filter=qfilter
         )
-
         out = []
         for r in results:
             if r.score < min_score:
@@ -894,54 +887,6 @@ def facts_delete(fact_id: int):
         logging.exception("facts_delete failed")
         return JSONResponse(status_code=500, content={"error": str(e)})
 
-
-
-@app.get("/ask_by_policy_id")
-def ask_by_policy_id(
-    query: str,
-    policy_id: str = Query(..., description="Record ID of the policy"),
-    min_score: Optional[float] = Query(0.3),
-):
-    """
-    Ask a question restricted to a specific policy (record_id)
-    """
-
-    # 🔒 FORCE policy filter
-    filters = [
-        FieldCondition(key="active", match=MatchValue(value=True)),
-        FieldCondition(key="record_id", match=MatchValue(value=str(policy_id)))
-    ]
-
-    query_filter = Filter(must=filters)
-
-    logging.info(f"📌 Policy-specific query | policy_id={policy_id}")
-
-    docs = search(query, query_filter=query_filter, min_score=min_score)
-
-    if not docs:
-        return JSONResponse(content={
-            "answer": "No relevant content found in this policy.",
-            "sources": []
-        })
-
-    answer, sources = query_llm(query, docs)
-
-    return JSONResponse(content={
-        "answer": answer,
-        "contexts": [d["text"] for d in sources if "text" in d],
-        "sources": [
-            {
-                "record_id": src["record_id"],
-                "filename": src["filename"],
-                "score": src["score"],
-                "author": src["author"],
-                "language": src["language"],
-                "country": src["country"],
-            }
-            for src in sources
-        ]
-    })
-
 @app.get("/debug-policy/{policy_id}")
 def debug_policy(policy_id: str):
     points, _ = client.scroll(
@@ -954,7 +899,6 @@ def debug_policy(policy_id: str):
         ),
         limit=10
     )
-
     return {
         "policy_id": policy_id,
         "count": len(points),

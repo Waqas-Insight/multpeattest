@@ -161,19 +161,26 @@
     overlay.style.display = 'flex';
     statusText.textContent = "Understanding query...";
 
-    // Stage 2: 5s - 20s
+    // Stage 2: 5s - 15s
     setTimeout(function() {
       if (overlay.style.display !== 'none') {
-        statusText.textContent = "Retrieving relevant evidence...";
+        statusText.textContent = "Retrieving policy evidence...";
       }
     }, 5000);
 
-    // Stage 3: 20s - 35s
+    // Stage 2: 15s - 25s
     setTimeout(function() {
       if (overlay.style.display !== 'none') {
-        statusText.textContent = "Synthesising final answer...";
+        statusText.textContent = "Filtering for answer relevance...";
       }
-    }, 20000);
+    }, 15000);
+
+    // Stage 3: 25s - 35s
+    setTimeout(function() {
+      if (overlay.style.display !== 'none') {
+        statusText.textContent = "Synthesising final response...";
+      }
+    }, 25000);
 
     // Stage 4: 35s+
     setTimeout(function() {

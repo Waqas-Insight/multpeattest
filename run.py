@@ -749,20 +749,79 @@ def fix_markdown_headings_properly(text):
     """Dummy markdown fixer. Replace with your actual logic."""
     return text  # Assuming your original logic will go here
 
+# Comprehensive list of countries to detect directly from document titles if metadata is missing
+COUNTRY_TITLE_MAP = {
+    "croatia": "Croatia", "austria": "Austria", "belgium": "Belgium", "bulgaria": "Bulgaria",
+    "cyprus": "Cyprus", "czech": "Czech Republic", "denmark": "Denmark", "estonia": "Estonia",
+    "finland": "Finland", "france": "France", "germany": "Germany", "greece": "Greece",
+    "hungary": "Hungary", "ireland": "Ireland", "italy": "Italy", "latvia": "Latvia",
+    "lithuania": "Lithuania", "luxembourg": "Luxembourg", "malta": "Malta", "netherlands": "Netherlands",
+    "poland": "Poland", "portugal": "Portugal", "romania": "Romania", "slovakia": "Slovakia",
+    "slovenia": "Slovenia", "spain": "Spain", "sweden": "Sweden", "uk": "United Kingdom"
+}
+
+def fix_acronym_casing(text: str) -> str:
+    """Ensures common policy acronyms (UN, UNEP, EU, RAMSAR, ETS, CAP, etc.) stay properly capitalized."""
+    if not text:
+        return "Unknown Policy"
+    
+    # List of acronyms to force uppercase
+    acronyms = r"\b(un|unep|eu|ets|cap|eia|crcf|sdage|paf|pep2030|lulucf|ghg|snbc|novi|ipcc|cbd)\b"
+    return re.sub(acronyms, lambda m: m.group(0).upper(), str(text), flags=re.IGNORECASE)
+
+def get_display_location(src: dict) -> str:
+    """Returns Country if present; falls back to Governance Level or extracts location from Document Title."""
+    country = src.get("country")
+    governance = src.get("governance_level") or src.get("governance") or src.get("level") or src.get("region")
+    raw_title = f"{src.get('author', '')} {src.get('title', '')} {src.get('filename', '')}".lower()
+
+    # 1. Handle explicit EU country metadata
+    if country and str(country).strip().lower() in ["eu", "european", "european union", "eu / european", "europe"]:
+        return "EU / European"
+
+    # 2. Return valid Country metadata (if present)
+    if country and str(country).strip().lower() not in ["unknown", "none", "null", ""]:
+        return fix_acronym_casing(str(country).strip().title())
+
+    # 3. Use Governance Level metadata (if present)
+    if governance and str(governance).strip().lower() not in ["unknown", "none", "null", ""]:
+        gov_lower = str(governance).strip().lower()
+        if gov_lower in ["european", "eu", "eu level", "europe"]:
+            return "EU / European"
+        elif gov_lower in ["global", "international"]:
+            return "Global"
+        return str(governance).strip().title()
+
+    # 4. Title Fallback A: Check if title explicitly mentions a specific country
+    for c_key, c_name in COUNTRY_TITLE_MAP.items():
+        if re.search(rf"\b{c_key}\b", raw_title):
+            return c_name
+
+    # 5. Title Fallback B: Check for Global treaties/organizations (Ramsar, UN, UNEP, CBD, IPCC)
+    if re.search(r"\b(ramsar|un|unep|cbd|ipcc|global|international|united nations|paris agreement)\b", raw_title):
+        return "Global"
+
+    # 6. Title Fallback C: Check for EU-level documents
+    if re.search(r"\b(eu|european|directive|regulation|commission|ets|cap|eia|crcf)\b", raw_title):
+        return "EU / European"
+
+    # 7. Default fallback
+    return "Unknown"
+
 @app.route('/qa-tool', methods=['GET', 'POST'])
 def qa_tool():
     if request.method == 'GET':
         return render_template("qa_tool.html")
-    elif request.method=='POST':
+    elif request.method == 'POST':
         reasoning = None
         policies = []
-        # Get user input
+
         question = request.form.get('question')
         language = request.form.get('language')
         category = request.form.get('category')
         country = request.form.get('country')
         governance = request.form.get('governance')
-        # Build query parameters / payload
+
         payload = {"question": question}
         filters = {}
         if language: filters['language'] = language
@@ -770,9 +829,9 @@ def qa_tool():
         if country: filters['country'] = country
         if governance: filters['governance_level'] = governance
         if filters: payload['filters'] = filters
+
         if question:
             try:
-                # Step 1: Call the working Odoo proxy endpoint on port 443
                 response = requests.post(
                     "https://aspect-erp.insight-centre.org/aspect/ask-question",
                     json=payload,
@@ -781,7 +840,6 @@ def qa_tool():
                 )
                 if response.status_code == 200:
                     raw_data = response.json()
-                    # Flexible Response Unpacking (handles Odoo RPC, FastAPI direct, and nested envelopes)
                     res_body = raw_data.get('result', raw_data) 
                     if isinstance(res_body, dict) and 'response' in res_body and isinstance(res_body['response'], dict):
                         inner_resp = res_body['response']
@@ -789,15 +847,15 @@ def qa_tool():
                         inner_resp = res_body
                     else:
                         inner_resp = {}
-                    # Extract answer and sources with backward-compatible key aliases
+
                     raw_answer = (
                         inner_resp.get('answer') or 
                         inner_resp.get('result') or 
                         inner_resp.get('response') or 
                         "No answer provided."
                     )
-                    sources = inner_resp.get('sources', []) if isinstance(inner_resp, dict) else []                    # Fallback checks
-                    # Refined Fallback Check
+                    sources = inner_resp.get('sources', []) if isinstance(inner_resp, dict) else []
+
                     is_too_short = len(str(raw_answer).strip()) < 20
                     is_explicit_empty = str(raw_answer).strip().lower() in [
                         "no answer provided.", 
@@ -805,17 +863,17 @@ def qa_tool():
                         "no relevant documents found for the specified criteria."
                     ]
                     if not is_explicit_empty and not is_too_short:
-                        # Step 2: Process both Markdown & HTML output
                         fixed_raw_answer = fix_markdown_headings_properly(raw_answer)
                         reasoning_html = Markup(markdown.markdown(fixed_raw_answer))
                         reasoning = reasoning_html
                     else:
                         reasoning = raw_answer
-                    #
-                    num_attach_to_retr = 3 # restricting attachment retrieval to top 3 sources
+
+                    num_attach_to_retr = 3
                     if sources and isinstance(sources, list):
-                        # Step 3: Process each source using HTTPS port 443
                         max_score = max([s.get('score', 1) for s in sources], default=1)
+                        
+                        # Top 3 sources with attachments
                         for src in sources[:num_attach_to_retr]:
                             policy_id = src.get("record_id")
                             file_links = []
@@ -825,7 +883,7 @@ def qa_tool():
                                         f"https://aspect-erp.insight-centre.org/aspect/policy/{policy_id}/files",
                                         headers={'Content-Type': 'application/json', 'Accept': 'application/json'},
                                         json={},
-                                        timeout=2  #restricting from 3 to 2
+                                        timeout=2
                                     )
                                     if file_resp.ok:
                                         file_data = file_resp.json()
@@ -833,26 +891,31 @@ def qa_tool():
                                         file_links = file_res.get('attachments', []) if isinstance(file_res, dict) else []
                                 except Exception as fe: 
                                     logging.warning(f"Failed to fetch attachments for policy {policy_id}: {fe}")
+
+                            raw_title = src.get("author") or src.get("title") or "Unknown Policy"
                             policies.append({
                                 "id": policy_id,
-                                "title": src.get("author", "Unknown"),
+                                "title": fix_acronym_casing(raw_title),
                                 "thumbnail_url": "/static/images/pdf_thumbnail.png",
-                                "country": src.get("country", "Unknown"),
-                                "language": src.get("language", "Unknown"),
-                                "author": src.get("author", "Unknown"),
+                                "country": get_display_location(src),
+                                "language": src.get("language", "Unknown").capitalize(),
+                                "author": fix_acronym_casing(raw_title),
                                 "evidence_location": f"Score: {src.get('score', 0)}",
                                 "similarity": round((src.get('score', 0) / max_score) * 100, 1) if max_score else 0,
                                 "files": file_links
                             })
-                        # For remaining sources (beyond top 3), append without synchronous attachment calls
+
+                        # Remaining sources beyond top 3
                         for src in sources[num_attach_to_retr:]:
+                            policy_id = src.get("record_id")  # ⚡ Fixed policy_id lookup for remaining sources
+                            raw_title = src.get("author") or src.get("title") or "Unknown Policy"
                             policies.append({
-                                "id": src.get("record_id"),
-                                "title": src.get("author", "Unknown"),
+                                "id": policy_id,
+                                "title": fix_acronym_casing(raw_title),
                                 "thumbnail_url": "/static/images/pdf_thumbnail.png",
-                                "country": src.get("country", "Unknown"),
-                                "language": src.get("language", "Unknown"),
-                                "author": src.get("author", "Unknown"),
+                                "country": get_display_location(src),
+                                "language": src.get("language", "Unknown").capitalize(),
+                                "author": fix_acronym_casing(raw_title),
                                 "evidence_location": f"Score: {src.get('score', 0)}",
                                 "similarity": round((src.get('score', 0) / max_score) * 100, 1) if max_score else 0,
                                 "files": []
@@ -862,6 +925,7 @@ def qa_tool():
             except Exception as e:
                 reasoning = f"Failed to get response: {str(e)}"
                 logging.error("Exception occurred while fetching response: %s", str(e))
+
         return render_template(
             "qa_tool.html",
             reasoning=reasoning,
