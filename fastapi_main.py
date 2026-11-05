@@ -1,5 +1,5 @@
-import logging, uuid, os, tempfile, requests, re, gc, torch
-from fastapi import FastAPI, File, UploadFile, Form, Query
+import logging, uuid, os, tempfile, requests, re, gc, json, torch
+from fastapi import FastAPI, File, UploadFile, Form, Query, Body
 from fastapi.responses import JSONResponse
 from typing import Optional, Dict, Any, List
 from collections import defaultdict
@@ -9,10 +9,8 @@ from rank_bm25 import BM25Okapi
 from sentence_transformers import SentenceTransformer
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from qdrant_client import QdrantClient
-from qdrant_client.models import PointStruct, Distance, VectorParams, Filter, FieldCondition, MatchValue
+from qdrant_client.models import PointStruct, Distance, VectorParams, Filter, FieldCondition, MatchValue, PointIdsList
 from dotenv import load_dotenv
-import re
-import json
 
 # 🌐 NEW: language detection for multilingual responses
 from langdetect import detect_langs, DetectorFactory, LangDetectException
@@ -283,115 +281,169 @@ def detect_response_language(query: str, default_code: str = "en", min_confidenc
     return LANG_NAMES.get(code, LANG_NAMES["en"])  # (english_name, native_name)
 
 # ---------------------------------------------------------------------------
-# 1. Multilingual LLM Entity Extractor
+# 1. Lookups & Pre-compiled Regex (Fast Path - < 0.1 ms execution)
 # ---------------------------------------------------------------------------
-FAST_COUNTRY_PATTERNS = {
-    "austria": r"\b(austria|austrian|österreich)\b",
-    "belgium": r"\b(belgium|belgian|belgique|belgië)\b",
-    "bulgaria": r"\b(bulgaria|bulgarian)\b",
-    "croatia": r"\b(croatia|croatian|hrvatska)\b",
-    "cyprus": r"\b(cyprus|cypriot)\b",
-    "czech republic": r"\b(czech republic|czechia|czech)\b",
-    "denmark": r"\b(denmark|danish|danmark)\b",
-    "estonia": r"\b(estonia|estonian|eesti)\b",
-    "finland": r"\b(finland|finnish|suomi)\b",
-    "france": r"\b(france|french|français|francaise)\b",
-    "germany": r"\b(germany|german|deutschland|deutsch|mecklenburg)\b",
-    "greece": r"\b(greece|greek)\b",
-    "hungary": r"\b(hungary|hungarian|magyarország|magyar)\b",
-    "ireland": r"\b(ireland|irish|éire|eire|gaeilge)\b",
-    "italy": r"\b(italy|italian|italia)\b",
-    "latvia": r"\b(latvia|latvian|latvija)\b",
-    "lithuania": r"\b(lithuania|lithuanian|lietuva)\b",
-    "luxembourg": r"\b(luxembourg|luxembourgish|lëtzebuerg)\b",
-    "malta": r"\b(malta|maltese)\b",
-    "netherlands": r"\b(netherlands|dutch|nederland)\b",
-    "poland": r"\b(poland|polish|polska)\b",
-    "portugal": r"\b(portugal|portuguese)\b",
-    "romania": r"\b(romania|romanian|românia)\b",
-    "slovakia": r"\b(slovakia|slovak|slovensko)\b",
-    "slovenia": r"\b(slovenia|slovenian|slovenija)\b",
-    "spain": r"\b(spain|spanish|españa)\b",
-    "sweden": r"\b(sweden|swedish|sverige)\b",
+
+COUNTRY_LOOKUP: Dict[str, str] = {
+    # Austria
+    "austria": "austria", "austrian": "austria", "österreich": "austria", "oesterreich": "austria", "autriche": "austria",
+    # Belgium
+    "belgium": "belgium", "belgian": "belgium", "belgique": "belgium", "belgië": "belgium", "belgien": "belgium",
+    # Bulgaria
+    "bulgaria": "bulgaria", "bulgarian": "bulgaria", "българия": "bulgaria",
+    # Croatia
+    "croatia": "croatia", "croatian": "croatia", "hrvatska": "croatia",
+    # Cyprus
+    "cyprus": "cyprus", "cypriot": "cyprus", "kypros": "cyprus", "kıbrıs": "cyprus",
+    # Czech Republic
+    "czech": "czech republic", "czechia": "czech republic", "česko": "czech republic", "česká republika": "czech republic",
+    # Denmark
+    "denmark": "denmark", "danish": "denmark", "danmark": "denmark",
+    # Estonia
+    "estonia": "estonia", "estonian": "estonia", "eesti": "estonia",
+    # Finland
+    "finland": "finland", "finnish": "finland", "suomi": "finland",
+    # France
+    "france": "france", "french": "france", "française": "france", "francais": "france",
+    # Germany
+    "germany": "germany", "german": "germany", "deutschland": "germany", "deutsch": "germany", "mecklenburg": "germany",
+    # Greece
+    "greece": "greece", "greek": "greece", "ελλάδα": "greece", "hellas": "greece",
+    # Hungary
+    "hungary": "hungary", "hungarian": "hungary", "magyarország": "hungary", "magyar": "hungary",
+    # Ireland
+    "ireland": "ireland", "irish": "ireland", "éire": "ireland", "eire": "ireland", "gaeilge": "ireland",
+    # Italy
+    "italy": "italy", "italian": "italy", "italia": "italy", "italiano": "italy",
+    # Latvia
+    "latvia": "latvia", "latvian": "latvia", "latvija": "latvia",
+    # Lithuania
+    "lithuania": "lithuania", "lithuanian": "lithuania", "lietuva": "lithuania",
+    # Luxembourg
+    "luxembourg": "luxembourg", "luxembourgish": "luxembourg", "lëtzebuerg": "luxembourg",
+    # Malta
+    "malta": "malta", "maltese": "malta", "malti": "malta",
+    # Netherlands
+    "netherlands": "netherlands", "dutch": "netherlands", "nederland": "netherlands", "holland": "netherlands",
+    # Poland
+    "poland": "poland", "polish": "poland", "polska": "poland", "polski": "poland",
+    # Portugal
+    "portugal": "portugal", "portuguese": "portugal", "português": "portugal",
+    # Romania
+    "romania": "romania", "romanian": "romania", "românia": "romania",
+    # Slovakia
+    "slovakia": "slovakia", "slovak": "slovakia", "slovensko": "slovakia",
+    # Slovenia
+    "slovenia": "slovenia", "slovenian": "slovenia", "slovenija": "slovenia",
+    # Spain
+    "spain": "spain", "spanish": "spain", "españa": "spain", "espana": "spain",
+    # Sweden
+    "sweden": "sweden", "swedish": "sweden", "sverige": "sweden",
+    # United Kingdom
+    "uk": "united kingdom", "united kingdom": "united kingdom", "britain": "united kingdom", "british": "united kingdom",
 }
 
-FAST_LEVEL_PATTERNS = {
-    "european": r"\b(eu|europe|european|ue|union europea|union europeenne|union européenne|europäische union|europese unie|unia europejska)\b",
-    "global": r"\b(global|international|un|united nations)\b",
-    "national": r"\b(national|federal)\b",
-    "regional": r"\b(regional|provincial)\b",
-    "local": r"\b(local)\b",
+LEVEL_LOOKUP: Dict[str, str] = {
+    "eu": "european", "europe": "european", "european": "european", "ue": "european",
+    "union europea": "european", "union europeenne": "european", "union européenne": "european",
+    "europäische union": "european", "europese unie": "european", "unia europejska": "european",
+    "global": "global", "international": "global", "un": "global", "united nations": "global",
+    "national": "national", "federal": "national",
+    "regional": "regional", "provincial": "regional",
+    "local": "local",
 }
 
-def extract_entities_multilingual(query: str) -> dict:
-    query_lower = query.lower()
-    extracted_country = None
-    extracted_level = None
+# Pre-compile unified Regex patterns sorted by length descending (matches multi-word terms first)
+_COUNTRY_REGEX = re.compile(
+    r"\b(" + "|".join(re.escape(k) for k in sorted(COUNTRY_LOOKUP.keys(), key=len, reverse=True)) + r")\b",
+    re.IGNORECASE,
+)
 
-    # 1. Fast path: Match known country terms (< 1 ms)
-    for canon_country, pattern in FAST_COUNTRY_PATTERNS.items():
-        if re.search(pattern, query_lower):
-            logging.info(f"⚡ Fast entity extraction matched country: '{canon_country}'")
-            extracted_country = canon_country
-            break
+_LEVEL_REGEX = re.compile(
+    r"\b(" + "|".join(re.escape(k) for k in sorted(LEVEL_LOOKUP.keys(), key=len, reverse=True)) + r")\b",
+    re.IGNORECASE,
+)
 
-    # 2. Fast path: Match known governance level terms (< 1 ms)
-    for canon_level, pattern in FAST_LEVEL_PATTERNS.items():
-        if re.search(pattern, query_lower):
-            logging.info(f"⚡ Fast entity extraction matched level: '{canon_level}'")
-            extracted_level = canon_level
-            break
+# Canonical validation targets
+VALID_CANONICAL_COUNTRIES = set(COUNTRY_LOOKUP.values())
+VALID_GOVERNANCE_LEVELS = set(LEVEL_LOOKUP.values())
 
-    # Return immediately if fast path matched either entity
-    if extracted_country or extracted_level:
+# ---------------------------------------------------------------------------
+# 1.5. Hybrid Extraction Function
+# ---------------------------------------------------------------------------
+
+def extract_entities_multilingual(query: str) -> Dict[str, Optional[str]]:
+    """
+    Extracts country and governance level entities using a high-performance fast path 
+    (< 0.1 ms regex lookup) with a local LLM fallback (Ollama) for complex multilingual queries.
+    """
+    # 1. Fast Path: Single-pass pre-compiled regex lookup
+    country_match = _COUNTRY_REGEX.search(query)
+    level_match = _LEVEL_REGEX.search(query)
+
+    extracted_country = COUNTRY_LOOKUP.get(country_match.group(0).lower()) if country_match else None
+    extracted_level = LEVEL_LOOKUP.get(level_match.group(0).lower()) if level_match else None
+
+    # Early return if fast path matched both entities
+    if extracted_country and extracted_level:
+        logging.info(f"⚡ Fast path matched country ('{extracted_country}') and level ('{extracted_level}')")
         return {"country": extracted_country, "governance_level": extracted_level}
 
-    # 3. Slow path: Fall back to local Ollama if no explicit entities were matched
+    # 2. Slow Path: Fallback to local Ollama if missing either entity
     system_prompt = (
         "Identify if a specific country or governance level is referenced in the query. "
         "Valid regions are ONLY: 'european', 'global', 'national', 'regional', 'local'. "
-        "Return ONLY a JSON object: {\"country\": \"lowercased_english_country_or_null\", \"governance_level\": \"Titlecase_region_or_null\"}."
+        'Return ONLY a JSON object: {"country": "lowercased_english_country_or_null", "governance_level": "lowercased_region_or_null"}.'
     )
 
     payload = {
         "model": "mistral",
         "messages": [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": query}
+            {"role": "user", "content": query},
         ],
         "stream": False,
-        "options": {"temperature": 0.0, "num_predict": 30}
+        "options": {"temperature": 0.0, "num_predict": 30},
     }
 
     try:
         res = requests.post("http://localhost:11434/api/chat", json=payload, timeout=8)
         res.raise_for_status()
         raw_text = res.json().get("message", {}).get("content", "").strip()
-        clean_json = re.sub(r'```(?:json)?\s*([\s\S]*?)\s*```', r'\1', raw_text).strip()
+        clean_json = re.sub(r"```(?:json)?\s*([\s\S]*?)\s*```", r"\1", raw_text).strip()
         data = json.loads(clean_json)
 
-        # Extract raw entity values from LLM response
-        raw_country = data.get("country")
-        raw_level = data.get("governance_level")
+        # Extract values from LLM response
+        llm_country = data.get("country")
+        llm_level = data.get("governance_level")
 
-        # Normalize and validate country against canonical keys in FAST_COUNTRY_PATTERNS
-        norm_country = normalize_filter_value(raw_country) if raw_country else None
-        valid_country = norm_country if (norm_country and norm_country in FAST_COUNTRY_PATTERNS) else None
+        # Normalize & validate LLM country output against canonical targets
+        if llm_country:
+            llm_country_lower = llm_country.lower().strip()
+            # Resolve via COUNTRY_LOOKUP dictionary or check canonical validity
+            llm_country_clean = COUNTRY_LOOKUP.get(llm_country_lower) or (
+                llm_country_lower if llm_country_lower in VALID_CANONICAL_COUNTRIES else None
+            )
+            if not llm_country_clean:
+                logging.warning(f"⚠️ LLM extracted unvalidated country '{llm_country}'. Ignoring.")
+            else:
+                extracted_country = extracted_country or llm_country_clean
 
-        if raw_country and not valid_country:
-            logging.info(f"⚠️ LLM extracted invalid country filter '{raw_country}' (normalized: '{norm_country}'). Ignoring filter.")
+        # Normalize & validate LLM governance level output
+        if llm_level:
+            llm_level_lower = llm_level.lower().strip()
+            if llm_level_lower in VALID_GOVERNANCE_LEVELS:
+                extracted_level = extracted_level or llm_level_lower
+            else:
+                logging.warning(f"⚠️ LLM extracted invalid level '{llm_level}'. Ignoring.")
 
-        # Validate governance level against allowed values
-        clean_level = raw_level.lower() if raw_level else None
-        valid_level = clean_level if clean_level in ["european", "global", "national", "regional", "local"] else None
-
-        return {
-            "country": valid_country,
-            "governance_level": valid_level
-        }
     except Exception as e:
-        logging.warning(f"⚠️ LLM entity extraction fallback: {e}")
-        return {"country": None, "governance_level": None}
+        logging.warning(f"⚠️ LLM entity extraction fallback failed: {e}")
+
+    return {
+        "country": extracted_country,
+        "governance_level": extracted_level,
+    }
 
 # ---------------------------------------------------------------------------
 # 2. Fact Injection Retriever
@@ -493,7 +545,7 @@ def query_llm(query: str, context_docs: List[dict], facts: List[str] = None):
     
     payload = {
         "model": "mistral",
-        "keep_alive": 0,
+        "keep_alive": "10m", #0, doesnt immediately remove mistral from memory
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt}
@@ -645,9 +697,6 @@ def delete_by_record_id(record_id: str):
 # =========================
 # FACTS SECTION (multilingual, single point per Odoo fact id)
 # =========================
-from fastapi import Body
-from typing import List, Optional
-from qdrant_client.models import PointIdsList
 
 #FACTS_COLLECTION_NAME = "policy_facts"
 FACTS_VECTOR_SIZE = VECTOR_SIZE  # 768
