@@ -654,70 +654,121 @@ def get_or_create_title_vector(doc_key: str, title_text: str) -> np.ndarray:
         TITLE_VECTOR_CACHE[doc_key] = vec / (norm + 1e-9) if norm > 0 else vec
     return TITLE_VECTOR_CACHE[doc_key]
 
-
 def search(query: str, top_k: int = 10, query_filter: Optional[Filter] = None, min_score: float = 0.25):
     if not all_docs:
         return []
 
-    # 1. Encode query and normalize vector for fast dot-product similarity
+    # 1. Encode query for vector search & cross-lingual title matching
     query_vec_np = model.encode(query, convert_to_numpy=True)
     norm_q = np.linalg.norm(query_vec_np)
     norm_query_vec = query_vec_np / (norm_q + 1e-9) if norm_q > 0 else query_vec_np
     query_vector = query_vec_np.tolist()
 
-    # 2. Get BM25 scores and normalize them to a [0.0, 1.0] scale
-    bm25_scores = bm25.get_scores(query.split()) if bm25 else np.zeros(len(all_docs))
-    max_bm25 = float(np.max(bm25_scores)) if (len(bm25_scores) > 0 and np.max(bm25_scores) > 0) else 1.0
-
-    # 3. Perform Qdrant dense vector retrieval
-    results = client.search(
+    # 2. Fetch Top-K candidates from Dense Vector Search (Qdrant)
+    qdrant_results = client.search(
         collection_name=COLLECTION_NAME,
         query_vector=query_vector,
         limit=top_k * 2,
         query_filter=query_filter
     )
 
-    scored = []
-    for res in results:
+    # 3. Fetch Top-K candidates from Sparse BM25 Search
+    bm25_scores = bm25.get_scores(query.split()) if bm25 else np.zeros(len(all_docs))
+    top_bm25_indices = np.argsort(bm25_scores)[::-1][:top_k * 2]
+
+    candidate_map = {}
+    vector_ranks = {}
+    bm25_ranks = {}
+
+    # Rank Qdrant vector hits (1-indexed)
+    vector_rank_counter = 1
+    for res in qdrant_results:
         payload = res.payload or {}
         text = payload.get("text", "")
+        filename = payload.get("filename")
+        record_id = payload.get("record_id")
 
-        # Scaled BM25 score (0.0 to 1.0)
-        index = doc_to_index.get(text)
-        raw_bm25 = bm25_scores[index] if index is not None else 0
-        norm_bm25 = raw_bm25 / max_bm25
+        # 🚨 GUARDRAIL 1: Skip orphaned chunks missing valid metadata
+        if not text or not filename or not record_id or str(filename).lower() in ["unknown", "none", "null"]:
+            continue
 
-        # Cross-lingual Title Boost calculation
+        if text not in candidate_map:
+            candidate_map[text] = payload
+            vector_ranks[text] = vector_rank_counter
+            vector_rank_counter += 1
+
+    # Rank BM25 hits (1-indexed)
+    bm25_rank_counter = 1
+    for idx in top_bm25_indices:
+        if bm25_scores[idx] <= 0:
+            break
+        text = all_docs[idx]
+
+        # Look up payload from qdrant_results if not already cached
+        if text not in candidate_map:
+            for res in qdrant_results:
+                if res.payload.get("text") == text:
+                    p = res.payload or {}
+                    fn = p.get("filename")
+                    rid = p.get("record_id")
+                    # 🚨 GUARDRAIL 2: Validate payload before caching BM25 match
+                    if fn and rid and str(fn).lower() not in ["unknown", "none", "null"]:
+                        candidate_map[text] = p
+                    break
+
+        # Only assign rank if text has a valid payload
+        if text in candidate_map:
+            bm25_ranks[text] = bm25_rank_counter
+            bm25_rank_counter += 1
+
+    # 4. Compute Reciprocal Rank Fusion (RRF) Scores
+    k = 60
+    rrf_scores = {}
+    all_candidate_texts = set(vector_ranks.keys()).union(set(bm25_ranks.keys()))
+
+    for text in all_candidate_texts:
+        vr = vector_ranks.get(text)
+        br = bm25_ranks.get(text)
+
+        rrf_score = 0.0
+        if vr:
+            rrf_score += 1.0 / (k + vr)
+        if br:
+            rrf_score += 1.0 / (k + br)
+
+        payload = candidate_map.get(text, {})
         author = payload.get("author", "")
         filename = payload.get("filename", "")
         policy_name = payload.get("policy_name", "")
         title_str = f"{policy_name} {author} {filename}".strip()
 
-        title_boost = 0.0
         if title_str:
-            doc_key = payload.get("record_id") or filename
+            doc_key = str(payload.get("record_id") or filename)
             title_vec = get_or_create_title_vector(doc_key, title_str)
-
-            # Cosine similarity between query and title (works across all 24 EU languages)
             title_sim = float(np.dot(norm_query_vec, title_vec))
-
-            # Apply a proportional boost if the query semantically matches the policy title (> 0.45 threshold)
             if title_sim > 0.45:
-                title_boost = (title_sim - 0.45) * 0.35
+                rrf_score += (title_sim - 0.45) * 0.02
 
-        # Hybrid Score = Dense Context Score + Normalized BM25 + Cross-Lingual Title Boost
-        hybrid_score = res.score + (norm_bm25 * 0.2) + title_boost
+        rrf_scores[text] = rrf_score
 
-        if hybrid_score >= min_score:
-            scored.append({
-                "text": text,
-                "score": round(hybrid_score, 4),
-                "record_id": payload.get("record_id"),
-                "filename": filename,
-                "author": author,
-                "language": payload.get("language"),
-                "country": payload.get("country")
-            })
+    # 5. Format & Group Output
+    scored = []
+    for text, score in rrf_scores.items():
+        payload = candidate_map.get(text, {})
+        
+        # 🚨 GUARDRAIL 3: Final safety check before output creation
+        if not payload.get("record_id") or not payload.get("filename"):
+            continue
+
+        scored.append({
+            "text": text,
+            "score": round(score, 5),
+            "record_id": payload.get("record_id"),
+            "filename": payload.get("filename"),
+            "author": payload.get("author"),
+            "language": payload.get("language"),
+            "country": payload.get("country")
+        })
 
     grouped = {}
     for doc in scored:
