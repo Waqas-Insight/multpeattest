@@ -869,15 +869,28 @@ def qa_tool():
                     else:
                         reasoning = raw_answer
 
+                    # ⚡ DEDUPLICATED UI CARD GENERATION
                     num_attach_to_retr = 3
                     if sources and isinstance(sources, list):
                         max_score = max([s.get('score', 1) for s in sources], default=1)
-                        
-                        # Top 3 sources with attachments
-                        for src in sources[:num_attach_to_retr]:
+                        seen_policy_keys = set()
+
+                        for src in sources:
                             policy_id = src.get("record_id")
+                            raw_title = src.get("author") or src.get("title") or "Unknown Policy"
+                            clean_title = fix_acronym_casing(raw_title)
+
+                            # Determine unique document identifier (record_id or title)
+                            dedup_key = str(policy_id) if (policy_id and str(policy_id).lower() not in ["none", "unknown", "null"]) else clean_title.lower()
+
+                            # Skip rendering if card for this policy document was already created
+                            if dedup_key in seen_policy_keys:
+                                continue
+                            seen_policy_keys.add(dedup_key)
+
                             file_links = []
-                            if policy_id:
+                            # Fetch attachments ONLY for top 3 UNIQUE policy documents
+                            if policy_id and len(policies) < num_attach_to_retr:
                                 try: 
                                     file_resp = requests.post(
                                         f"https://aspect-erp.insight-centre.org/aspect/policy/{policy_id}/files",
@@ -892,33 +905,16 @@ def qa_tool():
                                 except Exception as fe: 
                                     logging.warning(f"Failed to fetch attachments for policy {policy_id}: {fe}")
 
-                            raw_title = src.get("author") or src.get("title") or "Unknown Policy"
                             policies.append({
                                 "id": policy_id,
-                                "title": fix_acronym_casing(raw_title),
+                                "title": clean_title,
                                 "thumbnail_url": "/static/images/pdf_thumbnail.png",
                                 "country": get_display_location(src),
                                 "language": src.get("language", "Unknown").capitalize(),
-                                "author": fix_acronym_casing(raw_title),
+                                "author": clean_title,
                                 "evidence_location": f"Score: {src.get('score', 0)}",
                                 "similarity": round((src.get('score', 0) / max_score) * 100, 1) if max_score else 0,
                                 "files": file_links
-                            })
-
-                        # Remaining sources beyond top 3
-                        for src in sources[num_attach_to_retr:]:
-                            policy_id = src.get("record_id")  # ⚡ Fixed policy_id lookup for remaining sources
-                            raw_title = src.get("author") or src.get("title") or "Unknown Policy"
-                            policies.append({
-                                "id": policy_id,
-                                "title": fix_acronym_casing(raw_title),
-                                "thumbnail_url": "/static/images/pdf_thumbnail.png",
-                                "country": get_display_location(src),
-                                "language": src.get("language", "Unknown").capitalize(),
-                                "author": fix_acronym_casing(raw_title),
-                                "evidence_location": f"Score: {src.get('score', 0)}",
-                                "similarity": round((src.get('score', 0) / max_score) * 100, 1) if max_score else 0,
-                                "files": []
                             })
                 else:
                     reasoning = f"API Error {response.status_code}: {response.text}"

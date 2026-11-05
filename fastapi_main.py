@@ -688,7 +688,6 @@ def search(query: str, top_k: int = 10, query_filter: Optional[Filter] = None, m
         filename = payload.get("filename")
         record_id = payload.get("record_id")
 
-        # 🚨 GUARDRAIL 1: Skip orphaned chunks missing valid metadata
         if not text or not filename or not record_id or str(filename).lower() in ["unknown", "none", "null"]:
             continue
 
@@ -704,19 +703,16 @@ def search(query: str, top_k: int = 10, query_filter: Optional[Filter] = None, m
             break
         text = all_docs[idx]
 
-        # Look up payload from qdrant_results if not already cached
         if text not in candidate_map:
             for res in qdrant_results:
                 if res.payload.get("text") == text:
                     p = res.payload or {}
                     fn = p.get("filename")
                     rid = p.get("record_id")
-                    # 🚨 GUARDRAIL 2: Validate payload before caching BM25 match
                     if fn and rid and str(fn).lower() not in ["unknown", "none", "null"]:
                         candidate_map[text] = p
                     break
 
-        # Only assign rank if text has a valid payload
         if text in candidate_map:
             bm25_ranks[text] = bm25_rank_counter
             bm25_rank_counter += 1
@@ -751,12 +747,10 @@ def search(query: str, top_k: int = 10, query_filter: Optional[Filter] = None, m
 
         rrf_scores[text] = rrf_score
 
-    # 5. Format & Group Output
+    # 5. Format & Return ALL top scoring chunks for maximum LLM context
     scored = []
     for text, score in rrf_scores.items():
         payload = candidate_map.get(text, {})
-        
-        # 🚨 GUARDRAIL 3: Final safety check before output creation
         if not payload.get("record_id") or not payload.get("filename"):
             continue
 
@@ -770,13 +764,8 @@ def search(query: str, top_k: int = 10, query_filter: Optional[Filter] = None, m
             "country": payload.get("country")
         })
 
-    grouped = {}
-    for doc in scored:
-        key = (doc["record_id"], doc["filename"], doc["author"])
-        if key not in grouped or doc["score"] > grouped[key]["score"]:
-            grouped[key] = doc
-
-    return sorted(grouped.values(), key=lambda x: x["score"], reverse=True)[:top_k]
+    # Return top K chunks sorted by score (allowing multiple chunks per document for LLM synthesis)
+    return sorted(scored, key=lambda x: x["score"], reverse=True)[:top_k]
 
 @app.get("/memory-stats")
 def memory_stats():
