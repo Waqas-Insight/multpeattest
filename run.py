@@ -870,7 +870,6 @@ def qa_tool():
                         reasoning = raw_answer
 
                     # ⚡ DEDUPLICATED UI CARD GENERATION
-                    num_attach_to_retr = 3
                     if sources and isinstance(sources, list):
                         max_score = max([s.get('score', 1) for s in sources], default=1)
                         seen_policy_keys = set()
@@ -880,30 +879,11 @@ def qa_tool():
                             raw_title = src.get("author") or src.get("title") or "Unknown Policy"
                             clean_title = fix_acronym_casing(raw_title)
 
-                            # Determine unique document identifier (record_id or title)
                             dedup_key = str(policy_id) if (policy_id and str(policy_id).lower() not in ["none", "unknown", "null"]) else clean_title.lower()
 
-                            # Skip rendering if card for this policy document was already created
                             if dedup_key in seen_policy_keys:
                                 continue
                             seen_policy_keys.add(dedup_key)
-
-                            file_links = []
-                            # Fetch attachments ONLY for top 3 UNIQUE policy documents
-                            if policy_id and len(policies) < num_attach_to_retr:
-                                try: 
-                                    file_resp = requests.post(
-                                        f"https://aspect-erp.insight-centre.org/aspect/policy/{policy_id}/files",
-                                        headers={'Content-Type': 'application/json', 'Accept': 'application/json'},
-                                        json={},
-                                        timeout=2
-                                    )
-                                    if file_resp.ok:
-                                        file_data = file_resp.json()
-                                        file_res = file_data.get('result', file_data)
-                                        file_links = file_res.get('attachments', []) if isinstance(file_res, dict) else []
-                                except Exception as fe: 
-                                    logging.warning(f"Failed to fetch attachments for policy {policy_id}: {fe}")
 
                             policies.append({
                                 "id": policy_id,
@@ -913,15 +893,13 @@ def qa_tool():
                                 "language": src.get("language", "Unknown").capitalize(),
                                 "author": clean_title,
                                 "evidence_location": f"Score: {src.get('score', 0)}",
-                                "similarity": round((src.get('score', 0) / max_score) * 100, 1) if max_score else 0,
-                                "files": file_links
+                                "similarity": round((src.get('score', 0) / max_score) * 100, 1) if max_score else 0
                             })
-                else:
-                    reasoning = f"API Error {response.status_code}: {response.text}"
+                    else:
+                        reasoning = f"API Error {response.status_code}: {response.text}"
             except Exception as e:
                 reasoning = f"Failed to get response: {str(e)}"
                 logging.error("Exception occurred while fetching response: %s", str(e))
-
         return render_template(
             "qa_tool.html",
             reasoning=reasoning,
