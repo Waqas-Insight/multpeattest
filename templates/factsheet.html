@@ -10,6 +10,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Peatland Policy Fact Sheet</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Leaflet CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
     <style>
         * {
             margin: 0;
@@ -1264,6 +1269,182 @@
         /* ===================================================================
            END FLAG DISPLAY
            =================================================================== */
+        /*INTERACTIVE PEATLAND ATLAS*/
+
+        .atlas-section {
+            display: none;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 25px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            animation: slideIn 0.3s ease;
+        }
+
+        .atlas-section.atlas-visible {
+            display: block;
+        }
+
+        .atlas-toggle-btn {
+            display: block;
+            width: 100%;
+            padding: 14px 20px;
+            margin: 25px 0 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: white;
+            color: #1b5e20;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .atlas-toggle-btn:hover {
+            border-color: #e0e0e0;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(76, 175, 80, 0.7);
+        }
+
+        .atlas-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .atlas-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1b5e20;
+        }
+
+        .atlas-description {
+            color: #666;
+            font-size: 13px;
+            margin-top: 6px;
+            line-height: 1.5;
+        }
+
+        .atlas-status {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        /* Atlas metric selector */
+        .atlas-metric-controls {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 0 0 16px;
+            padding: 14px 16px;
+            background: #f1f8f4;
+            border: 2px solid #dceade;
+            border-radius: 8px;
+        }
+
+        .atlas-metric-label {
+            color: #1b5e20;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .atlas-metric-select {
+            flex: 1;
+            min-width: 210px;
+            max-width: 400px;
+            padding: 10px 12px;
+            border: 2px solid #b8d6bf;
+            border-radius: 6px;
+            background: #fff;
+            color: #1b5e20;
+            font: inherit;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .atlas-metric-select:focus-visible {
+            outline: none;
+            border-color: #4caf50;
+        }
+
+        .atlas-map-wrapper {
+            width: 100%;
+            height: 520px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+            background: #f1f5f1;
+        }
+
+        #peatlandMap {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .atlas-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 16px;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .atlas-legend-title {
+            width: 100%;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .atlas-legend-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            width: 100%;
+        }
+
+        .atlas-no-data {
+            margin-top: 4px;
+        }
+
+        .atlas-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .atlas-legend-swatch {
+            width: 15px;
+            height: 15px;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-radius: 3px;
+        }
+
+        .atlas-country {
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .atlas-section {
+                padding: 16px;
+            }
+
+            .atlas-map-wrapper {
+                height: 380px;
+            }
+
+            .atlas-title {
+                font-size: 19px;
+            }
+        }
+
 
         /* Responsive */
         @media (max-width: 1200px) {
@@ -1301,7 +1482,7 @@
         </div>
     </div>
 
-    <div class="container">
+        <div class="container">
         <!-- Stats Section -->
         <div class="stats-section">
             <div class="stats-grid">
@@ -1370,7 +1551,6 @@
                     <div class="tag" onclick="quickFilter('high')">Coverage > 20%</div>
                     <div class="tag" onclick="quickFilter('medium')">Coverage 10-20%</div>
                     <div class="tag" onclick="quickFilter('low')">Coverage < 10%</div>
-                    <div class="tag" onclick="quickFilter('nordic')">Nordic Countries</div>
                 </div>
             </div>
 
@@ -1381,6 +1561,60 @@
             </div>
         </div>
 
+        <button
+            type="button"
+            class="atlas-toggle-btn"
+            id="atlasToggleBtn"
+            aria-controls="atlasSection"
+            aria-expanded="false"
+            onclick="toggleAtlas()">
+            Explore Interactive Peatland Atlas
+        </button>
+
+
+        <!-- Interactive Peatland Atlas -->
+        <section class="atlas-section" id="atlasSection">
+
+            <div class="atlas-header">
+                <div>
+                    <h2 class="atlas-title">
+                        Interactive Peatland Atlas
+                    </h2>
+
+                    <p class="atlas-description">
+                        Explore all of the European member states. Peatland statistics
+                        and detailed factsheets are currently available for EU-27 countries;
+                        countries without data are shown in grey.
+                    </p>
+
+                    <div class="atlas-status" id="atlasStatus">
+                        Preparing geographical data...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Atlas-specific choropleth metric selector -->
+            <div class="atlas-metric-controls">
+                <label class="atlas-metric-label" for="atlasMetricSelect">Range by</label>
+                <select class="atlas-metric-select" id="atlasMetricSelect" onchange="changeAtlasMetric(this.value)">
+                    <option value="percentage" selected>Peatland Coverage (%)</option>
+                    <option value="area">Total Peatland Area (ha)</option>
+                    <option value="natural">Natural Peatlands (ha)</option>
+                    <option value="extraction">Extraction Peatlands (ha)</option>
+                    <option value="afforested">Afforested Peatlands (ha)</option>
+                    <option value="agricultural">Agricultural Peatlands (ha)</option>
+                    <option value="miscellaneous">Miscellaneous Peatlands (ha)</option>
+                </select>
+            </div>
+
+            <div class="atlas-map-wrapper">
+                <div id="peatlandMap"></div>
+            </div>
+            
+            <div class="atlas-legend" id="atlasLegend"></div>
+
+        </section>
+        
         <!-- Results Info -->
         <div class="results-info">
             <div class="results-count">
@@ -1403,7 +1637,7 @@
                             <th onclick="sortTable('percentage')">Peatland % ↕</th>
                             <th onclick="sortTable('area')">Total Area (ha) ↕</th>
                             <th onclick="sortTable('natural')">Natural (ha) ↕</th>
-                            <th onclick="sortTable('extraction')">Extraction (ha) ↕</th>
+                            <th onclick="sortTable('extraction')">extraction (ha) ↕</th>
                             <th onclick="sortTable('afforested')">Afforested (ha) ↕</th>
                             <th onclick="sortTable('agricultural')">Agricultural (ha) ↕</th>
                         </tr>
@@ -1440,6 +1674,8 @@
         <div class="blog-content" id="blogContent"></div>
     </div>
 
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         /* =================================================================
            FLAG RENDERING
@@ -1517,7 +1753,6 @@
         var stat_eu_flg = document.getElementById("stat-eu-flag");
         stat_eu_flg.innerHTML = getFlagHtml("Totals", 50);
 
-        /* ================================================================= */
 
         const countriesData = [
         {'code': 'FI',
@@ -2197,6 +2432,546 @@
         let filteredData = [...countriesData];
         let currentView = 'cards';
 
+        /* Interactive Peatland Atlas
+           Leaflet + Gisco Geojson */
+
+        // Geojson directly from static directory.
+        const atlasGeoJsonUrl = "{{ url_for('static', filename='countries-council-of-europe.geojson') }}";
+
+        let peatlandMap = null;
+        let atlasGeoJsonLayer = null;
+
+        // Leaflet polygon associated with each country code.
+        const atlasCountryLayers = new Map();
+
+        const atlasMetricConfig = {
+            percentage: {
+                label: 'Peatland Coverage',
+                unit: '%',
+                decimals: 2
+            },
+            area: {
+                label: 'Total Peatland Area',
+                unit: 'ha',
+                decimals: 0
+            },
+            natural: {
+                label: 'Natural Peatlands',
+                unit: 'ha',
+                decimals: 0
+            },
+            extraction: {
+                label: 'Extraction Peatlands',
+                unit: 'ha',
+                decimals: 0
+            },
+            afforested: {
+                label: 'Afforested Peatlands',
+                unit: 'ha',
+                decimals: 0
+            },
+            agricultural: {
+                label: 'Agricultural Peatlands',
+                unit: 'ha',
+                decimals: 0
+            },
+            miscellaneous: {
+                label: 'Miscellaneous Peatlands',
+                unit: 'ha',
+                decimals: 0
+            }
+        };
+
+        // Default metric.
+        let selectedAtlasMetric = 'percentage';
+
+        function changeAtlasMetric(metric) {
+            if (!Object.prototype.hasOwnProperty.call(atlasMetricConfig, metric)) {
+                return;
+            }
+
+            selectedAtlasMetric = metric;
+            updateAtlasChoropleth();
+        }
+
+        // Sequential green legend range.
+        const atlasChoroplethColours = [
+            '#edf8e9',
+            '#bae4b3',
+            '#74c476',
+            '#31a354',
+            '#006d2c'
+        ];
+
+        // Grey represents unavailable data.
+        const atlasNoDataColour = '#bdbdbd';
+
+        let atlasQuantileBreaks = [];
+
+        function getAtlasMetricValue(country) {
+
+            if (!country) return null;
+
+            const value = country[selectedAtlasMetric];
+
+            if (
+                value === null ||
+                value === undefined ||
+                value === ''
+            ) {
+                return null;
+            }
+
+            const numericValue = Number(value);
+
+            return Number.isFinite(numericValue)
+                ? numericValue
+                : null;
+        }
+
+
+        function formatAtlasMetricValue(value) {
+
+            if (value === null || value === undefined) {
+                return 'Data not available';
+            }
+
+            const config = atlasMetricConfig[selectedAtlasMetric];
+
+            return value.toLocaleString('en-US', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: config.decimals
+            }) + ' ' + config.unit;
+        }
+
+        function calculateAtlasQuantileBreaks(values) {
+
+            if (values.length <= 1) {
+                return [];
+            }
+
+            const sortedValues = [...values].sort((a, b) => a - b);
+
+            const quantiles = [0.2, 0.4, 0.6, 0.8];
+
+            const minimum = sortedValues[0];
+            const maximum = sortedValues[sortedValues.length - 1];
+
+            const breaks = [];
+
+            quantiles.forEach(function(quantile) {
+
+                const position = (sortedValues.length - 1) * quantile;
+
+                const lowerIndex = Math.floor(position);
+                const upperIndex = Math.ceil(position);
+
+                const fraction = position - lowerIndex;
+
+                const boundary =
+                    sortedValues[lowerIndex] +
+                    (sortedValues[upperIndex] - sortedValues[lowerIndex]) * fraction;
+
+                if (
+                    boundary > minimum &&
+                    boundary < maximum &&
+                    !breaks.some(existing => Math.abs(existing - boundary) < 1e-10)
+                ) {
+                    breaks.push(boundary);
+                }
+            });
+
+            return breaks;
+        }
+
+        function getAtlasCountryColour(value) {
+
+            if (value === null || value === undefined) {
+                return atlasNoDataColour;
+            }
+
+            const classIndex = atlasQuantileBreaks.findIndex(
+                boundary => value <= boundary
+            );
+
+            const resolvedIndex = classIndex === -1
+                ? atlasQuantileBreaks.length
+                : classIndex;
+
+            return atlasChoroplethColours[resolvedIndex];
+        }
+
+        const atlasCountryDataByCode = new Map(
+            countriesData
+                .filter(country => country.code !== 'Totals')
+                .map(country => [country.code, country])
+        );
+
+
+        function setAtlasStatus(message) {
+            const status = document.getElementById('atlasStatus');
+
+            if (status) {
+                status.textContent = message;
+            }
+        }
+
+        function getAtlasCountryStyle(feature) {
+
+            const code = feature.properties?.CNTR_ID;
+            const country = atlasCountryDataByCode.get(code);
+
+            const value = getAtlasMetricValue(country);
+
+            return {
+                fillColor: getAtlasCountryColour(value),
+                color: '#66806a',
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.8
+            };
+        }
+
+        function updateAtlasChoropleth() {
+
+            const validValues = [];
+
+            // Collect values from the complete EU-27 dataset.
+            atlasCountryDataByCode.forEach(function(country) {
+
+                const value = getAtlasMetricValue(country);
+
+                if (value !== null) {
+                    validValues.push(value);
+                }
+            });
+
+            atlasQuantileBreaks =
+                calculateAtlasQuantileBreaks(validValues);
+
+            // Update existing country polygons.
+            atlasCountryLayers.forEach(function(layer, code) {
+
+                const country = atlasCountryDataByCode.get(code);
+                const countryName = country?.country || layer.feature?.properties?.NAME_ENGL || code;
+                const value = getAtlasMetricValue(country);
+
+                layer.setStyle(getAtlasCountryStyle({
+                    properties: {
+                        CNTR_ID: code
+                    }
+                }));
+
+                // Update tooltip to reflect selected metric.
+                layer.setTooltipContent(
+                    `<strong>${countryName}</strong><br>` +
+                    `${atlasMetricConfig[selectedAtlasMetric].label}: ` +
+                    `${formatAtlasMetricValue(value)}`
+                );
+            });
+
+            updateAtlasLegend(validValues);
+        }
+
+        function updateAtlasLegend(validValues) {
+
+            const legend = document.getElementById('atlasLegend');
+
+            if (!legend) return;
+
+            if (validValues.length === 0) {
+                legend.innerHTML = `
+                    <p>No numerical data available for this metric.</p>
+                    <span>
+                        <span style="
+                            display:inline-block;
+                            width:12px;
+                            height:12px;
+                            background:${atlasNoDataColour};
+                        "></span>
+                        Data not available
+                    </span>
+                `;
+                return;
+            }
+
+            const minimum = Math.min(...validValues);
+            const maximum = Math.max(...validValues);
+
+            const classCount = atlasQuantileBreaks.length + 1;
+
+            let legendHTML = `
+                <div class="atlas-legend-title">
+                    ${atlasMetricConfig[selectedAtlasMetric].label}
+                </div>
+                <div class="atlas-legend-items">
+            `;
+
+            for (let i = 0; i < classCount; i++) {
+
+                let label;
+
+                if (classCount === 1) {
+
+                    label =
+                        `${formatAtlasMetricValue(minimum)} – ` +
+                        `${formatAtlasMetricValue(maximum)}`;
+
+                } else if (i === 0) {
+
+                    label =
+                        `≤ ${formatAtlasMetricValue(atlasQuantileBreaks[0])}`;
+
+                } else if (i === classCount - 1) {
+
+                    label =
+                        `> ${formatAtlasMetricValue(atlasQuantileBreaks[i - 1])}`;
+
+                } else {
+
+                    label =
+                        `> ${formatAtlasMetricValue(atlasQuantileBreaks[i - 1])}` +
+                        ` – ≤ ${formatAtlasMetricValue(atlasQuantileBreaks[i])}`;
+                }
+
+                legendHTML += `
+                    <div class="atlas-legend-item">
+                        <span class="atlas-legend-swatch"
+                            style="background:${atlasChoroplethColours[i]}">
+                        </span>
+                        <span>${label}</span>
+                    </div>
+                `;
+            }
+
+            legendHTML += `
+                </div>
+                <div class="atlas-legend-item atlas-no-data">
+                    <span class="atlas-legend-swatch"
+                        style="background:${atlasNoDataColour}">
+                    </span>
+                    <span>Data not available</span>
+                </div>
+            `;
+
+            legend.innerHTML = legendHTML;
+        }
+
+        async function initAtlas() {
+
+            if (peatlandMap) return;
+
+            const mapContainer = document.getElementById('peatlandMap');
+
+            if (!mapContainer) {
+                console.warn('Peatland Atlas container was not found.');
+                return;
+            }
+
+            if (typeof L === 'undefined') {
+                setAtlasStatus('Unable to load Leaflet mapping library.');
+                console.error('Leaflet is not available.');
+                return;
+            }
+
+            // Focus on the European region rather than overseas territories
+            // included in some Natural Earth country geometries.
+            const europeBounds = L.latLngBounds(
+                [32, -27],
+                [73, 57]
+            );
+
+            peatlandMap = L.map('peatlandMap', {
+                scrollWheelZoom: false,
+                maxBounds: europeBounds,
+                maxBoundsViscosity: 0.8,
+                minZoom: 3
+            }).fitBounds(europeBounds, {
+                padding: [15, 15],
+                maxZoom: 4
+            });
+
+            // OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 10
+            }).addTo(peatlandMap);
+
+
+            setAtlasStatus('Loading European geographical boundaries...');
+
+            try {
+
+                const response = await fetch(atlasGeoJsonUrl);
+
+                if (!response.ok) {
+                    throw new Error(
+                        `GeoJSON request failed: HTTP ${response.status}`
+                    );
+                }
+
+                const geoJsonData = await response.json();
+
+                if (
+                    geoJsonData.type !== 'FeatureCollection' ||
+                    !Array.isArray(geoJsonData.features)
+                ) {
+                    throw new Error('Invalid GeoJSON FeatureCollection.');
+                }
+
+
+                // Geojson country layer.
+                atlasGeoJsonLayer = L.geoJSON(geoJsonData, {
+
+                    filter: function(feature) {
+                        const code = feature.properties?.CNTR_ID;
+
+                        return Boolean(code);
+                    },
+
+                    style: getAtlasCountryStyle,
+
+                    // Configure each country polygon.
+                    onEachFeature: function(feature, layer) {
+
+                        const code = feature.properties.CNTR_ID;
+                        const country = atlasCountryDataByCode.get(code);
+
+                        // Retain countries even when factsheet data is unavailable.
+                        // Store polygon using country code.
+                        atlasCountryLayers.set(code, layer);
+
+                        // Country name display on hover.
+                        layer.bindTooltip(country?.country || feature.properties.NAME_ENGL || code, {
+                            sticky: true,
+                            direction: 'top'
+                        });
+
+                        // Hover interaction.
+                        layer.on({
+
+                            mouseover: function(event) {
+                                event.target.setStyle({
+                                    weight: 2,
+                                    color: '#2e7d32',
+                                    fillOpacity: 1
+                                });
+
+                                event.target.bringToFront();
+                            },
+
+                            mouseout: function(event) {
+                                atlasGeoJsonLayer.resetStyle(event.target);
+                            },
+
+                            // Display country modal.
+                            click: function() {
+                                if (country) showModal(country.code);
+                            }
+                        });
+                    }
+                });
+
+
+                peatlandMap.fitBounds(europeBounds, {
+                    padding: [15, 15],
+                    maxZoom: 4
+                });
+
+                updateAtlasChoropleth();
+                updateAtlasDisplay();
+
+                const loadedCount = atlasCountryLayers.size;
+                const expectedCount = geoJsonData.features.length;
+
+                setAtlasStatus(
+                    `Loaded ${loadedCount} of ${expectedCount} European country boundaries. Select a coloured country to explore its factsheet. Grey indicates unavailable data.`
+                );
+
+                setTimeout(function() {
+                    peatlandMap.invalidateSize();
+                    peatlandMap.fitBounds(europeBounds, {
+                        padding: [25, 25],
+                        maxZoom: 4
+                    });
+                }, 300);
+
+            } catch (error) {
+
+                console.error('Peatland Atlas loading error:', error);
+
+                setAtlasStatus(
+                    'Unable to load geographical data. Please check the GeoJSON file and try again.'
+                );
+            }
+        }
+
+        function toggleAtlas() {
+
+            const atlasSection = document.getElementById('atlasSection');
+            const toggleButton = document.getElementById('atlasToggleBtn');
+
+            if (!atlasSection || !toggleButton) return;
+
+            const isExpanded = atlasSection.classList.toggle('atlas-visible');
+
+            toggleButton.textContent = isExpanded
+                ? 'Collapse Interactive Peatland Atlas'
+                : 'Explore Interactive Peatland Atlas';
+
+            toggleButton.setAttribute(
+                'aria-expanded',
+                String(isExpanded)
+            );
+
+            if (isExpanded) {
+
+                if (!peatlandMap) {
+                    initAtlas();
+                } else {
+
+                    setTimeout(function() {
+                        peatlandMap.invalidateSize({ pan: false });
+                    }, 100);
+                }
+            }
+        }
+
+
+        // Synchronise visible map polygons with the existing factsheet filters.
+        function updateAtlasDisplay() {
+
+            if (!peatlandMap || atlasCountryLayers.size === 0) {
+                return;
+            }
+
+            // Codes currently present in the filtered factsheet results.
+            const visibleCodes = new Set(
+                filteredData
+                    .filter(country => country.code !== 'Totals')
+                    .map(country => country.code)
+            );
+
+            // Add or remove country polygons according to active filters.
+            atlasCountryLayers.forEach(function(layer, code) {
+
+                // Countries without factsheet records remain visible in grey.
+                if (!atlasCountryDataByCode.has(code) || visibleCodes.has(code)) {
+
+                    if (!peatlandMap.hasLayer(layer)) {
+                        peatlandMap.addLayer(layer);
+                    }
+
+                } else {
+
+                    if (peatlandMap.hasLayer(layer)) {
+                        peatlandMap.removeLayer(layer);
+                    }
+                }
+            });
+        }
+
+
         function formatNumber(num) { 
             if (!num && num !== 0) 
                 return 'Data not yet Available'; 
@@ -2334,7 +3109,6 @@
                 case 'high':   filteredData = countriesData.filter(c => c.percentage > 20); break;
                 case 'medium': filteredData = countriesData.filter(c => c.percentage >= 10 && c.percentage <= 20); break;
                 case 'low':    filteredData = countriesData.filter(c => c.percentage < 10); break;
-                case 'nordic': filteredData = countriesData.filter(c => c.region === 'nordic'); break;
             }
             updateDisplay();
         }
@@ -2342,6 +3116,7 @@
         function updateDisplay() {
             renderCards();
             updateStats();
+             updateAtlasDisplay();
             
             const visibleCount = filteredData.filter(c => c.code !== "Totals").length;
             document.getElementById('resultCount').textContent = visibleCount;
@@ -2397,7 +3172,6 @@
             setStat("totalAfforested", totals.afforested, "M", 1000000, 1);
             setStat("totalAgricultural", totals.agricultural, "M", 1000000, 1);
             setStat("totalMiscellaneous", miscellaneous, "M", 1000000, 1);
-            setStat("totalNonnatural", totals.area-totals.natural, "M", 1000000, 1);
     
         }
 
