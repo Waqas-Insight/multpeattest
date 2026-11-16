@@ -162,33 +162,61 @@
     overlay.style.display = 'flex';
     statusText.textContent = "Understanding query...";
 
-    // Stage 2: 5s - 15s
+    // Stage 2: 5s - 10s
     setTimeout(function() {
       if (overlay.style.display !== 'none') {
-        statusText.textContent = "Retrieving policy evidence...";
+        statusText.textContent = "Identifying relevant policy areas...";
       }
     }, 5000);
 
-    // Stage 2: 15s - 25s
+    // Stage 3: 10s - 15s
     setTimeout(function() {
       if (overlay.style.display !== 'none') {
-        statusText.textContent = "Filtering for answer relevance...";
+        statusText.textContent = "Searching policy documents and factsheets...";
+      }
+    }, 10000);
+
+    // Stage 4: 15s - 20s
+    setTimeout(function() {
+      if (overlay.style.display !== 'none') {
+        statusText.textContent = "Retrieving matching clauses and guidelines...";
       }
     }, 15000);
 
-    // Stage 3: 25s - 35s
+    // Stage 5: 20s - 25s
+    setTimeout(function() {
+      if (overlay.style.display !== 'none') {
+        statusText.textContent = "Filtering passages for relevance...";
+      }
+    }, 20000);
+
+    // Stage 6: 25s - 30s
+    setTimeout(function() {
+      if (overlay.style.display !== 'none') {
+        statusText.textContent = "Verifying evidence and source citations...";
+      }
+    }, 25000);
+
+    // Stage 7: 30s - 35s
     setTimeout(function() {
       if (overlay.style.display !== 'none') {
         statusText.textContent = "Synthesising final response...";
       }
-    }, 25000);
+    }, 30000);
+    
+    // Stage 8: 35s - 40s
+    setTimeout(function() {
+      if (overlay.style.display !== 'none') {
+        statusText.textContent = "Formatting references and final checks...";
+      }
+    }, 35000);
 
-    // Stage 4: 35s+
+    // Stage 9: 40s+
     setTimeout(function() {
       if (overlay.style.display !== 'none') {
         statusText.textContent = "Detecting higher traffic, this may take a little longer than normal...";
       }
-    }, 35000);
+    }, 40000);
   });
 
   // Auto scroll to results 
