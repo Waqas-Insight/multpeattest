@@ -843,7 +843,7 @@ def qa_tool():
                     "https://aspect-erp.insight-centre.org/aspect/ask-question",
                     json=payload,
                     headers={'Content-Type': 'application/json', 'Accept': 'application/json'},
-                    timeout=45
+                    timeout=120
                 )
                 if response.status_code == 200:
                     raw_data = response.json()
