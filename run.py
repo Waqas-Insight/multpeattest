@@ -34,7 +34,13 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
-FEEDBACK_FILE = os.path.join(app.root_path, 'data', 'feedback.jsonl')
+PROD_FEEDBACK_DIR = '/var/lib/multipeattools'
+if os.getenv('FEEDBACK_FILE'):
+    FEEDBACK_FILE = os.getenv('FEEDBACK_FILE')
+elif os.path.isdir(PROD_FEEDBACK_DIR) and os.access(PROD_FEEDBACK_DIR, os.W_OK):
+    FEEDBACK_FILE = os.path.join(PROD_FEEDBACK_DIR, 'feedback.jsonl')
+else:
+    FEEDBACK_FILE = os.path.join(app.root_path, 'data', 'feedback.jsonl')
 os.makedirs(os.path.dirname(FEEDBACK_FILE), exist_ok=True)
 # Rate-limiting & storage safeguards
 MAX_FEEDBACK_FILE_BYTES = 25 * 1024 * 1024  # 25 MB hard cap on log file
