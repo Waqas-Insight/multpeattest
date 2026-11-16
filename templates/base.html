@@ -124,7 +124,7 @@
                                         <ul class="dropdown-menu text-wrap" style="min-width: auto; max-width:275px;">
                                             <li><a class="dropdown-item" href="{{ url_for('policy') }}">Explore Policy Collection</a></li>
                                             <li><a class="dropdown-item" href="{{ url_for('policy_info') }}">Policy Data Explainer</a></li>
-                                            <li><a class="dropdown-item" href="{{ url_for('sub_policy') }}">Policy Suggestion & Correction</a></li>
+                                            <!--<li><a class="dropdown-item" href="{{ url_for('sub_policy') }}">Policy Suggestion & Correction</a></li>-->
                                         </ul>
                                     </li>
                                     <div class="d-none d-lg-block" style="border-right: 1px solid #747474; height: 25px; padding: 0px 5px; align-self: center;"></div>
@@ -158,11 +158,11 @@
                                             <li><a class="dropdown-item" href="{{ url_for('ai_about') }}">About Our AI</a></li>
                                         </ul>
                                     </li>
-                                    <div class="d-none d-lg-block" style="border-right: 1px solid #747474; height: 25px; padding: 0px 5px; align-self: center;"></div>
+                                    <!--<div class="d-none d-lg-block" style="border-right: 1px solid #747474; height: 25px; padding: 0px 5px; align-self: center;"></div>
                                     <div class="d-none d-lg-block" style="height: 25px; padding: 0px 5px; align-self: center;"></div>
                                     <li class="nav-item">
                                         <a class="nav-link" href="{{ url_for('feedback') }}" style="padding: 5px; font-weight: bold;">Feedback</a>
-                                    </li>
+                                    </li>-->
                                 </ul>
                             </div>
                         </nav>
@@ -172,40 +172,160 @@
                 <div id="content">{% block content %}{% endblock %}</div>
             </div>
             <div id="footer">
-    {% block footer %}
-    <footer style="margin:0px; padding: 0px;">
-        <div class="navbar-expand" style="background-color: #9fbbcf; width: 100%; min-height: 40px;">
-            <div style="padding-top: 0px; width: 100%;" class="collapse navbar-collapse">
-                <ul class="nav navbar-nav flex-wrap">
-                    <li class="nav-item">
-                        <a class="nav-link" href="https://multipeat.org/" target="_blank" style="padding: 7px; margin-left: 15px; font-weight: bold;">Project</a>
-                    </li>
-                    <div style="border-right: 1px solid #747474; height: 25px; padding: 0px 10px; align-self: center;"></div>
-                    <li class="nav-item">
-                        <a class="nav-link" href="https://multipeat.org/en/contact-0" target="_blank" style="padding: 7px; margin-left: 15px; font-weight: bold;">Contact</a>
-                    </li>
-                </ul>
+                {% block footer %}
+                <footer style="margin:0px; padding: 0px;">
+                    <div class="navbar-expand" style="background-color: #9fbbcf; width: 100%; min-height: 40px;">
+                        <div style="padding-top: 0px; width: 100%;" class="collapse navbar-collapse">
+                            <ul class="nav navbar-nav flex-wrap">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="https://multipeat.org/" target="_blank" style="padding: 7px; margin-left: 15px; font-weight: bold;">Project</a>
+                                </li>
+                                <div style="border-right: 1px solid #747474; height: 25px; padding: 0px 10px; align-self: center;"></div>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="https://multipeat.org/en/contact-0" target="_blank" style="padding: 7px; margin-left: 15px; font-weight: bold;">Contact</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </footer>
+                {% endblock %}
             </div>
         </div>
-    </footer>
-    {% endblock %}
-</div>
-        </div>
         <!-- Custom Dialog Box -->
-<div id="dialogOverlay" class="dialog-overlay">
-    <div id="dialogBox" class="dialog-box">
-        <div class="dialog-header">
-            <h3 id="dialogTitle" class="dialog-title">
-                <span id="dialogIcon" class="dialog-icon"></span>
-                <span id="dialogTitleText"></span>
-            </h3>
-            <button id="dialogClose" class="dialog-close">&times;</button>
+        <div id="dialogOverlay" class="dialog-overlay">
+            <div id="dialogBox" class="dialog-box">
+                <div class="dialog-header">
+                    <h3 id="dialogTitle" class="dialog-title">
+                        <span id="dialogIcon" class="dialog-icon"></span>
+                        <span id="dialogTitleText"></span>
+                    </h3>
+                    <button id="dialogClose" class="dialog-close">&times;</button>
+                </div>
+                <div id="dialogContent" class="dialog-content"></div>
+                <div class="dialog-footer">
+                    <button id="dialogOk" class="dialog-button">OK</button>
+                </div>
+            </div>
         </div>
-        <div id="dialogContent" class="dialog-content"></div>
-        <div class="dialog-footer">
-            <button id="dialogOk" class="dialog-button">OK</button>
+
+        <!-- Floating Feedback Button -->
+        <button id="feedbackBtn" class="btn btn-primary rounded-circle shadow-lg" style="position: fixed; bottom: 25px; right: 25px; width: 56px; height: 56px; z-index: 1040; display: flex; align-items: center; justify-content: center;">
+        <i class="bi bi-chat-left-text-fill fs-4"></i>
+        </button>
+        <!-- Feedback Popover Card -->
+        <div id="feedbackCard" class="card shadow-lg border-0" style="display: none; position: fixed; bottom: 90px; right: 25px; width: 340px; z-index: 1040; border-radius: 12px; overflow: hidden;">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+            <span class="fw-bold"><i class="bi bi-chat-dots me-2"></i>Send Feedback</span>
+            <button type="button" id="closeFeedbackBtn" class="btn-close btn-close-white btn-sm" aria-label="Close"></button>
         </div>
-    </div>
-</div>
+        <div class="card-body p-3">
+            <form id="feedbackForm">
+            <!-- CSRF Token for Flask-WTF -->
+            <input type="hidden" id="feedbackCsrfToken" value="{{ csrf_token() }}">
+            <!-- Honeypot field (hidden from humans, traps automated bots) -->
+            <div style="position: absolute; left: -9999px;" aria-hidden="true">
+                <label for="feedbackWebsite">Website</label>
+                <input type="text" id="feedbackWebsite" name="website" tabindex="-1" autocomplete="off">
+            </div>
+            <div class="mb-2">
+                <label for="feedbackText" class="form-label small fw-semibold text-muted mb-1">Your Feedback <span class="text-danger">*</span></label>
+                <textarea class="form-control form-control-sm" id="feedbackText" rows="3" maxlength="2000" placeholder="Tell us what you think or report an issue..." required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="feedbackEmail" class="form-label small fw-semibold text-muted mb-1">Contact Email <span class="text-muted fw-normal">(Optional)</span></label>
+                <input type="email" class="form-control form-control-sm" id="feedbackEmail" maxlength="120" placeholder="name@example.com">
+            </div>
+            <div id="feedbackMsg" class="small mb-2" style="display: none;"></div>
+            <button type="submit" id="submitFeedbackBtn" class="btn btn-primary btn-sm w-100 fw-semibold">
+                <i class="bi bi-send me-1"></i> Submit Feedback
+            </button>
+            </form>
+        </div>
+        </div>
     </body>
 </html>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const feedbackBtn = document.getElementById('feedbackBtn');
+    const feedbackCard = document.getElementById('feedbackCard');
+    const closeFeedbackBtn = document.getElementById('closeFeedbackBtn');
+    const feedbackForm = document.getElementById('feedbackForm');
+    const feedbackMsg = document.getElementById('feedbackMsg');
+    const submitFeedbackBtn = document.getElementById('submitFeedbackBtn');
+
+    feedbackBtn.addEventListener('click', function () {
+        const isHidden = feedbackCard.style.display === 'none';
+        feedbackCard.style.display = isHidden ? 'block' : 'none';
+    });
+
+    closeFeedbackBtn.addEventListener('click', function () {
+        feedbackCard.style.display = 'none';
+    });
+
+    feedbackForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const text = document.getElementById('feedbackText').value.trim();
+        const email = document.getElementById('feedbackEmail').value.trim();
+        const honeypot = document.getElementById('feedbackWebsite').value;
+        const csrfToken = document.getElementById('feedbackCsrfToken').value;
+
+        if (!text) return;
+
+        submitFeedbackBtn.disabled = true;
+        submitFeedbackBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Sending...';
+
+        let ragContext = null;
+        const ragContextEl = document.getElementById('ragContextData');
+        if (ragContextEl) {
+            try {
+                ragContext = JSON.parse(ragContextEl.textContent);
+            } catch (err) {
+                console.warn('Could not parse RAG context for feedback:', err);
+            }
+        }
+
+        fetch('/api/feedback', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                feedback: text,
+                email: email || null,
+                website: honeypot,
+                url: window.location.href,
+                rag_context: ragContext
+            })
+        })
+        .then(async res => {
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            throw new Error(data.message || `Error ${res.status}`);
+        }
+        return data;
+        })
+        .then(data => {
+        feedbackMsg.className = 'small mb-2 text-success fw-semibold';
+        feedbackMsg.textContent = 'Thank you for your feedback!';
+        feedbackMsg.style.display = 'block';
+        feedbackForm.reset();
+        setTimeout(() => {
+            feedbackCard.style.display = 'none';
+            feedbackMsg.style.display = 'none';
+            submitFeedbackBtn.disabled = false;
+            submitFeedbackBtn.innerHTML = '<i class="bi bi-send me-1"></i> Submit Feedback';
+        }, 2000);
+        })
+        .catch(err => {
+        feedbackMsg.className = 'small mb-2 text-danger fw-semibold';
+        feedbackMsg.textContent = err.message || 'Error sending feedback. Please try again.';
+        feedbackMsg.style.display = 'block';
+        submitFeedbackBtn.disabled = false;
+        submitFeedbackBtn.innerHTML = '<i class="bi bi-send me-1"></i> Submit Feedback';
+        });
+    });
+    });
+</script>

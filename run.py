@@ -1,30 +1,19 @@
-import os
-import json
-#from sys import exit
+import os, json, re, ast, csv, glob, time
 from flask import Flask, Response
 from flask import request, session, url_for, render_template, send_file, redirect, send_from_directory, flash, jsonify, abort, stream_with_context
-#from werkzeug.utils import secure_filename
 from flask_wtf import FlaskForm
 from flask_wtf.csrf import CSRFProtect
-#from flask_sqlalchemy import SQLAlchemy
-#from flask_cors import CORS
-#from werkzeug.utils import secure_filename
 from wtforms import StringField, PasswordField, SubmitField, validators
-import psycopg2
-#from datetime import datetime
-import csv
-import time
-#import pandas as pd
-import glob
-import logging
+from datetime import datetime, timezone
+from collections import defaultdict
 from markupsafe import Markup
+import psycopg2
+import logging
 import markdown
-import re
-import ast
+import requests
 
 #
 from modules import assum_json_to_dict, usrinp_json_to_dict
-import requests
 from config import ODOO_BASE, ODOO_DB, DEFAULT_POLICY_ID, REQUEST_TIMEOUT
 #added remarks for run.py
 # powershell: $env:FLASK_APP = "run"
@@ -44,6 +33,24 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
+
+PROD_FEEDBACK_DIR = '/var/lib/multipeattools'
+if os.getenv('FEEDBACK_FILE'):
+    FEEDBACK_FILE = os.getenv('FEEDBACK_FILE')
+elif os.path.isdir(PROD_FEEDBACK_DIR) and os.access(PROD_FEEDBACK_DIR, os.W_OK):
+    FEEDBACK_FILE = os.path.join(PROD_FEEDBACK_DIR, 'feedback.jsonl')
+else:
+    FEEDBACK_FILE = os.path.join(app.root_path, 'data', 'feedback.jsonl')
+os.makedirs(os.path.dirname(FEEDBACK_FILE), exist_ok=True)
+# Rate-limiting & storage safeguards
+MAX_FEEDBACK_FILE_BYTES = 25 * 1024 * 1024  # 25 MB hard cap on log file
+IP_RATE_LIMIT = 5                           # Max 5 submissions per IP...
+IP_RATE_WINDOW = 900                        # ...within 15 minutes (900s)
+GLOBAL_RATE_LIMIT = 100                     # Max 100 submissions total per hour across all IPs
+
+_ip_submissions = defaultdict(list)
+_global_submissions = []
+
 #log = logging.getLogger(__name__)
 '''
 APP CONFIGURATION
@@ -976,6 +983,119 @@ def getpubs(code):
     #url = f'http://140.203.154.253:8016/aspect/publishers/{code}/'
     url = f'https://aspect-erp.insight-centre.org/aspect/publishers/{code}/'
     return create_dataendpoint(url)
+
+def _is_rate_limited(client_ip: str) -> bool:
+    now = time.time()
+
+    # 1. Prune expired global timestamps (1-hour window)
+    global _global_submissions
+    _global_submissions = [t for t in _global_submissions if now - t < 3600]
+    if len(_global_submissions) >= GLOBAL_RATE_LIMIT:
+        return True
+
+    # 2. Prune expired per-IP timestamps
+    _ip_submissions[client_ip] = [t for t in _ip_submissions[client_ip] if now - t < IP_RATE_WINDOW]
+    if len(_ip_submissions[client_ip]) >= IP_RATE_LIMIT:
+        return True
+
+    # Record valid attempt
+    _global_submissions.append(now)
+    _ip_submissions[client_ip].append(now)
+    return False
+
+def _sanitize_rag_context(raw_ctx) -> dict | None:
+    """Validates and bounds the optional RAG tool payload to prevent log bloat."""
+    if not isinstance(raw_ctx, dict):
+        return None
+
+    question = str(raw_ctx.get('question') or '').strip()[:1000]
+    answer = str(raw_ctx.get('answer') or '').strip()[:8000]
+    if not question and not answer:
+        return None
+
+    raw_filters = raw_ctx.get('filters') if isinstance(raw_ctx.get('filters'), dict) else {}
+    clean_filters = {
+        k: str(raw_filters[k]).strip()[:100]
+        for k in ('language', 'category', 'country', 'governance')
+        if raw_filters.get(k)
+    }
+
+    raw_policies = raw_ctx.get('policies') if isinstance(raw_ctx.get('policies'), list) else []
+    clean_policies = []
+    for p in raw_policies[:10]:
+        if isinstance(p, dict):
+            clean_policies.append({
+                'id': p.get('id'),
+                'title': str(p.get('title') or '')[:300],
+                'country': str(p.get('country') or '')[:100],
+                'language': str(p.get('language') or '')[:100],
+                'similarity': p.get('similarity'),
+                'evidence_location': str(p.get('evidence_location') or '')[:100],
+            })
+
+    return {
+        'question': question,
+        'filters': clean_filters,
+        'answer': answer,
+        'policies': clean_policies,
+    }
+
+@app.route('/api/feedback', methods=['POST'])
+def receive_feedback():
+    try:
+        # 1. Reject oversized payloads (> 64 KB, accommodating RAG context)
+        if request.content_length and request.content_length > 65_536:
+            return jsonify({'status': 'error', 'message': 'Payload too large.'}), 413
+
+        data = request.get_json(silent=True) or {}
+
+        # 2. Honeypot check: silently discard bot submissions
+        if data.get('website'):
+            return jsonify({'status': 'success', 'message': 'Feedback received successfully.'})
+
+        # 3. Resolve real client IP behind Nginx & enforce rate limit
+        forwarded_for = request.headers.get('X-Forwarded-For', '')
+        client_ip = forwarded_for.split(',')[0].strip() if forwarded_for else (request.remote_addr or 'unknown')
+        if _is_rate_limited(client_ip):
+            return jsonify({'status': 'error', 'message': 'Too many feedback submissions. Please try again later.'}), 429
+
+        # 4. Validate and truncate input lengths
+        feedback_text = str(data.get('feedback') or '').strip()
+        user_email = str(data.get('email') or '').strip()[:120]
+        page_url = str(data.get('url') or '').strip()[:300]
+
+        if not feedback_text:
+            return jsonify({'status': 'error', 'message': 'Feedback content is required.'}), 400
+        if len(feedback_text) > 2000:
+            return jsonify({'status': 'error', 'message': 'Feedback must be 2,000 characters or fewer.'}), 400
+
+        # 5. Prevent disk exhaustion if log file hits 25 MB
+        if os.path.exists(FEEDBACK_FILE) and os.path.getsize(FEEDBACK_FILE) >= MAX_FEEDBACK_FILE_BYTES:
+            logging.error("Feedback file reached 25 MB limit; rejecting new entries until rotated.")
+            return jsonify({'status': 'error', 'message': 'Feedback storage is temporarily full.'}), 503
+
+        entry = {
+            'timestamp': datetime.now(timezone.utc).isoformat(),
+            'feedback': feedback_text,
+            'email': user_email if user_email else None,
+            'page_url': page_url,
+            'rag_context': _sanitize_rag_context(data.get('rag_context')),
+            'user_agent': (request.headers.get('User-Agent') or '')[:250],
+            'remote_ip': client_ip
+        }
+
+        with open(FEEDBACK_FILE, 'a', encoding='utf-8') as f:
+            f.write(json.dumps(entry, ensure_ascii=False) + '\n')
+
+        return jsonify({'status': 'success', 'message': 'Feedback received successfully.'})
+    except Exception as e:
+        logging.error(f"Error saving feedback: {e}")
+        return jsonify({'status': 'error', 'message': 'An unexpected error occurred.'}), 500
+
+#################################################
+########### WAQAS CSV DOWNLOAD WORK #############
+#################################################
+# need to fix his duplicate imports and hardcoded routes at some point
 
 from flask import Flask, request, jsonify
 @app.route('/save-csv', methods=['POST'])
