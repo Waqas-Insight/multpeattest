@@ -276,18 +276,29 @@
         submitFeedbackBtn.disabled = true;
         submitFeedbackBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Sending...';
 
+        let ragContext = null;
+        const ragContextEl = document.getElementById('ragContextData');
+        if (ragContextEl) {
+            try {
+                ragContext = JSON.parse(ragContextEl.textContent);
+            } catch (err) {
+                console.warn('Could not parse RAG context for feedback:', err);
+            }
+        }
+
         fetch('/api/feedback', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken
-        },
-        body: JSON.stringify({
-            feedback: text,
-            email: email || null,
-            website: honeypot,
-            url: window.location.href
-        })
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                feedback: text,
+                email: email || null,
+                website: honeypot,
+                url: window.location.href,
+                rag_context: ragContext
+            })
         })
         .then(async res => {
         const data = await res.json().catch(() => ({}));

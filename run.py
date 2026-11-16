@@ -997,11 +997,48 @@ def _is_rate_limited(client_ip: str) -> bool:
     _ip_submissions[client_ip].append(now)
     return False
 
+def _sanitize_rag_context(raw_ctx) -> dict | None:
+    """Validates and bounds the optional RAG tool payload to prevent log bloat."""
+    if not isinstance(raw_ctx, dict):
+        return None
+
+    question = str(raw_ctx.get('question') or '').strip()[:1000]
+    answer = str(raw_ctx.get('answer') or '').strip()[:8000]
+    if not question and not answer:
+        return None
+
+    raw_filters = raw_ctx.get('filters') if isinstance(raw_ctx.get('filters'), dict) else {}
+    clean_filters = {
+        k: str(raw_filters[k]).strip()[:100]
+        for k in ('language', 'category', 'country', 'governance')
+        if raw_filters.get(k)
+    }
+
+    raw_policies = raw_ctx.get('policies') if isinstance(raw_ctx.get('policies'), list) else []
+    clean_policies = []
+    for p in raw_policies[:10]:
+        if isinstance(p, dict):
+            clean_policies.append({
+                'id': p.get('id'),
+                'title': str(p.get('title') or '')[:300],
+                'country': str(p.get('country') or '')[:100],
+                'language': str(p.get('language') or '')[:100],
+                'similarity': p.get('similarity'),
+                'evidence_location': str(p.get('evidence_location') or '')[:100],
+            })
+
+    return {
+        'question': question,
+        'filters': clean_filters,
+        'answer': answer,
+        'policies': clean_policies,
+    }
+
 @app.route('/api/feedback', methods=['POST'])
 def receive_feedback():
     try:
-        # 1. Reject oversized payloads before parsing (> 10 KB)
-        if request.content_length and request.content_length > 10_240:
+        # 1. Reject oversized payloads (> 64 KB, accommodating RAG context)
+        if request.content_length and request.content_length > 65_536:
             return jsonify({'status': 'error', 'message': 'Payload too large.'}), 413
 
         data = request.get_json(silent=True) or {}
@@ -1010,7 +1047,7 @@ def receive_feedback():
         if data.get('website'):
             return jsonify({'status': 'success', 'message': 'Feedback received successfully.'})
 
-        # 3. Resolve real client IP behind Nginx reverse proxy & check rate limit
+        # 3. Resolve real client IP behind Nginx & enforce rate limit
         forwarded_for = request.headers.get('X-Forwarded-For', '')
         client_ip = forwarded_for.split(',')[0].strip() if forwarded_for else (request.remote_addr or 'unknown')
         if _is_rate_limited(client_ip):
@@ -1036,12 +1073,13 @@ def receive_feedback():
             'feedback': feedback_text,
             'email': user_email if user_email else None,
             'page_url': page_url,
+            'rag_context': _sanitize_rag_context(data.get('rag_context')),
             'user_agent': (request.headers.get('User-Agent') or '')[:250],
             'remote_ip': client_ip
         }
 
         with open(FEEDBACK_FILE, 'a', encoding='utf-8') as f:
-            f.write(json.dumps(entry) + '\n')
+            f.write(json.dumps(entry, ensure_ascii=False) + '\n')
 
         return jsonify({'status': 'success', 'message': 'Feedback received successfully.'})
     except Exception as e:
