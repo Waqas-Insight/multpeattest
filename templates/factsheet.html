@@ -1597,6 +1597,7 @@
             <div class="atlas-metric-controls">
                 <label class="atlas-metric-label" for="atlasMetricSelect">Range by</label>
                 <select class="atlas-metric-select" id="atlasMetricSelect" onchange="changeAtlasMetric(this.value)">
+                    <option value="percentage">Total Peatland Coverage (%)</option>
                     <option value="area" selected>Total Peatlands (ha)</option>
                     <option value="natural">Natural Peatlands (ha)</option>
                     <option value="nonnatural">Non-Natural Peatlands (ha)</option>
@@ -2441,6 +2442,11 @@
         const atlasCountryLayers = new Map();
 
         const atlasMetricConfig = {
+            percentage: {
+                label: 'Total Peatland Coverage',
+                unit: '%',
+                decimals: 2
+            },
             area: {
                 label: 'Total Peatlands',
                 unit: 'ha',
@@ -2472,11 +2478,11 @@
 
         // Sequential green legend range.
         const atlasChoroplethColours = [
-            '#edf8e9',
-            '#bae4b3',
-            '#74c476',
-            '#31a354',
-            '#006d2c'
+            '#F5E6D3',
+            '#DFC19E',
+            '#BB936A',
+            '#916039',
+            '#603813'
         ];
 
         // Grey represents unavailable data.
@@ -2628,7 +2634,7 @@
 
             return {
                 fillColor: getAtlasCountryColour(value),
-                color: '#66806a',
+                color: '#785438',
                 weight: 1,
                 opacity: 1,
                 fillOpacity: 0.8
@@ -2873,7 +2879,7 @@
                             mouseover: function(event) {
                                 event.target.setStyle({
                                     weight: 2,
-                                    color: '#2e7d32',
+                                    color: '#603813',
                                     fillOpacity: 1
                                 });
 
